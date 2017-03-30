@@ -30,6 +30,22 @@ function signingData(tx, prefix = HashPrefix.transactionSig) {
   return serializeObject(tx, {prefix, signingFieldsOnly: true});
 }
 
+function signingClaimData(claim) {
+  console.log('claim:', claim)
+  const prefix = HashPrefix.paymentChannelClaim
+console.log("prefix", prefix)
+  const channel = types.Hash256.from(claim.channel).toBytes()
+console.log("channel", channel)
+  const amount = types.Amount.from(claim.amount).toBytes()
+console.log("amount", amount)
+  const bytesList = new BytesList();
+
+  bytesList.put(prefix)
+  bytesList.put(channel)
+  bytesList.put(amount)
+  return bytesList.toBytes()
+}
+
 function multiSigningData(tx, signingAccount) {
   const prefix = HashPrefix.transactionMultiSig;
   const suffix = types.AccountID.from(signingAccount).toBytes();
@@ -47,6 +63,7 @@ module.exports = {
   parseBytes,
   multiSigningData,
   signingData,
+  signingClaimData,
   binaryToJSON,
   sha512Half,
   transactionID,
