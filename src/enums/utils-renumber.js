@@ -109,6 +109,8 @@ let tesSUCCESS = 0;
 
 let starting_from_tecCLAIM = 100;
 
+let starting_from_tecDIR_FULL = 121;
+
 let previousKey = 'tem';
 Object.keys(input).forEach(key => {
   if (key.substring(0, 3) !== previousKey.substring(0, 3)) {
@@ -124,6 +126,9 @@ Object.keys(input).forEach(key => {
   } else if (key.substring(0, 3) === 'tes') {
     console.log(`    "${key}": ${tesSUCCESS},`);
   } else if (key.substring(0, 3) === 'tec') {
+    if (key === 'tecDIR_FULL') {
+      starting_from_tecCLAIM = starting_from_tecDIR_FULL;
+    }
     console.log(`    "${key}": ${starting_from_tecCLAIM++},`);
   }
 });
