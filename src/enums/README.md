@@ -46,4 +46,4 @@ TODO: Write a script to read rippled's source file and generate the necessary ma
 
 ## Transaction Types
 
-TODO
+See https://github.com/ripple/rippled/blob/develop/src/ripple/protocol/TxFormats.h
