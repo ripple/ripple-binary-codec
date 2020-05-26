@@ -12,7 +12,6 @@
     "test": "test"
   },
   "dependencies": {
-    "babel-runtime": "^6.26.0",
     "bn.js": "^5.1.1",
     "create-hash": "^1.2.0",
     "decimal.js": "^10.2.0",
