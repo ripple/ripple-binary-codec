@@ -40,7 +40,7 @@ function byteForHex(hex) {
   return byte;
 }
 
-function parseBytes(val, Output = <any>[]) {
+function parseBytes(val, Output = <any>Array) {
   if (!val || val.length === undefined) {
     throw new Error(`${val} is not a sequence`);
   }

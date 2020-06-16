@@ -1,6 +1,6 @@
 /* eslint-disable func-style */
 
-import BN from 'bn.js';
+import { BN } from 'bn.js';
 import { coreTypes } from './types';
 const { HashPrefix } = require('./hash-prefixes');
 const {BinaryParser} = require('./serdes/binary-parser');

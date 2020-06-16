@@ -1,7 +1,7 @@
-const assert = require('assert');
-const {parseBytes, bytesToHex} = require('../utils/bytes-utils');
+import { strict as assert } from 'assert';
+import { parseBytes, bytesToHex } from '../utils/bytes-utils';
 import { makeClass } from '../utils/make-class';
-const {Type, Field} = require('../enums');
+import { Enums } from '../enums';
 
 const BytesSink = {
   put(/* bytesSequence */) {
@@ -86,10 +86,10 @@ const BinarySerializer = makeClass({
       this.writeLengthEncoded(value);
     } else {
       value.toBytesSink(sink);
-      if (field.type === Type.STObject) {
-        sink.put(Field.ObjectEndMarker.bytes);
-      } else if (field.type === Type.STArray) {
-        sink.put(Field.ArrayEndMarker.bytes);
+      if (field.type === Enums.Type.STObject) {
+        sink.put(Enums.Field.ObjectEndMarker.bytes);
+      } else if (field.type === Enums.Type.STArray) {
+        sink.put(Enums.Field.ArrayEndMarker.bytes);
       }
     }
   },

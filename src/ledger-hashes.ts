@@ -1,5 +1,5 @@
 import * as _ from 'lodash'
-import BN from 'bn.js';
+import { BN } from 'bn.js';
 import { strict as assert } from 'assert';
 import { coreTypes } from './types';
 const { STObject, Hash256 } = coreTypes;

@@ -1,5 +1,5 @@
 import { strict as assert } from 'assert';
-import BN from 'bn.js';
+import { BN } from 'bn.js';
 import { makeClass } from '../utils/make-class';
 const {Comparable, SerializedType} = require('./serialized-type');
 const {serializeUIntN} = require('../utils/bytes-utils');

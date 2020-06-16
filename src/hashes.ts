@@ -2,7 +2,7 @@ import { makeClass } from './utils/make-class';
 import { HashPrefix } from './hash-prefixes';
 import { coreTypes } from './types';
 import { parseBytes } from './utils/bytes-utils';
-import { createHash } from 'create-hash';
+import * as createHash from 'create-hash';
 
 const Sha512Half = makeClass({
   Sha512Half() {

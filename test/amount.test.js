@@ -13,8 +13,12 @@ function amountErrorTests() {
     const testName = `${JSON.stringify(f.test_json)}\n\tis invalid ` +
                      `because: ${f.error}`
     it(testName, () => {
-      expect(() => Amount.from(f.test_json)).toThrow()
-      expect(() => JSON.stringify(f.test_json)).toThrow();
+      expect(() => {
+        Amount.from(f.test_json)
+      }).toThrow()
+      expect(() => {
+        JSON.stringify(f.test_json)
+      }).toThrow();
     });
   });
 }

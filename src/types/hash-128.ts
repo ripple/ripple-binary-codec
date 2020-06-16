@@ -1,5 +1,5 @@
 import { makeClass } from '../utils/make-class';
-const {Hash} = require('./hash');
+import { Hash } from './hash';
 
 const Hash128 = makeClass({
   inherits: Hash,

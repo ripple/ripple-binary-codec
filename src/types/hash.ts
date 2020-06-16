@@ -1,7 +1,7 @@
 import { strict as assert } from 'assert';
 import { makeClass } from '../utils/make-class';
-const {Comparable, SerializedType} = require('./serialized-type');
-const {compareBytes, parseBytes} = require('../utils/bytes-utils');
+import { Comparable, SerializedType } from './serialized-type';
+import { compareBytes, parseBytes } from '../utils/bytes-utils';
 
 const Hash = makeClass({
   Hash(bytes) {
