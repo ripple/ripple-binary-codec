@@ -1,8 +1,7 @@
-const _ = require('lodash');
-const assert = require('assert');
-const utils = require('./utils');
-const {Amount} = require('../src/coretypes');
-const {loadFixture} = utils;
+import * as _ from 'lodash';
+import { loadFixture } from './utils';
+import { coreTypes } from '../dist/types';
+const { Amount } = coreTypes
 const fixtures = loadFixture('data-driven-tests.json');
 
 function amountErrorTests() {
@@ -14,17 +13,16 @@ function amountErrorTests() {
     const testName = `${JSON.stringify(f.test_json)}\n\tis invalid ` +
                      `because: ${f.error}`
     it(testName, () => {
-      assert.throws(() => {
-        Amount.from(f.test_json);
-      }, JSON.stringify(f.test_json));
+      expect(() => Amount.from(f.test_json)).toThrow()
+      expect(() => JSON.stringify(f.test_json)).toThrow();
     });
   });
 }
 
 describe('Amount', function() {
   it('can be parsed from', function() {
-    assert(Amount.from('1000000') instanceof Amount);
-    assert.equal(Amount.from('1000000').valueString(), '1000000');
+    expect(Amount.from('1000000') instanceof Amount).toBe(true);
+    expect(Amount.from('1000000').valueString()).toEqual('1000000');
     const fixture = {
       'value': '1',
       'issuer': '0000000000000000000000000000000000000000',
@@ -36,7 +34,7 @@ describe('Amount', function() {
       'issuer': 'rrrrrrrrrrrrrrrrrrrrrhoLvTp',
       'currency': 'USD'
     };
-    assert.deepEqual(amt.toJSON(), rewritten);
+    expect(amt.toJSON()).toEqual(rewritten);
   });
   amountErrorTests()
 });

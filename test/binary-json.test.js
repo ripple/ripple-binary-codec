@@ -1,6 +1,5 @@
-const assert = require('assert');
 const fixtures = require('./fixtures/codec-fixtures.json');
-const {decode, encode, decodeLedgerData} = require('../src');
+const {decode, encode, decodeLedgerData} = require('../dist');
 
 function json(object) {
   return JSON.stringify(object);
@@ -15,15 +14,15 @@ describe('ripple-binary-codec', function() {
     describe(name, function() {
       entries.forEach((t, test_n) => {
         // eslint-disable-next-line max-len
-        it(`${name}[${test_n}] can encode ${truncateForDisplay(json(t.json))} to ${truncateForDisplay(t.binary)}`,
+        test(`${name}[${test_n}] can encode ${truncateForDisplay(json(t.json))} to ${truncateForDisplay(t.binary)}`,
           () => {
-            assert.equal(t.binary, encode(t.json));
+            expect(t.binary).toEqual(encode(t.json));
           });
         // eslint-disable-next-line max-len
-        it(`${name}[${test_n}] can decode ${truncateForDisplay(t.binary)} to ${truncateForDisplay(json(t.json))}`,
+        test(`${name}[${test_n}] can decode ${truncateForDisplay(t.binary)} to ${truncateForDisplay(json(t.json))}`,
           () => {
             const decoded = decode(t.binary);
-            assert.deepEqual(t.json, decoded);
+            expect(t.json).toMatchObject(decoded);
           });
       });
     });
@@ -32,12 +31,14 @@ describe('ripple-binary-codec', function() {
   makeSuite('accountState', fixtures.accountState);
 
   describe('ledgerData', function() {
-    fixtures.ledgerData.forEach((t, test_n) => {
-      it(`ledgerData[${test_n}] can decode ${t.binary} to ${json(t.json)}`,
+    if(fixtures.ledgerData) {
+      fixtures.ledgerData.forEach((t, test_n) => {
+      test(`ledgerData[${test_n}] can decode ${t.binary} to ${json(t.json)}`,
         () => {
           const decoded = decodeLedgerData(t.binary);
-          assert.deepEqual(t.json, decoded);
+          expect(t.json).toMatchObject(decoded);
         });
-    });
+      });
+    }
   })
 });

@@ -1,8 +1,7 @@
-const assert = require('assert');
 const {
   encode,
   decode
-} = require('../src')
+} = require('../dist')
 
 // Notice: no Amount or Fee
 const tx_json = {
@@ -45,78 +44,76 @@ And the smallest:
 };
 
 describe('encoding and decoding tx_json', function() {
-  it('can encode tx_json without Amount or Fee', function() {
+  test('can encode tx_json without Amount or Fee', function() {
     const encoded = encode(tx_json);
     const decoded = decode(encoded);
-    assert.deepStrictEqual(tx_json, decoded);
+    expect(tx_json).toMatchObject(decoded);
   });
-  it('can encode tx_json with Amount and Fee', function() {
+  test('can encode tx_json with Amount and Fee', function() {
     const my_tx = Object.assign({}, tx_json, {
       Amount: '1000',
       Fee: '10'
     });
     const encoded = encode(my_tx);
     const decoded = decode(encoded);
-    assert.deepStrictEqual(my_tx, decoded);
+    expect(my_tx).toMatchObject(decoded);
   });
-  it('throws when Amount is invalid', function() {
+  test('throws when Amount is invalid', function() {
     const my_tx = Object.assign({}, tx_json, {
       Amount: '1000.001',
       Fee: '10'
     });
-    assert.throws(() => {
+    expect(() => {
       encode(my_tx);
-    }, {
+    }).toThrow({
       name: 'Error',
       message: amount_parameters_message('1000.001')
     });
   });
-  it('throws when Fee is invalid', function() {
+  test('throws when Fee is invalid', function() {
     const my_tx = Object.assign({}, tx_json, {
       Amount: '1000',
       Fee: '10.123'
     });
-    assert.throws(() => {
+    expect(() => {
       encode(my_tx);
-    }, {
+    }).toThrow({
       name: 'Error',
       message: amount_parameters_message('10.123')
     });
   });
-  it('throws when Amount and Fee are invalid', function() {
+  test('throws when Amount and Fee are invalid', function() {
     const my_tx = Object.assign({}, tx_json, {
       Amount: '1000.789',
       Fee: '10.123'
     });
-    assert.throws(() => {
+    expect(() => {
       encode(my_tx);
-    }, {
+    }).toThrow({
       name: 'Error',
       message: amount_parameters_message('1000.789')
     });
   });
-  it('throws when Amount is a number instead of a string-encoded integer',
+  test('throws when Amount is a number instead of a string-encoded integer',
     function() {
       const my_tx = Object.assign({}, tx_json, {
         Amount: 1000.789
       });
-      assert.throws(() => {
+      expect(() => {
         encode(my_tx);
-      },
-      {
+      }).toThrow({
         name: 'Error',
         message: 'unsupported value: 1000.789'
       });
     });
-  it('throws when Fee is a number instead of a string-encoded integer',
+  test('throws when Fee is a number instead of a string-encoded integer',
     function() {
       const my_tx = Object.assign({}, tx_json, {
         Amount: 1234.56
       });
-      assert.throws(() => {
+      expect(() => {
         encode(my_tx);
-      },
-      {
+      }).toThrow({
         name: 'Error',
         message: 'unsupported value: 1234.56'
       });

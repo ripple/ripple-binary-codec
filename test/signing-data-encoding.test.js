@@ -1,7 +1,5 @@
-const _ = require('lodash');
-const assert = require('assert');
-const {encodeForSigning, encodeForSigningClaim, encodeForMultisigning} =
-  require('../src');
+import { _ } from 'lodash';
+import { encodeForSigning, encodeForSigningClaim, encodeForMultisigning } from '../dist';
 
 const tx_json = {
   Account: 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ',
@@ -22,9 +20,9 @@ const tx_json = {
 };
 
 describe('Signing data', function() {
-  it('can create single signing blobs', function() {
+  test('can create single signing blobs', function() {
     const actual = encodeForSigning(tx_json);
-    assert.equal(actual,
+    expect(actual).toBe(
       ['53545800', // signingPrefix
         // TransactionType
         '12',
@@ -60,11 +58,11 @@ describe('Signing data', function() {
         'B5F762798A53D543A014CAF8B297CFF8F2F937E8'].join('')
     );
   });
-  it('can create multi signing blobs', function() {
+  test('can create multi signing blobs', function() {
     const signingAccount = 'rJZdUusLDtY9NEsGea7ijqhVrXv98rYBYN';
     const signingJson = _.assign({}, tx_json, {SigningPubKey: ''});
     const actual = encodeForMultisigning(signingJson, signingAccount);
-    assert.equal(actual,
+    expect(actual).toBe(
       ['534D5400', // signingPrefix
         // TransactionType
         '12',
@@ -108,7 +106,7 @@ describe('Signing data', function() {
     const amount = '1000'
     const json = {channel, amount}
     const actual = encodeForSigningClaim(json)
-    assert.equal(actual, [
+    expect(actual).toBe([
       // hash prefix
       '434C4D00',
       // channel ID

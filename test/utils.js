@@ -3,7 +3,7 @@ const fs = require('fs');
 const fsExtra = require('fs-extra');
 const assert = require('assert');
 const Decimal = require('decimal.js');
-const {parseBytes} = require('../src/utils/bytes-utils');
+const {parseBytes} = require('../dist/utils/bytes-utils');
 
 function hexOnly(hex) {
   return hex.replace(/[^a-fA-F0-9]/g, '');
@@ -80,7 +80,7 @@ function assertEqualAmountJSON(actual, expected) {
               new Decimal(expected.value)));
 }
 
-module.exports = {
+export {
   hexOnly,
   parseHexOnly,
   loadFixture,

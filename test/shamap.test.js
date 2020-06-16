@@ -1,8 +1,7 @@
-const assert = require('assert');
-const {ShaMap} = require('../src/shamap.js');
-const {binary: {serializeObject}, Hash256, HashPrefix}
-  = require('../src/coretypes');
-const {loadFixture} = require('./utils');
+import { ShaMap } from '../dist/shamap.js';
+import { binary, HashPrefix } from '../dist/coretypes';
+import { coreTypes } from '../dist/types'
+import { loadFixture } from './utils';
 
 function now() {
   return (Number(Date.now())) / 1000;
@@ -16,7 +15,7 @@ function makeItem(indexArg) {
   while (str.length < 64) {
     str += '0';
   }
-  const index = Hash256.from(str);
+  const index = coreTypes.Hash256.from(str);
   const item = {
     toBytesSink(sink) {
       index.toBytesSink(sink);
@@ -31,11 +30,11 @@ function makeItem(indexArg) {
 describe('ShaMap', () => {
   now();
 
-  it('hashes to zero when empty', () => {
+  test('hashes to zero when empty', () => {
     const map = new ShaMap();
-    assert.equal(map.hash().toHex(), ZERO);
+    expect(map.hash().toHex()).toBe(ZERO);
   });
-  it('creates the same hash no matter which order items are added', () => {
+  test('creates the same hash no matter which order items are added', () => {
     let map = new ShaMap();
     const items = [
       '0',
@@ -50,13 +49,13 @@ describe('ShaMap', () => {
     ];
     items.forEach(i => map.addItem(...makeItem(i)));
     const h1 = map.hash();
-    assert(h1.eq(h1));
+    expect(h1.eq(h1)).toBe(true);
     map = new ShaMap();
     items.reverse().forEach(i => map.addItem(...makeItem(i)));
-    assert(map.hash().eq(h1));
+    expect(map.hash()).toStrictEqual(h1);
   });
   function factory(fixture) {
-    it(`recreate account state hash from ${fixture}`, () => {
+    test(`recreate account state hash from ${fixture}`, () => {
       const map = new ShaMap();
       const ledger = loadFixture(fixture);
       // const t = now();
@@ -66,9 +65,9 @@ describe('ShaMap', () => {
           console.log(e.index);
           console.log(i);
         }
-        const bytes = serializeObject(e);
+        const bytes = binary.serializeObject(e);
         return {
-          index: Hash256.from(e.index),
+          index: coreTypes.Hash256.from(e.index),
           hashPrefix() {
             return leafNodePrefix;
           },
@@ -77,7 +76,7 @@ describe('ShaMap', () => {
           }
         };
       }).forEach(so => map.addItem(so.index, so));
-      assert.equal(map.hash().toHex(), ledger.account_hash);
+      expect(map.hash().toHex()).toBe(ledger.account_hash);
       // console.log('took seconds: ', (now() - t));
     });
   }
