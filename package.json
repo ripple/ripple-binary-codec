@@ -41,7 +41,7 @@
   },
   "scripts": {
     "compile": "tsc && cp ./src/enums/definitions.json ./dist/enums",
-    "prepublish": "npm test && npm run lint && npm run compile",
+    "prepublish": "npm run compile && npm test",
     "test": "jest",
     "lint": "tslint -p ./"
   },
