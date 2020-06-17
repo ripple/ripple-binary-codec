@@ -9,18 +9,6 @@ function hexOnly(hex) {
 
 function unused() {}
 
-// function captureLogsAsync() {
-//   let log = '';
-//   const unhook = intercept(txt => {
-//     log += txt;
-//     return '';
-//   });
-//   return function() {
-//     unhook();
-//     return log;
-//   };
-// }
-
 function captureLogs(func) {
   const finished = captureLogsAsync();
   try {
@@ -58,11 +46,6 @@ function fixturePath(relativePath) {
 function prettyJSON(val) {
   return JSON.stringify(val, null, 2);
 }
-
-// function writeFixture(relativePath, data) {
-//   const out = isBufferOrString(data) ? data : prettyJSON(data);
-//   return fsExtra.outputFileSync(fixturePath(relativePath), out);
-// }
 
 function assertEqualAmountJSON(actual, expected) {
   const typeA = (typeof actual);
