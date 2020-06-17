@@ -1,5 +1,5 @@
-import { _ } from 'lodash';
-import { encodeForSigning, encodeForSigningClaim, encodeForMultisigning } from '../dist';
+const _ = require('lodash');
+const { encodeForSigning, encodeForSigningClaim, encodeForMultisigning } = require('../dist');
 
 const tx_json = {
   Account: 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ',

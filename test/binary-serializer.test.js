@@ -1,10 +1,10 @@
 /* eslint-disable func-style */
 
-import { BN } from 'bn.js';
-import { binary } from '../dist/coretypes';
-import { encode } from '../dist';
-const {makeParser, BytesList, BinarySerializer} = binary;
-import { coreTypes } from '../dist/types'
+const { BN } = require('bn.js');
+const { binary } = require('../dist/coretypes');
+const { encode } = require('../dist');
+const { makeParser, BytesList, BinarySerializer } = binary;
+const { coreTypes } = require('../dist/types');
 const {UInt8, UInt16, UInt32, UInt64, STObject} = coreTypes;
 
 const { loadFixture } = require('./utils');

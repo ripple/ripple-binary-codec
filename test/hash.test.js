@@ -1,4 +1,4 @@
-import { coreTypes } from '../dist/types'
+const { coreTypes } = require('../dist/types');
 const {Hash160, Hash256, Currency, AccountID} = coreTypes;
 
 describe('Hash160', function() {

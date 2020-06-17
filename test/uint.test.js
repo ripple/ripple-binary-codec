@@ -1,4 +1,4 @@
-import { coreTypes } from '../dist/types';
+const { coreTypes } = require('../dist/types');
 const {UInt8, UInt16, UInt32, UInt64} = coreTypes;
 
 test("compareToTests", () => {

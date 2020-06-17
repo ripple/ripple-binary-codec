@@ -1,7 +1,7 @@
-import { ShaMap } from '../dist/shamap.js';
-import { binary, HashPrefix } from '../dist/coretypes';
-import { coreTypes } from '../dist/types'
-import { loadFixture } from './utils';
+const { ShaMap } =  require('../dist/shamap.js');
+const { binary, HashPrefix } = require('../dist/coretypes');
+const { coreTypes } = require('../dist/types');
+const { loadFixture } = require('./utils');
 
 function now() {
   return (Number(Date.now())) / 1000;

@@ -1,6 +1,6 @@
-import * as _ from 'lodash';
-import { loadFixture } from './utils';
-import { coreTypes } from '../dist/types';
+const _ = require('lodash');
+const { loadFixture } = require('./utils');
+const { coreTypes } = require('../dist/types');
 const { Amount } = coreTypes
 const fixtures = loadFixture('data-driven-tests.json');
 

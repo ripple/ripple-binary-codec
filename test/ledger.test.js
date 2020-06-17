@@ -1,5 +1,5 @@
-import { loadFixture } from './utils';
-import { transactionTreeHash, ledgerHash, accountStateHash } from '../dist/ledger-hashes';
+const { loadFixture } = require('./utils');
+const { transactionTreeHash, ledgerHash, accountStateHash } = require('../dist/ledger-hashes');
 
 describe('Ledger Hashes', function() {
   function testFactory(ledgerFixture) {

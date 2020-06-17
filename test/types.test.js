@@ -1,12 +1,11 @@
-import { _ } from 'lodash';
-import { strict as assert } from 'assert';
-import { coreTypes } from '../dist/types';
-import { SerializedType } from '../dist/types/serialized-type';
+const _ = require('lodash');
+const { coreTypes } = require('../dist/types');
+const { SerializedType } = require('../dist/types/serialized-type');
 
 describe('SerializedType interfaces', () => {
   _.forOwn(coreTypes, (Value, name) => {
     test(`${name} has a \`from\` static constructor`, () => {
-      assert(Value.from && Value.from !== Array.from);
+      expect(Value.from && Value.from !== Array.from).toBe(true);
     });
     test(`${name} has a default constructor`, () => {
       /* eslint-disable no-new*/

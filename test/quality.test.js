@@ -1,4 +1,4 @@
-import { quality, binary } from '../dist/coretypes';
+const { quality, binary } = require('../dist/coretypes');
 
 describe('Quality encode/decode', function() {
   const bookDirectory =

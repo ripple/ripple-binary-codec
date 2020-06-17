@@ -61,7 +61,7 @@ function assertEqualAmountJSON(actual, expected) {
               new Decimal(expected.value)));
 }
 
-export {
+module.exports = {
   hexOnly,
   parseHexOnly,
   loadFixture,

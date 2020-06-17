@@ -1,19 +1,19 @@
 /* eslint-disable func-style */
 
-import { coreTypes } from '../dist/types';
+const { coreTypes } = require('../dist/types');
 
-import * as _ from 'lodash';
-import { encodeAccountID } from 'ripple-address-codec';
-import { binary } from '../dist/coretypes'
+const _ = require('lodash');
+const { encodeAccountID } = require('ripple-address-codec');
+const { binary } = require('../dist/coretypes');
 const { Amount, Hash160 } = coreTypes;
 const { makeParser, readJSON } = binary;
-import { Enums } from './../dist/enums';
+const { Enums } = require('./../dist/enums');
 const Field = Enums.Field;
 const { TransactionType } = Enums;
-import { parseHexOnly, hexOnly, loadFixture } from './utils';
-import { bytesToHex } from '../dist/utils/bytes-utils';
+const { parseHexOnly, hexOnly, loadFixture } = require('./utils');
+const { bytesToHex } = require('../dist/utils/bytes-utils');
 const fixtures = loadFixture('data-driven-tests.json');
-import { BytesList } from '../dist/serdes/binary-serializer';
+const { BytesList } = require('../dist/serdes/binary-serializer');
 
 const __ = hexOnly;
 function unused() {}

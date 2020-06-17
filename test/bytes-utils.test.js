@@ -1,4 +1,4 @@
-import { slice, compareBytes, parseBytes, bytesToHex } from '../dist/utils/bytes-utils'
+const { slice, compareBytes, parseBytes, bytesToHex } = require('../dist/utils/bytes-utils');
 
 describe('bytes-utils', function() {
   describe('parseBytes', function() {
