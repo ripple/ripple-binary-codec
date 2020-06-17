@@ -1,6 +1,5 @@
 const fs = require('fs');
 const assert = require('assert');
-const Decimal = require('decimal.js');
 const {parseBytes} = require('../dist/utils/bytes-utils');
 
 function hexOnly(hex) {
@@ -47,26 +46,11 @@ function prettyJSON(val) {
   return JSON.stringify(val, null, 2);
 }
 
-function assertEqualAmountJSON(actual, expected) {
-  const typeA = (typeof actual);
-  assert(typeA === (typeof expected));
-  if (typeA === 'string') {
-    assert.equal(actual, expected);
-    return;
-  }
-  assert.equal(actual.currency, expected.currency);
-  assert.equal(actual.issuer, expected.issuer);
-  assert(actual.value === expected.value ||
-            new Decimal(actual.value).equals(
-              new Decimal(expected.value)));
-}
-
 module.exports = {
   hexOnly,
   parseHexOnly,
   loadFixture,
   loadFixtureText,
-  assertEqualAmountJSON,
   unused,
   captureLogs
 };

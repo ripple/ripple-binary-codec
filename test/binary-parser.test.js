@@ -1,6 +1,7 @@
 /* eslint-disable func-style */
 
 const { coreTypes } = require('../dist/types');
+const  Decimal = require('decimal.js');
 
 const _ = require('lodash');
 const { encodeAccountID } = require('ripple-address-codec');
@@ -20,6 +21,21 @@ function unused() {}
 function toJSON(v) {
   return v.toJSON ? v.toJSON() : v;
 }
+
+function assertEqualAmountJSON(actual, expected) {
+  const typeA = (typeof actual);
+  expect(typeA === (typeof expected)).toBe(true);
+  if (typeA === 'string') {
+    expect(actual).toEqual(expected);
+    return;
+  }
+  expect(actual.currency).toEqual(expected.currency);
+  expect(actual.issuer).toEqual(expected.issuer);
+  expect(actual.value === expected.value ||
+            new Decimal(actual.value).equals(
+              new Decimal(expected.value))).toBe(true);
+}
+
 
 function basicApiTests() {
   const bytes = parseHexOnly('00,01020304,0506', Uint8Array);
@@ -186,7 +202,7 @@ function amountParsingTests() {
       const value = parser.readType(Amount);
       // May not actually be in canonical form. The fixtures are to be used
       // also for json -> binary;
-      expect(toJSON(value)).toEqual(f.test_json);
+      assertEqualAmountJSON(toJSON(value), (f.test_json));
       if (f.exponent) {
         expect(value.exponent()).toEqual(f.exponent);
       }
