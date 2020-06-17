@@ -36,7 +36,6 @@ describe('ripple-binary-codec', function () {
         test(`ledgerData[${testN}] can decode ${t.binary} to ${json(t.json)}`,
           () => {
             const decoded = decodeLedgerData(t.binary)
-            console.log(decoded)
             expect(t.json).toEqual(decoded)
           })
       })
