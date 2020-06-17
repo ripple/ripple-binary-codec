@@ -1,29 +1,29 @@
-import { makeClass } from '../utils/make-class';
-import { parseBytes } from '../utils/bytes-utils';
-import { SerializedType } from './serialized-type';
+import { makeClass } from '../utils/make-class'
+import { parseBytes } from '../utils/bytes-utils'
+import { SerializedType } from './serialized-type'
 
 const Blob = makeClass({
   mixins: SerializedType,
-  Blob(bytes) {
+  Blob (bytes) {
     if (bytes) {
-      this._bytes = parseBytes(bytes, Uint8Array);
+      this._bytes = parseBytes(bytes, Uint8Array)
     } else {
-      this._bytes = new Uint8Array(0);
+      this._bytes = new Uint8Array(0)
     }
   },
   statics: {
-    fromParser(parser, hint) {
-      return new this(parser.read(hint));
+    fromParser (parser, hint) {
+      return new this(parser.read(hint))
     },
-    from(value) {
+    from (value) {
       if (value instanceof this) {
-        return value;
+        return value
       }
-      return new this(value);
+      return new this(value)
     }
   }
-}, undefined);
+}, undefined)
 
 export {
   Blob
-};
+}
