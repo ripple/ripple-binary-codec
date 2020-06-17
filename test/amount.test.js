@@ -15,10 +15,8 @@ function amountErrorTests() {
     it(testName, () => {
       expect(() => {
         Amount.from(f.test_json)
-      }).toThrow()
-      expect(() => {
         JSON.stringify(f.test_json)
-      }).toThrow();
+      }).toThrow()
     });
   });
 }

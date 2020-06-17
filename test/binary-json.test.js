@@ -22,7 +22,7 @@ describe('ripple-binary-codec', function() {
         test(`${name}[${test_n}] can decode ${truncateForDisplay(t.binary)} to ${truncateForDisplay(json(t.json))}`,
           () => {
             const decoded = decode(t.binary);
-            expect(t.json).toMatchObject(decoded);
+            expect(t.json).toEqual(decoded);
           });
       });
     });
@@ -36,7 +36,7 @@ describe('ripple-binary-codec', function() {
       test(`ledgerData[${test_n}] can decode ${t.binary} to ${json(t.json)}`,
         () => {
           const decoded = decodeLedgerData(t.binary);
-          expect(t.json).toMatchObject(decoded);
+          expect(t.json).toEqual(decoded);
         });
       });
     }

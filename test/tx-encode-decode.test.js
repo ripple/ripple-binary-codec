@@ -47,7 +47,7 @@ describe('encoding and decoding tx_json', function() {
   test('can encode tx_json without Amount or Fee', function() {
     const encoded = encode(tx_json);
     const decoded = decode(encoded);
-    expect(tx_json).toMatchObject(decoded);
+    expect(tx_json).toEqual(decoded);
   });
   test('can encode tx_json with Amount and Fee', function() {
     const my_tx = Object.assign({}, tx_json, {
@@ -56,7 +56,7 @@ describe('encoding and decoding tx_json', function() {
     });
     const encoded = encode(my_tx);
     const decoded = decode(encoded);
-    expect(my_tx).toMatchObject(decoded);
+    expect(my_tx).toEqual(decoded);
   });
   test('throws when Amount is invalid', function() {
     const my_tx = Object.assign({}, tx_json, {
