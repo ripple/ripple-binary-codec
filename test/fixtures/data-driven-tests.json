@@ -2564,7 +2564,7 @@
         {
             "test_json": {
                 "currency": "USD",
-                "value": "-1.0",
+                "value": "-1",
                 "issuer": "rrrrrrrrrrrrrrrrrrrrBZbvji"
             },
             "significant_digits": 1,
@@ -2579,7 +2579,7 @@
         {
             "test_json": {
                 "currency": "USD",
-                "value": "1.0",
+                "value": "1",
                 "issuer": "rrrrrrrrrrrrrrrrrrrrBZbvji"
             },
             "significant_digits": 1,
@@ -2594,7 +2594,7 @@
         {
             "test_json": {
                 "currency": "USD",
-                "value": "0.0",
+                "value": "0",
                 "issuer": "rrrrrrrrrrrrrrrrrrrrBZbvji"
             },
             "significant_digits": 1,
@@ -2864,7 +2864,7 @@
         {
             "test_json": {
                 "currency": "USD",
-                "value": "1111111111111111.0",
+                "value": "1111111111111111",
                 "issuer": "rrrrrrrrrrrrrrrrrrrrBZbvji"
             },
             "significant_digits": 16,

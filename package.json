@@ -12,13 +12,12 @@
     "test": "test"
   },
   "dependencies": {
-    "babel-runtime": "^6.26.0",
-    "bn.js": "^5.1.1",
+    "bn.js": "^5.1.2",
     "create-hash": "^1.2.0",
     "decimal.js": "^10.2.0",
     "inherits": "^2.0.4",
     "lodash": "^4.17.15",
-    "ripple-address-codec": "^4.1.0"
+    "ripple-address-codec": "^4.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",
@@ -26,22 +25,13 @@
     "@types/jest": "^25.1.0",
     "@types/lodash": "^4.14.155",
     "@types/node": "^14.0.10",
-    "babel-cli": "^6.8.0",
-    "babel-eslint": "^10.0.2",
-    "babel-loader": "^6.2.4",
-    "babel-register": "^6.8.0",
-    "fs-extra": "^9.0.0",
-    "intercept-stdout": "^0.1.2",
-    "istanbul": "~0.4.3",
     "jest": "^25.2.7",
-    "mocha": "~7.1.2",
-    "tslint": "^5.19.0",
-    "tslint-eslint-rules": "^5.4.0",
-    "typescript": "^3.7.4"
+    "eslint": "^7.2.0",
+    "typescript": "^3.9.5"
   },
   "scripts": {
     "compile": "tsc && cp ./src/enums/definitions.json ./dist/enums",
-    "prepublish": "npm run compile && npm test",
+    "prepare": "npm run compile && npm test",
     "test": "jest",
     "lint": "tslint -p ./"
   },
