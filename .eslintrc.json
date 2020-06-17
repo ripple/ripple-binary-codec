@@ -1,7 +1,8 @@
 {
     "env": {
         "browser": true,
-        "es2020": true
+        "es2020": true,
+        "jest" : true
     },
     "extends": [
         "standard"
@@ -12,8 +13,11 @@
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "jest"
     ],
     "rules": {
+        "camelcase" : 1,
+        "no-path-concat" : 0
     }
 }

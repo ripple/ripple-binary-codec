@@ -19,7 +19,7 @@ const tx_json = {
   // TxnSignature,
   // Signature,
   // SigningPubKey
-};
+}
 
 const amount_parameters_message = input => {
   // disables the ESLint rule on the whole rest of the file
@@ -40,82 +40,82 @@ Thus the largest serializable IOU value is:
 
 And the smallest:
 0.000000000000000000000000000000000000000000000000000000000000000000000000000000001
-`;
-};
+`
+}
 
-describe('encoding and decoding tx_json', function() {
-  test('can encode tx_json without Amount or Fee', function() {
-    const encoded = encode(tx_json);
-    const decoded = decode(encoded);
-    expect(tx_json).toEqual(decoded);
-  });
-  test('can encode tx_json with Amount and Fee', function() {
+describe('encoding and decoding tx_json', function () {
+  test('can encode tx_json without Amount or Fee', function () {
+    const encoded = encode(tx_json)
+    const decoded = decode(encoded)
+    expect(tx_json).toEqual(decoded)
+  })
+  test('can encode tx_json with Amount and Fee', function () {
     const my_tx = Object.assign({}, tx_json, {
       Amount: '1000',
       Fee: '10'
-    });
-    const encoded = encode(my_tx);
-    const decoded = decode(encoded);
-    expect(my_tx).toEqual(decoded);
-  });
-  test('throws when Amount is invalid', function() {
+    })
+    const encoded = encode(my_tx)
+    const decoded = decode(encoded)
+    expect(my_tx).toEqual(decoded)
+  })
+  test('throws when Amount is invalid', function () {
     const my_tx = Object.assign({}, tx_json, {
       Amount: '1000.001',
       Fee: '10'
-    });
+    })
     expect(() => {
-      encode(my_tx);
+      encode(my_tx)
     }).toThrow({
       name: 'Error',
       message: amount_parameters_message('1000.001')
-    });
-  });
-  test('throws when Fee is invalid', function() {
+    })
+  })
+  test('throws when Fee is invalid', function () {
     const my_tx = Object.assign({}, tx_json, {
       Amount: '1000',
       Fee: '10.123'
-    });
+    })
     expect(() => {
-      encode(my_tx);
+      encode(my_tx)
     }).toThrow({
       name: 'Error',
       message: amount_parameters_message('10.123')
-    });
-  });
-  test('throws when Amount and Fee are invalid', function() {
+    })
+  })
+  test('throws when Amount and Fee are invalid', function () {
     const my_tx = Object.assign({}, tx_json, {
       Amount: '1000.789',
       Fee: '10.123'
-    });
+    })
     expect(() => {
-      encode(my_tx);
+      encode(my_tx)
     }).toThrow({
       name: 'Error',
       message: amount_parameters_message('1000.789')
-    });
-  });
+    })
+  })
   test('throws when Amount is a number instead of a string-encoded integer',
-    function() {
+    function () {
       const my_tx = Object.assign({}, tx_json, {
         Amount: 1000.789
-      });
+      })
       expect(() => {
-        encode(my_tx);
+        encode(my_tx)
       }).toThrow({
         name: 'Error',
         message: 'unsupported value: 1000.789'
-      });
-    });
+      })
+    })
   test('throws when Fee is a number instead of a string-encoded integer',
-    function() {
+    function () {
       const my_tx = Object.assign({}, tx_json, {
         Amount: 1234.56
-      });
+      })
       expect(() => {
-        encode(my_tx);
+        encode(my_tx)
       }).toThrow({
         name: 'Error',
         message: 'unsupported value: 1234.56'
-      });
-    });
-});
+      })
+    })
+})

@@ -1,77 +1,77 @@
 /* eslint-disable func-style */
 
-const { coreTypes } = require('../dist/types');
-const  Decimal = require('decimal.js');
+const { coreTypes } = require('../dist/types')
+const Decimal = require('decimal.js')
 
-const _ = require('lodash');
-const { encodeAccountID } = require('ripple-address-codec');
-const { binary } = require('../dist/coretypes');
-const { Amount, Hash160 } = coreTypes;
-const { makeParser, readJSON } = binary;
-const { Enums } = require('./../dist/enums');
-const Field = Enums.Field;
-const { TransactionType } = Enums;
-const { parseHexOnly, hexOnly, loadFixture } = require('./utils');
-const { bytesToHex } = require('../dist/utils/bytes-utils');
-const fixtures = loadFixture('data-driven-tests.json');
-const { BytesList } = require('../dist/serdes/binary-serializer');
+const _ = require('lodash')
+const { encodeAccountID } = require('ripple-address-codec')
+const { binary } = require('../dist/coretypes')
+const { Amount, Hash160 } = coreTypes
+const { makeParser, readJSON } = binary
+const { Enums } = require('./../dist/enums')
+const Field = Enums.Field
+const { TransactionType } = Enums
+const { parseHexOnly, hexOnly, loadFixture } = require('./utils')
+const { bytesToHex } = require('../dist/utils/bytes-utils')
+const fixtures = loadFixture('data-driven-tests.json')
+const { BytesList } = require('../dist/serdes/binary-serializer')
 
-const __ = hexOnly;
-function unused() {}
-function toJSON(v) {
-  return v.toJSON ? v.toJSON() : v;
+const __ = hexOnly
+function unused () {}
+function toJSON (v) {
+  return v.toJSON ? v.toJSON() : v
 }
 
-function assertEqualAmountJSON(actual, expected) {
-  const typeA = (typeof actual);
-  expect(typeA === (typeof expected)).toBe(true);
-  if (typeA === 'string') {
-    expect(actual).toEqual(expected);
-    return;
+function assertEqualAmountJSON (actual, expected) {
+  expect((typeof actual) === (typeof expected)).toBe(true)
+  if ((typeof actual) === 'string') {
+    expect(actual).toEqual(expected)
+    return
   }
-  expect(actual.currency).toEqual(expected.currency);
-  expect(actual.issuer).toEqual(expected.issuer);
+  expect(actual.currency).toEqual(expected.currency)
+  expect(actual.issuer).toEqual(expected.issuer)
   expect(actual.value === expected.value ||
             new Decimal(actual.value).equals(
-              new Decimal(expected.value))).toBe(true);
+              new Decimal(expected.value))).toBe(true)
 }
 
-
-function basicApiTests() {
-  const bytes = parseHexOnly('00,01020304,0506', Uint8Array);
+function basicApiTests () {
+  const bytes = parseHexOnly('00,01020304,0506', Uint8Array)
   test('can read slices of bytes', () => {
-    const parser = makeParser(bytes);
-    expect(parser.pos()).toBe(0);
-    expect(parser._buf instanceof Uint8Array).toBe(true);
-    const read1 = parser.read(1);
-    expect(read1 instanceof Uint8Array).toBe(true);
-    expect(read1).toEqual(Uint8Array.from([0]));
-    expect(parser.read(4)).toEqual(Uint8Array.from([1, 2, 3, 4]));
-    expect(parser.read(2)).toEqual(Uint8Array.from([5, 6]));
-    expect(() => parser.read(1)).toThrow();
-  });
+    const parser = makeParser(bytes)
+    expect(parser.pos()).toBe(0)
+    expect(parser._buf instanceof Uint8Array).toBe(true)
+    const read1 = parser.read(1)
+    expect(read1 instanceof Uint8Array).toBe(true)
+    expect(read1).toEqual(Uint8Array.from([0]))
+    expect(parser.read(4)).toEqual(Uint8Array.from([1, 2, 3, 4]))
+    expect(parser.read(2)).toEqual(Uint8Array.from([5, 6]))
+    expect(() => parser.read(1)).toThrow()
+  })
   test('can read a Uint32 at full', () => {
-    const parser = makeParser('FFFFFFFF');
-    expect(parser.readUInt32()).toEqual(0xFFFFFFFF);
-  });
+    const parser = makeParser('FFFFFFFF')
+    expect(parser.readUInt32()).toEqual(0xFFFFFFFF)
+  })
 }
-basicApiTests();
+basicApiTests()
 
-function transactionParsingTests() {
+function transactionParsingTests () {
   const transaction = {
     json: {
-      'Account': 'raD5qJMAShLeHZXf9wjUmo6vRK4arj9cF3',
-      'Fee': '10',
-      'Flags': 0,
-      'Sequence': 103929,
-      'SigningPubKey':
+      Account: 'raD5qJMAShLeHZXf9wjUmo6vRK4arj9cF3',
+      Fee: '10',
+      Flags: 0,
+      Sequence: 103929,
+      SigningPubKey:
         '028472865AF4CB32AA285834B57576B7290AA8C31B459047DB27E16F418D6A7166',
-      'TakerGets': {'currency': 'ILS',
-        'issuer': 'rNPRNzBB92BVpAhhZr4iXDTveCgV5Pofm9',
-        'value': '1694.768'},
-      'TakerPays': '98957503520',
-      'TransactionType': 'OfferCreate',
-      'TxnSignature': __(`
+      TakerGets: {
+        currency: 'ILS',
+        issuer: 'rNPRNzBB92BVpAhhZr4iXDTveCgV5Pofm9',
+        value: '1694.768'
+      },
+      TakerPays: '98957503520',
+      TransactionType: 'OfferCreate',
+      TxnSignature: __(`
           304502202ABE08D5E78D1E74A4C18F2714F64E87B8BD57444AF
           A5733109EB3C077077520022100DB335EE97386E4C0591CAC02
           4D50E9230D8F171EEB901B5E5E4BD6D1E0AEF98C`)
@@ -85,195 +85,194 @@ function transactionParsingTests() {
       8BD57444AFA5733109EB3C077077520022100DB335EE97386E4C059
       1CAC024D50E9230D8F171EEB901B5E5E4BD6D1E0AEF98C811439408
       A69F0895E62149CFCC006FB89FA7D1E6E5D`)
-  };
+  }
 
-  const tx_json = transaction.json;
+  const tx_json = transaction.json
   // These tests are basically development logs
 
   test('can be done with low level apis', () => {
-    const parser = makeParser(transaction.binary);
+    const parser = makeParser(transaction.binary)
 
-    expect(parser.readField()).toEqual(Field.TransactionType);
-    expect(parser.readUInt16()).toEqual(7);
-    expect(parser.readField()).toEqual(Field.Flags);
-    expect(parser.readUInt32()).toEqual(0);
-    expect(parser.readField()).toEqual(Field.Sequence);
-    expect(parser.readUInt32()).toEqual(103929);
-    expect(parser.readField()).toEqual(Field.TakerPays);
-    parser.read(8);
-    expect(parser.readField()).toEqual(Field.TakerGets);
+    expect(parser.readField()).toEqual(Field.TransactionType)
+    expect(parser.readUInt16()).toEqual(7)
+    expect(parser.readField()).toEqual(Field.Flags)
+    expect(parser.readUInt32()).toEqual(0)
+    expect(parser.readField()).toEqual(Field.Sequence)
+    expect(parser.readUInt32()).toEqual(103929)
+    expect(parser.readField()).toEqual(Field.TakerPays)
+    parser.read(8)
+    expect(parser.readField()).toEqual(Field.TakerGets)
     // amount value
-    expect(parser.read(8)).not.toBe([]);
+    expect(parser.read(8)).not.toBe([])
     // amount currency
-    expect(Hash160.fromParser(parser)).not.toBe([]);
-    expect(encodeAccountID(parser.read(20))).toEqual(tx_json.TakerGets.issuer);
-    expect(parser.readField()).toEqual(Field.Fee);
-    expect(parser.read(8)).not.toEqual([]);
-    expect(parser.readField()).toEqual(Field.SigningPubKey);
-    expect(parser.readVLLength()).toBe(33);
-    expect(bytesToHex(parser.read(33))).toEqual(tx_json.SigningPubKey);
-    expect(parser.readField()).toEqual(Field.TxnSignature);
-    expect(bytesToHex(parser.readVL())).toEqual(tx_json.TxnSignature);
-    expect(parser.readField()).toEqual(Field.Account);
-    expect(encodeAccountID(parser.readVL())).toEqual(tx_json.Account);
-    expect(parser.end()).toBe(true);
-  });
+    expect(Hash160.fromParser(parser)).not.toBe([])
+    expect(encodeAccountID(parser.read(20))).toEqual(tx_json.TakerGets.issuer)
+    expect(parser.readField()).toEqual(Field.Fee)
+    expect(parser.read(8)).not.toEqual([])
+    expect(parser.readField()).toEqual(Field.SigningPubKey)
+    expect(parser.readVLLength()).toBe(33)
+    expect(bytesToHex(parser.read(33))).toEqual(tx_json.SigningPubKey)
+    expect(parser.readField()).toEqual(Field.TxnSignature)
+    expect(bytesToHex(parser.readVL())).toEqual(tx_json.TxnSignature)
+    expect(parser.readField()).toEqual(Field.Account)
+    expect(encodeAccountID(parser.readVL())).toEqual(tx_json.Account)
+    expect(parser.end()).toBe(true)
+  })
 
   test('can be done with high level apis', () => {
-    const parser = makeParser(transaction.binary);
-    function readField() {
-      return parser.readFieldAndValue();
+    const parser = makeParser(transaction.binary)
+    function readField () {
+      return parser.readFieldAndValue()
     }
     {
-      const [field, value] = readField();
-      expect(field).toEqual(Field.TransactionType);
-      expect(value).toEqual(TransactionType.OfferCreate);
+      const [field, value] = readField()
+      expect(field).toEqual(Field.TransactionType)
+      expect(value).toEqual(TransactionType.OfferCreate)
     }
     {
-      const [field, value] = readField();
-      expect(field).toEqual( Field.Flags);
-      expect(value.val).toEqual(0);
+      const [field, value] = readField()
+      expect(field).toEqual(Field.Flags)
+      expect(value.val).toEqual(0)
     }
     {
-      const [field, value] = readField();
-      expect(field).toEqual(Field.Sequence);
-      expect(value.val).toEqual(103929);
+      const [field, value] = readField()
+      expect(field).toEqual(Field.Sequence)
+      expect(value.val).toEqual(103929)
     }
     {
-      const [field, value] = readField();
-      expect(field).toEqual(Field.TakerPays);
-      expect(value.currency.isNative()).toEqual(true);
-      expect(value.currency.toJSON()).toEqual('XRP');
+      const [field, value] = readField()
+      expect(field).toEqual(Field.TakerPays)
+      expect(value.currency.isNative()).toEqual(true)
+      expect(value.currency.toJSON()).toEqual('XRP')
     }
     {
-      const [field, value] = readField();
-      expect(field).toEqual(Field.TakerGets);
-      expect(value.currency.isNative()).toEqual(false);
-      expect(value.issuer.toJSON()).toEqual(tx_json.TakerGets.issuer);
+      const [field, value] = readField()
+      expect(field).toEqual(Field.TakerGets)
+      expect(value.currency.isNative()).toEqual(false)
+      expect(value.issuer.toJSON()).toEqual(tx_json.TakerGets.issuer)
     }
     {
-      const [field, value] = readField();
-      expect(field).toEqual(Field.Fee);
-      expect(value.currency.isNative()).toEqual(true);
+      const [field, value] = readField()
+      expect(field).toEqual(Field.Fee)
+      expect(value.currency.isNative()).toEqual(true)
     }
     {
-      const [field, value] = readField();
-      expect(field).toEqual(Field.SigningPubKey);
-      expect(value.toJSON()).toEqual(tx_json.SigningPubKey);
+      const [field, value] = readField()
+      expect(field).toEqual(Field.SigningPubKey)
+      expect(value.toJSON()).toEqual(tx_json.SigningPubKey)
     }
     {
-      const [field, value] = readField();
-      expect(field).toEqual(Field.TxnSignature);
-      expect(value.toJSON()).toEqual(tx_json.TxnSignature);
+      const [field, value] = readField()
+      expect(field).toEqual(Field.TxnSignature)
+      expect(value.toJSON()).toEqual(tx_json.TxnSignature)
     }
     {
-      const [field, value] = readField();
-      expect(field).toEqual(Field.Account);
-      expect(value.toJSON()).toEqual(tx_json.Account);
+      const [field, value] = readField()
+      expect(field).toEqual(Field.Account)
+      expect(value.toJSON()).toEqual(tx_json.Account)
     }
-    expect(parser.end()).toBe(true);
-  });
+    expect(parser.end()).toBe(true)
+  })
 
   test('can be done with higher level apis', () => {
-    const parser = makeParser(transaction.binary);
-    const jsonFromBinary = readJSON(parser);
-    expect(jsonFromBinary).toEqual(tx_json);
-  });
+    const parser = makeParser(transaction.binary)
+    const jsonFromBinary = readJSON(parser)
+    expect(jsonFromBinary).toEqual(tx_json)
+  })
 
   test('readJSON (binary.decode) does not return STObject ', () => {
-    const parser = makeParser(transaction.binary);
-    const jsonFromBinary = readJSON(parser);
-    expect(jsonFromBinary instanceof coreTypes.STObject).toBe(false);
-    expect(_.isPlainObject(jsonFromBinary)).toBe(true);
-  });
+    const parser = makeParser(transaction.binary)
+    const jsonFromBinary = readJSON(parser)
+    expect(jsonFromBinary instanceof coreTypes.STObject).toBe(false)
+    expect(_.isPlainObject(jsonFromBinary)).toBe(true)
+  })
 }
-transactionParsingTests();
+transactionParsingTests()
 
-function amountParsingTests() {
-  _.filter(fixtures.values_tests, {type: 'Amount'}).forEach((f, i) => {
+function amountParsingTests () {
+  _.filter(fixtures.values_tests, { type: 'Amount' }).forEach((f, i) => {
     if (f.error) {
-      return;
+      return
     }
-    const parser = makeParser(f.expected_hex);
+    const parser = makeParser(f.expected_hex)
     const testName =
       `values_tests[${i}] parses ${f.expected_hex.slice(0, 16)}...
-          as ${JSON.stringify(f.test_json)}`;
+          as ${JSON.stringify(f.test_json)}`
     test(testName, () => {
-      const value = parser.readType(Amount);
+      const value = parser.readType(Amount)
       // May not actually be in canonical form. The fixtures are to be used
       // also for json -> binary;
-      assertEqualAmountJSON(toJSON(value), (f.test_json));
+      assertEqualAmountJSON(toJSON(value), (f.test_json))
       if (f.exponent) {
-        expect(value.exponent()).toEqual(f.exponent);
+        expect(value.exponent()).toEqual(f.exponent)
       }
-    });
-  });
+    })
+  })
 }
 amountParsingTests()
 
-function fieldParsingTests() {
+function fieldParsingTests () {
   fixtures.fields_tests.forEach((f, i) => {
-    const parser = makeParser(f.expected_hex);
+    const parser = makeParser(f.expected_hex)
     test(`fields[${i}]: parses ${f.expected_hex} as ${f.name}`, () => {
-      const field = parser.readField();
-      expect(field.name).toEqual(f.name);
-      expect(field.type.name).toEqual(f.type_name);
-    });
-  });
+      const field = parser.readField()
+      expect(field.name).toEqual(f.name)
+      expect(field.type.name).toEqual(f.type_name)
+    })
+  })
 }
 fieldParsingTests()
 
-function assertRecyclable(json, forField) {
-  const Type = forField.associatedType;
-  const recycled = Type.from(json).toJSON();
-  expect(recycled).toEqual(json);
-  const sink = new BytesList();
-  Type.from(recycled).toBytesSink(sink);
+function assertRecyclable (json, forField) {
+  const Type = forField.associatedType
+  const recycled = Type.from(json).toJSON()
+  expect(recycled).toEqual(json)
+  const sink = new BytesList()
+  Type.from(recycled).toBytesSink(sink)
   const recycledAgain = makeParser(sink.toHex())
     .readType(Type)
-    .toJSON();
-  expect(recycledAgain).toEqual(json);
+    .toJSON()
+  expect(recycledAgain).toEqual(json)
 }
 
-function nestedObjectTests() {
-  function disabled(i) {
-    unused(i);
-    return false; // !_.includes([2], i);
+function nestedObjectTests () {
+  function disabled (i) {
+    unused(i)
+    return false // !_.includes([2], i);
   }
 
   fixtures.whole_objects.forEach((f, i) => {
     if (disabled(i)) {
-      return;
+      return
     }
 
     test(`whole_objects[${i}]: can parse blob into
           ${JSON.stringify(f.tx_json)}`,
     /*                                              */ () => {
-
-      const parser = makeParser(f.blob_with_no_signing);
-      let ix = 0;
+      const parser = makeParser(f.blob_with_no_signing)
+      let ix = 0
       while (!parser.end()) {
-        const [field, value] = parser.readFieldAndValue();
-        const expected = f.fields[ix];
-        const expectedJSON = expected[1].json;
-        const expectedField = expected[0];
-        const actual = toJSON(value);
+        const [field, value] = parser.readFieldAndValue()
+        const expected = f.fields[ix]
+        const expectedJSON = expected[1].json
+        const expectedField = expected[0]
+        const actual = toJSON(value)
 
         try {
-          expect(actual).toEqual(expectedJSON);
+          expect(actual).toEqual(expectedJSON)
         } catch (e) {
-          throw new Error(`${e} ${field} a: ${actual} e: ${expectedJSON}`);
+          throw new Error(`${e} ${field} a: ${actual} e: ${expectedJSON}`)
         }
-        expect(field.name).toEqual(expectedField);
-        assertRecyclable(actual, field);
-        ix++;
+        expect(field.name).toEqual(expectedField)
+        assertRecyclable(actual, field)
+        ix++
       }
-    });
-  });
+    })
+  })
 }
 nestedObjectTests()
 
-function pathSetBinaryTests() {
+function pathSetBinaryTests () {
   const bytes = __(
     `1200002200000000240000002E2E00004BF161D4C71AFD498D00000000000000
      0000000000000055534400000000000A20B3C85F482532A9578DBB3950B85CA0
@@ -303,50 +302,72 @@ function pathSetBinaryTests() {
      69E6DCC940CA48D82337AD000000000000000000000000425443000000000057
      180C769B66D942EE69E6DCC940CA48D82337AD10000000000000000000000000
      58525000000000003000000000000000000000000055534400000000000A20B3
-     C85F482532A9578DBB3950B85CA06594D100`);
+     C85F482532A9578DBB3950B85CA06594D100`)
 
   const expectedJSON =
-    [[{account: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K',
+    [[{
+      account: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K',
       currency: 'BTC',
-      issuer: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K'},
-    {account: 'rM1oqKtfh1zgjdAgbFmaRm3btfGBX25xVo',
+      issuer: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K'
+    },
+    {
+      account: 'rM1oqKtfh1zgjdAgbFmaRm3btfGBX25xVo',
       currency: 'BTC',
-      issuer: 'rM1oqKtfh1zgjdAgbFmaRm3btfGBX25xVo'},
-    {account: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B',
+      issuer: 'rM1oqKtfh1zgjdAgbFmaRm3btfGBX25xVo'
+    },
+    {
+      account: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B',
       currency: 'BTC',
-      issuer: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B'},
-    {currency: 'USD',
-      issuer: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B'}],
-    [{account: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K',
+      issuer: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B'
+    },
+    {
+      currency: 'USD',
+      issuer: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B'
+    }],
+    [{
+      account: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K',
       currency: 'BTC',
-      issuer: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K'},
-    {account: 'rM1oqKtfh1zgjdAgbFmaRm3btfGBX25xVo',
+      issuer: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K'
+    },
+    {
+      account: 'rM1oqKtfh1zgjdAgbFmaRm3btfGBX25xVo',
       currency: 'BTC',
-      issuer: 'rM1oqKtfh1zgjdAgbFmaRm3btfGBX25xVo'},
-    {account: 'rpvfJ4mR6QQAeogpXEKnuyGBx8mYCSnYZi',
+      issuer: 'rM1oqKtfh1zgjdAgbFmaRm3btfGBX25xVo'
+    },
+    {
+      account: 'rpvfJ4mR6QQAeogpXEKnuyGBx8mYCSnYZi',
       currency: 'BTC',
-      issuer: 'rpvfJ4mR6QQAeogpXEKnuyGBx8mYCSnYZi'},
-    {currency: 'USD',
-      issuer: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B'}],
-    [{account: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K',
+      issuer: 'rpvfJ4mR6QQAeogpXEKnuyGBx8mYCSnYZi'
+    },
+    {
+      currency: 'USD',
+      issuer: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B'
+    }],
+    [{
+      account: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K',
       currency: 'BTC',
-      issuer: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K'},
-    {account: 'r3AWbdp2jQLXLywJypdoNwVSvr81xs3uhn',
+      issuer: 'r9hEDb4xBGRfBCcX3E4FirDWQBAYtpxC8K'
+    },
+    {
+      account: 'r3AWbdp2jQLXLywJypdoNwVSvr81xs3uhn',
       currency: 'BTC',
-      issuer: 'r3AWbdp2jQLXLywJypdoNwVSvr81xs3uhn'},
-    {currency: '0000000000000000000000005852500000000000'},
-    {currency: 'USD',
-      issuer: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B'}]];
+      issuer: 'r3AWbdp2jQLXLywJypdoNwVSvr81xs3uhn'
+    },
+    { currency: '0000000000000000000000005852500000000000' },
+    {
+      currency: 'USD',
+      issuer: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B'
+    }]]
 
   test('works with long paths', () => {
-    const parser = makeParser(bytes);
-    const txn = readJSON(parser);
-    expect(txn.Paths).toEqual(expectedJSON);
+    const parser = makeParser(bytes)
+    const txn = readJSON(parser)
+    expect(txn.Paths).toEqual(expectedJSON)
     // TODO: this should go elsewhere
     expect(
       coreTypes.PathSet.from(txn.Paths).toJSON()).toEqual(
       expectedJSON
-    );
-  });
+    )
+  })
 }
-pathSetBinaryTests();
+pathSetBinaryTests()

@@ -1,5 +1,5 @@
-const _ = require('lodash');
-const { encodeForSigning, encodeForSigningClaim, encodeForMultisigning } = require('../dist');
+const _ = require('lodash')
+const { encodeForSigning, encodeForSigningClaim, encodeForMultisigning } = require('../dist')
 
 const tx_json = {
   Account: 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ',
@@ -17,11 +17,11 @@ const tx_json = {
     '3CD7B9B',
   SigningPubKey:
     'ED5F5AC8B98974A3CA843326D9B88CEBD0560177B973EE0B149F782CFAA06DC66A'
-};
+}
 
-describe('Signing data', function() {
-  test('can create single signing blobs', function() {
-    const actual = encodeForSigning(tx_json);
+describe('Signing data', function () {
+  test('can create single signing blobs', function () {
+    const actual = encodeForSigning(tx_json)
     expect(actual).toBe(
       ['53545800', // signingPrefix
         // TransactionType
@@ -56,12 +56,12 @@ describe('Signing data', function() {
         // VLLength
         '14',
         'B5F762798A53D543A014CAF8B297CFF8F2F937E8'].join('')
-    );
-  });
-  test('can create multi signing blobs', function() {
-    const signingAccount = 'rJZdUusLDtY9NEsGea7ijqhVrXv98rYBYN';
-    const signingJson = _.assign({}, tx_json, {SigningPubKey: ''});
-    const actual = encodeForMultisigning(signingJson, signingAccount);
+    )
+  })
+  test('can create multi signing blobs', function () {
+    const signingAccount = 'rJZdUusLDtY9NEsGea7ijqhVrXv98rYBYN'
+    const signingJson = _.assign({}, tx_json, { SigningPubKey: '' })
+    const actual = encodeForMultisigning(signingJson, signingAccount)
     expect(actual).toBe(
       ['534D5400', // signingPrefix
         // TransactionType
@@ -98,13 +98,13 @@ describe('Signing data', function() {
         'B5F762798A53D543A014CAF8B297CFF8F2F937E8',
         // signingAccount suffix
         'C0A5ABEF242802EFED4B041E8F2D4A8CC86AE3D1'].join('')
-    );
-  });
-  it('can create claim blob', function() {
+    )
+  })
+  test('can create claim blob', function () {
     const channel =
       '43904CBFCDCEC530B4037871F86EE90BF799DF8D2E0EA564BC8A3F332E4F5FB1'
     const amount = '1000'
-    const json = {channel, amount}
+    const json = { channel, amount }
     const actual = encodeForSigningClaim(json)
     expect(actual).toBe([
       // hash prefix
@@ -115,4 +115,4 @@ describe('Signing data', function() {
       '00000000000003E8'
     ].join(''))
   })
-});
+})
