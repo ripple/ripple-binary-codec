@@ -1,13 +1,14 @@
 import {strict as assert} from 'assert';
-const coreTypes = require('./coretypes');
-const {quality,
-       binary: {bytesToHex,
-                signingData,
-                signingClaimData,
-                multiSigningData,
-                binaryToJSON,
-                serializeObject,
-                BinaryParser}} = coreTypes;
+import { quality, binary } from './coretypes';
+import { coreTypes } from './types';
+const { bytesToHex,
+        signingData,
+        signingClaimData,
+        multiSigningData,
+        binaryToJSON,
+        serializeObject,
+        BinaryParser } = binary;
+
 
 function decodeLedgerData(binary) {
   assert(typeof binary === 'string', 'binary must be a hex string');
