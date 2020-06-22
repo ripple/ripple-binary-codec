@@ -39,7 +39,7 @@
     "compile": "tsc && cp ./src/enums/definitions.json ./dist/enums",
     "prepare": "npm run compile && npm test",
     "test": "jest",
-    "lint": "eslint --fix ./src/**/*.ts && eslint --fix ./test/*.js"
+    "lint": "eslint ./src/**/*.ts && eslint ./test/*.js"
   },
   "repository": {
     "type": "git",
