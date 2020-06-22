@@ -12,7 +12,7 @@ const ShaMapNode = makeClass({
   },
   cached: {
     hash() {
-      const hasher = Sha512Half.put(this.hashPrefix()); //If something fails this was changed
+      const hasher = Sha512Half.put(this.hashPrefix());
       this.toBytesSink(hasher);
       return hasher.finish();
     }
