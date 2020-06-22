@@ -38,6 +38,7 @@
   "scripts": {
     "compile": "tsc && cp ./src/enums/definitions.json ./dist/enums",
     "prepare": "npm run compile && npm test",
+    "lint" : "echo 'no linting for this PR is available'",
     "test": "jest"
   },
   "repository": {
