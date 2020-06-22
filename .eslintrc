@@ -1,3 +1,4 @@
+# ESLint documentation can be found at http://eslint.org/docs/
 env:
   browser: true
   node: true
