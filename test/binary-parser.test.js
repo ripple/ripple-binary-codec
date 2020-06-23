@@ -270,7 +270,6 @@ function nestedObjectTests () {
     })
   })
 }
-nestedObjectTests()
 
 function pathSetBinaryTests () {
   const bytes = __(
@@ -371,3 +370,8 @@ function pathSetBinaryTests () {
   })
 }
 pathSetBinaryTests()
+
+describe('Binary Parser', function() {
+  describe('pathSetBinaryTests', pathSetBinaryTests);
+  describe('nestedObjectTests', nestedObjectTests);
+});

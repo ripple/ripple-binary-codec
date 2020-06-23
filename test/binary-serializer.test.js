@@ -66,7 +66,6 @@ function bytesListTest () {
     expect(joined).toEqual(Uint8Array.from([0, 2, 3, 4, 5]))
   })
 }
-bytesListTest()
 
 function assertRecycles (blob) {
   const parser = makeParser(blob)
@@ -86,7 +85,6 @@ function nestedObjectTests () {
       })
   })
 }
-nestedObjectTests()
 
 function check (type, n, expected) {
   test(`Uint${type.width * 8} serializes ${n} as ${expected}`, function () {
@@ -130,7 +128,6 @@ function deliverMinTest () {
     expect(encode(deliverMinTx)).toEqual(deliverMinTxBinary)
   })
 }
-deliverMinTest()
 
 function SignerListSetTest () {
   test('can serialize SignerListSet', () => {
@@ -140,7 +137,6 @@ function SignerListSetTest () {
     expect(encode(SignerListSet.tx.meta)).toEqual(SignerListSet.meta)
   })
 }
-SignerListSetTest()
 
 function DepositPreauthTest () {
   test('can serialize DepositPreauth', () => {
@@ -150,7 +146,6 @@ function DepositPreauthTest () {
     expect(encode(DepositPreauth.tx.meta)).toEqual(DepositPreauth.meta)
   })
 }
-DepositPreauthTest()
 
 function EscrowTest () {
   test('can serialize EscrowCreate', () => {
@@ -164,7 +159,6 @@ function EscrowTest () {
     expect(encode(Escrow.cancel.tx)).toEqual(Escrow.cancel.binary)
   })
 }
-EscrowTest()
 
 function PaymentChannelTest () {
   test('can serialize PaymentChannelCreate', () => {
@@ -178,4 +172,12 @@ function PaymentChannelTest () {
   })
 }
 
-PaymentChannelTest()
+describe('Binary Serialization', function() {
+  describe('nestedObjectTests', nestedObjectTests);
+  describe('BytesList', bytesListTest);
+  describe('DeliverMin', deliverMinTest);
+  describe('DepositPreauth', DepositPreauthTest);
+  describe('SignerListSet', SignerListSetTest);
+  describe('Escrow', EscrowTest);
+  describe('PaymentChannel', PaymentChannelTest);
+})
