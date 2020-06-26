@@ -90,10 +90,10 @@ const BinarySerializer = makeClass(
         this.writeLengthEncoded(value);
       } else {
         value.toBytesSink(sink);
-        if (field.type === Enums.Type.STObject) {
-          sink.put(Enums.Field.ObjectEndMarker.bytes);
-        } else if (field.type === Enums.Type.STArray) {
-          sink.put(Enums.Field.ArrayEndMarker.bytes);
+        if (field.type.name === "STObject") {
+          sink.put(Enums.Field["ObjectEndMarker"].bytes);
+        } else if (field.type.name === "STArray") {
+          sink.put(Enums.Field["ArrayEndMarker"].bytes);
         }
       }
     },

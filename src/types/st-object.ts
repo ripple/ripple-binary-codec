@@ -2,7 +2,6 @@ import { makeClass } from "../utils/make-class";
 import { Enums } from "../enums";
 const _ = require("lodash");
 const { BinarySerializer } = require("../serdes/binary-serializer");
-const { ObjectEndMarker } = Enums.Field;
 const { SerializedType } = require("./serialized-type");
 
 const STObject = makeClass(
@@ -14,10 +13,10 @@ const STObject = makeClass(
         const so = new this();
         while (!parser.end(end)) {
           const field = parser.readField();
-          if (field === ObjectEndMarker) {
+          if (field.name === "ObjectEndMarker") {
             break;
           }
-          so[field] = parser.readFieldValue(field);
+          so[field.name] = parser.readFieldValue(field);
         }
         return so;
       },
@@ -31,7 +30,7 @@ const STObject = makeClass(
             (so, val, key) => {
               const field = Enums.Field[key];
               if (field) {
-                so[field] = field.associatedType.from(val);
+                so[field.name] = field.associatedType.from(val);
               } else {
                 so[key] = val;
               }
@@ -63,7 +62,7 @@ const STObject = makeClass(
       const fields = this.fieldKeys();
       const sorted = _.sortBy(fields, "ordinal");
       sorted.filter(filter).forEach((field) => {
-        const value = this[field];
+        const value = this[field.name];
         if (!field.isSerialized) {
           return;
         }
