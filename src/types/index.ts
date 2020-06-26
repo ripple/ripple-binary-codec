@@ -2,7 +2,7 @@ import { Enums } from "../enums";
 import { AccountID } from "./account-id";
 import { Amount } from "./amount";
 import { Blob } from "./blob";
- const { Currency } = require("./currency");
+const { Currency } = require("./currency");
 const { Hash128 } = require("./hash-128");
 const { Hash160 } = require("./hash-160");
 const { Hash256 } = require("./hash-256");
