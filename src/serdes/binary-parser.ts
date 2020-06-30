@@ -1,103 +1,113 @@
 import { strict as assert } from "assert";
-import { makeClass } from "../utils/make-class";
-import { Field } from "../definitions";
-import { slice, parseBytes } from "../utils/bytes-utils";
+import { Field, FieldInstance } from "../definitions";
 
-const BinaryParser = makeClass(
-  {
-    BinaryParser(buf) {
-      this._buf = parseBytes(buf, Uint8Array);
-      this._length = this._buf.length;
-      this._cursor = 0;
-    },
-    skip(n) {
-      this._cursor += n;
-    },
-    read(n, to = Uint8Array) {
-      const start = this._cursor;
-      const end = this._cursor + n;
-      assert(end <= this._buf.length);
-      this._cursor = end;
-      return slice(this._buf, start, end, to);
-    },
-    readUIntN(n) {
-      return this.read(n, Array).reduce((a, b) => (a << 8) | b) >>> 0;
-    },
-    readUInt8() {
-      return this._buf[this._cursor++];
-    },
-    readUInt16() {
-      return this.readUIntN(2);
-    },
-    readUInt32() {
-      return this.readUIntN(4);
-    },
-    pos() {
-      return this._cursor;
-    },
-    size() {
-      return this._buf.length;
-    },
-    end(customEnd) {
-      const cursor = this.pos();
-      return (
-        cursor >= this._length || (customEnd !== null && cursor >= customEnd)
+class BinaryParser {
+  _buf: Buffer
+
+  constructor(buf: string) {
+    this._buf = Buffer.from(buf, 'hex')
+  }
+
+  skip(n: number): void {
+    assert(n <= this._buf.byteLength)
+    this._buf = this._buf.slice(n);
+  }
+
+  read(n: number): Buffer {
+    assert(n <= this._buf.byteLength) 
+
+    let slice = this._buf.slice(0,n)
+    this.skip(n);
+    return slice
+  }
+
+  readUIntN(n: number): number {
+    return this.read(n).reduce((a, b) => (a << 8) | b) >>> 0;
+  }
+
+  readUInt8(): number {
+    return this.readUIntN(1);
+  }
+
+  readUInt16(): number {
+    return this.readUIntN(2);
+  }
+
+  readUInt32(): number {
+    return this.readUIntN(4);
+  }
+
+  size(): number {
+    return this._buf.byteLength;
+  }
+
+  end(customEnd?: number): boolean {
+    const length = this._buf.byteLength
+    return (
+      length === 0 || (customEnd !== undefined && length <= customEnd)
+    );
+  }
+
+  readVL(): Buffer {
+    return this.read(this.readVLLength());
+  }
+
+  readVLLength(): number {
+    const b1 = this.readUInt8();
+    if (b1 <= 192) {
+      return b1;
+    } else if (b1 <= 240) {
+      const b2 = this.readUInt8();
+      return 193 + (b1 - 193) * 256 + b2;
+    } else if (b1 <= 254) {
+      const b2 = this.readUInt8();
+      const b3 = this.readUInt8();
+      return 12481 + (b1 - 241) * 65536 + b2 * 256 + b3;
+    }
+    throw new Error("Invalid varint length indicator");
+  }
+
+  readFieldOrdinal(): number {
+    const tagByte = this.readUInt8();
+    const type = (tagByte & 0xf0) >>> 4 || this.readUInt8();
+    const nth = tagByte & 0x0f || this.readUInt8();
+    return (type << 16) | nth;
+  }
+
+  readField(): FieldInstance {
+    return Field.fromString(this.readFieldOrdinal().toString());
+  }
+
+  readType(type) { // Returns a serializedType, will type when implimented
+    return type.fromParser(this);
+  }
+
+  typeForField(field: FieldInstance) { //same
+    return field.associatedType;
+  }
+
+  readFieldValue(field: FieldInstance) { // same
+    const kls = this.typeForField(field);
+    if (!kls) {
+      throw new Error(`unsupported: (${field.name}, ${field.type.name})`);
+    }
+    const sizeHint = field.isVariableLengthEncoded
+      ? this.readVLLength()
+      : null;
+    const value = kls.fromParser(this, sizeHint);
+    if (value === undefined) {
+      throw new Error(
+        `fromParser for (${field.name}, ${field.type.name}) -> undefined `
       );
-    },
-    readVL() {
-      return this.read(this.readVLLength());
-    },
-    readVLLength() {
-      const b1 = this.readUInt8();
-      if (b1 <= 192) {
-        return b1;
-      } else if (b1 <= 240) {
-        const b2 = this.readUInt8();
-        return 193 + (b1 - 193) * 256 + b2;
-      } else if (b1 <= 254) {
-        const b2 = this.readUInt8();
-        const b3 = this.readUInt8();
-        return 12481 + (b1 - 241) * 65536 + b2 * 256 + b3;
-      }
-      throw new Error("Invalid varint length indicator");
-    },
-    readFieldOrdinal() {
-      const tagByte = this.readUInt8();
-      const type = (tagByte & 0xf0) >>> 4 || this.readUInt8();
-      const nth = tagByte & 0x0f || this.readUInt8();
-      return (type << 16) | nth;
-    },
-    readField() {
-      return Field.fromString(this.readFieldOrdinal().toString());
-    },
-    readType(type) {
-      return type.fromParser(this);
-    },
-    typeForField(field) {
-      return field.associatedType;
-    },
-    readFieldValue(field) {
-      const kls = this.typeForField(field);
-      if (!kls) {
-        throw new Error(`unsupported: (${field.name}, ${field.type.name})`);
-      }
-      const sizeHint = field.isVariableLengthEncoded
-        ? this.readVLLength()
-        : null;
-      const value = kls.fromParser(this, sizeHint);
-      if (value === undefined) {
-        throw new Error(
-          `fromParser for (${field.name}, ${field.type.name}) -> undefined `
-        );
-      }
-      return value;
-    },
-    readFieldAndValue() {
-      const field = this.readField();
-      return [field, this.readFieldValue(field)];
-    },
-  },
-  undefined
-);
+    }
+    return value;
+  }
+
+  readFieldAndValue() { // same
+    const field = this.readField();
+    return [field, this.readFieldValue(field)];
+  }
+
+}
 
 export { BinaryParser };
