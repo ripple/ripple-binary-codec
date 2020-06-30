@@ -84,16 +84,16 @@ const BinarySerializer = makeClass(
       const sink = this.sink;
       const value = field.associatedType.from(_value);
       assert(value.toBytesSink, field);
-      sink.put(field.bytes);
+      sink.put(field.header);
 
       if (field.isVLEncoded) {
         this.writeLengthEncoded(value);
       } else {
         value.toBytesSink(sink);
         if (field.type.name === "STObject") {
-          sink.put(Enums.Field["ObjectEndMarker"].bytes);
+          sink.put(Enums.Field["ObjectEndMarker"].header);
         } else if (field.type.name === "STArray") {
-          sink.put(Enums.Field["ArrayEndMarker"].bytes);
+          sink.put(Enums.Field["ArrayEndMarker"].header);
         }
       }
     },
