@@ -3,7 +3,7 @@ import {
   TransactionResult,
   TransactionType,
   LedgerEntryType,
-} from "../enums";
+} from "../definitions";
 import { AccountID } from "./account-id";
 import { Amount } from "./amount";
 import { Blob } from "./blob";

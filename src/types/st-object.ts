@@ -1,5 +1,5 @@
 import { makeClass } from "../utils/make-class";
-import { Field } from "../enums";
+import { Field } from "../definitions";
 const _ = require("lodash");
 const { BinarySerializer } = require("../serdes/binary-serializer");
 const { SerializedType } = require("./serialized-type");

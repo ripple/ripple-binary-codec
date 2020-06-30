@@ -1,4 +1,4 @@
-import { serializeUIntN } from "./../utils/bytes-utils";
+import { serializeUIntN } from "../utils/bytes-utils";
 import * as enums from "./definitions.json";
 
 const TYPE_WIDTH = 2;

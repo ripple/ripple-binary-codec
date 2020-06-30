@@ -1,6 +1,6 @@
 import { strict as assert } from "assert";
 import { makeClass } from "../utils/make-class";
-import { Field } from "../enums";
+import { Field } from "../definitions";
 import { slice, parseBytes } from "../utils/bytes-utils";
 
 const BinaryParser = makeClass(

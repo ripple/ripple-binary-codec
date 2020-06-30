@@ -1,7 +1,7 @@
 import { strict as assert } from "assert";
 import { parseBytes, bytesToHex } from "../utils/bytes-utils";
 import { makeClass } from "../utils/make-class";
-import { Field } from "../enums";
+import { Field } from "../definitions";
 
 const BytesSink = {
   put(/* bytesSequence */) {
