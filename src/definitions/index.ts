@@ -51,7 +51,7 @@ class Bytes {
 /*
  * @brief: Collection of Bytes objects, mapping bidirectionally
  */
-class BytesCollection {
+class BytesLookup {
   constructor(types: { [key: string]: number }, readonly ordinalWidth: number) {
     Object.entries(types).forEach(([k, v]) => {
       this[k] = new Bytes(k, v, ordinalWidth);
@@ -71,17 +71,17 @@ class BytesCollection {
 /*
  * type FieldInfo is the type of the objects constaining information about each field in definitions.json
  */
-type FieldInfo = {
+interface FieldInfo {
   nth: number;
   isVLEncoded: boolean;
   isSerialized: boolean;
   isSigningField: boolean;
   type: string;
-};
+}
 
-type Field = {
+interface FieldInstance {
   readonly nth: number;
-  readonly isVLEncoded: boolean;
+  readonly isVariableLengthEncoded: boolean;
   readonly isSerialized: boolean;
   readonly isSigningField: boolean;
   readonly type: Bytes;
@@ -89,14 +89,14 @@ type Field = {
   readonly name: string;
   readonly header: Uint8Array;
   readonly associatedType: any;
-};
+}
 
-function buildField([name, info]: [string, FieldInfo]): Field {
+function buildField([name, info]: [string, FieldInfo]): FieldInstance {
   const typeOrdinal = enums.TYPES[info.type];
   return {
     name: name,
     nth: info.nth,
-    isVLEncoded: info.isVLEncoded,
+    isVariableLengthEncoded: info.isVLEncoded,
     isSerialized: info.isSerialized,
     isSigningField: info.isSigningField,
     ordinal: (typeOrdinal << 16) | info.nth,
@@ -109,7 +109,7 @@ function buildField([name, info]: [string, FieldInfo]): Field {
 /*
  * @brief: The collection of all fields as defined in definitons.json
  */
-class Fields {
+class FieldLookup {
   constructor(fields: Array<[string, FieldInfo]>) {
     fields.forEach(([k, v]) => {
       this[k] = buildField([k, v]);
@@ -117,52 +117,24 @@ class Fields {
     });
   }
 
-  fromString(value: string): Field {
-    return this[value] as Field;
+  fromString(value: string): FieldInstance {
+    return this[value] as FieldInstance;
   }
 }
 
-interface EnumInterface {
-  TYPES: { [key: string]: number };
-  FIELDS: Array<[string, FieldInfo]>;
-  LEDGER_ENTRY_TYPES: { [key: string]: number };
-  TRANSACTION_TYPES: { [key: string]: number };
-  TRANSACTION_RESULTS: { [key: string]: number };
-}
+const Type = new BytesLookup(enums.TYPES, TYPE_WIDTH);
+const LedgerEntryType = new BytesLookup(
+  enums.LEDGER_ENTRY_TYPES,
+  LEDGER_ENTRY_WIDTH
+);
+const TransactionType = new BytesLookup(
+  enums.TRANSACTION_TYPES,
+  TRANSACTION_TYPE_WIDTH
+);
+const TransactionResult = new BytesLookup(
+  enums.TRANSACTION_RESULTS,
+  TRANSACTION_RESULT_WIDTH
+);
+const Field = new FieldLookup(enums.FIELDS as Array<[string, FieldInfo]>);
 
-type Enum = {
-  readonly Type: BytesCollection;
-  readonly Field: Fields;
-  readonly LedgerEntryType: BytesCollection;
-  readonly TransactionType: BytesCollection;
-  readonly TransactionResult: BytesCollection;
-};
-
-function buildEnums(initVals: EnumInterface): Enum {
-  return {
-    Type: new BytesCollection(initVals.TYPES, TYPE_WIDTH),
-    LedgerEntryType: new BytesCollection(
-      initVals.LEDGER_ENTRY_TYPES,
-      LEDGER_ENTRY_WIDTH
-    ),
-    TransactionType: new BytesCollection(
-      initVals.TRANSACTION_TYPES,
-      TRANSACTION_TYPE_WIDTH
-    ),
-    TransactionResult: new BytesCollection(
-      initVals.TRANSACTION_RESULTS,
-      TRANSACTION_RESULT_WIDTH
-    ),
-    Field: new Fields(initVals.FIELDS),
-  };
-}
-
-const Enums: Enum = buildEnums({
-  TYPES: enums.TYPES,
-  FIELDS: enums.FIELDS as Array<[string, FieldInfo]>,
-  LEDGER_ENTRY_TYPES: enums.LEDGER_ENTRY_TYPES,
-  TRANSACTION_TYPES: enums.TRANSACTION_TYPES,
-  TRANSACTION_RESULTS: enums.TRANSACTION_RESULTS,
-});
-
-export { Enums };
+export { Field, Type, LedgerEntryType, TransactionResult, TransactionType };

@@ -1,4 +1,9 @@
-import { Enums } from "../enums";
+import {
+  Field,
+  TransactionResult,
+  TransactionType,
+  LedgerEntryType,
+} from "../enums";
 import { AccountID } from "./account-id";
 import { Amount } from "./amount";
 import { Blob } from "./blob";
@@ -33,12 +38,12 @@ const coreTypes = {
   Vector256,
 };
 
-Object.values(Enums.Field).forEach((field) => {
+Object.values(Field).forEach((field) => {
   field.associatedType = coreTypes[field.type.name];
 });
 
-Enums.Field["TransactionType"].associatedType = Enums.TransactionType;
-Enums.Field["TransactionResult"].associatedType = Enums.TransactionResult;
-Enums.Field["LedgerEntryType"].associatedType = Enums.LedgerEntryType;
+Field["TransactionType"].associatedType = TransactionType;
+Field["TransactionResult"].associatedType = TransactionResult;
+Field["LedgerEntryType"].associatedType = LedgerEntryType;
 
 export { coreTypes };

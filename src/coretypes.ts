@@ -1,4 +1,10 @@
-import { Enums } from "./enums";
+import {
+  Field,
+  TransactionType,
+  LedgerEntryType,
+  Type,
+  TransactionResult,
+} from "./enums";
 const types = require("./types");
 const binary = require("./binary");
 const { ShaMap } = require("./shamap");
@@ -11,7 +17,11 @@ export {
   hashes,
   binary,
   ledgerHashes,
-  Enums,
+  Field,
+  TransactionType,
+  LedgerEntryType,
+  Type,
+  TransactionResult,
   quality,
   HashPrefix,
   ShaMap,

@@ -1,7 +1,7 @@
 import { strict as assert } from "assert";
 import { parseBytes, bytesToHex } from "../utils/bytes-utils";
 import { makeClass } from "../utils/make-class";
-import { Enums } from "../enums";
+import { Field } from "../enums";
 
 const BytesSink = {
   put(/* bytesSequence */) {
@@ -86,14 +86,14 @@ const BinarySerializer = makeClass(
       assert(value.toBytesSink, field);
       sink.put(field.header);
 
-      if (field.isVLEncoded) {
+      if (field.isVariableLengthEncoded) {
         this.writeLengthEncoded(value);
       } else {
         value.toBytesSink(sink);
         if (field.type.name === "STObject") {
-          sink.put(Enums.Field["ObjectEndMarker"].header);
+          sink.put(Field["ObjectEndMarker"].header);
         } else if (field.type.name === "STArray") {
-          sink.put(Enums.Field["ArrayEndMarker"].header);
+          sink.put(Field["ArrayEndMarker"].header);
         }
       }
     },

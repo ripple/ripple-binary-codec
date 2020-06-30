@@ -1,5 +1,5 @@
 import { makeClass } from "../utils/make-class";
-import { Enums } from "../enums";
+import { Field } from "../enums";
 const _ = require("lodash");
 const { BinarySerializer } = require("../serdes/binary-serializer");
 const { SerializedType } = require("./serialized-type");
@@ -28,7 +28,7 @@ const STObject = makeClass(
           return _.transform(
             value,
             (so, val, key) => {
-              const field = Enums.Field[key];
+              const field = Field[key];
               if (field) {
                 so[field.name] = field.associatedType.from(val);
               } else {
@@ -43,7 +43,7 @@ const STObject = makeClass(
     },
     fieldKeys() {
       return Object.keys(this)
-        .map((k) => Enums.Field[k])
+        .map((k) => Field[k])
         .filter(Boolean);
     },
     toJSON() {
