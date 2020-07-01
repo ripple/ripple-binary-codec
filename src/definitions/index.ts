@@ -9,7 +9,7 @@ const TRANSACTION_RESULT_WIDTH = 1;
 /*
  * @brief: Serialize a field based on type_code and Field.nth
  */
-function fieldHeader(type: number, nth: number): Uint8Array {
+function fieldHeader(type: number, nth: number): Buffer {
   const header: Array<number> = [];
   if (type < 16) {
     if (nth < 16) {
@@ -22,7 +22,7 @@ function fieldHeader(type: number, nth: number): Uint8Array {
   } else {
     header.push(0, type, nth);
   }
-  return new Uint8Array(header);
+  return Buffer.from(header);
 }
 
 /*
@@ -87,7 +87,7 @@ interface FieldInstance {
   readonly type: Bytes;
   readonly ordinal: number;
   readonly name: string;
-  readonly header: Uint8Array;
+  readonly header: Buffer;
   readonly associatedType: any;
 }
 
@@ -137,4 +137,4 @@ const TransactionResult = new BytesLookup(
 );
 const Field = new FieldLookup(enums.FIELDS as Array<[string, FieldInfo]>);
 
-export { Field, Type, LedgerEntryType, TransactionResult, TransactionType };
+export { Field, FieldInstance, Type, LedgerEntryType, TransactionResult, TransactionType };

@@ -1,110 +1,97 @@
-import { strict as assert } from "assert";
-import { parseBytes, bytesToHex } from "../utils/bytes-utils";
-import { makeClass } from "../utils/make-class";
-import { Field } from "../definitions";
+import * as assert from "assert";
+import { Field, FieldInstance } from "../definitions";
 
-const BytesSink = {
-  put(/* bytesSequence */) {
-    // any hex string or any object with a `length` and where 0 <= [ix] <= 255
-  },
-};
+class BytesList {
+  arrays: Array<Buffer> = [];
+  length: number = 0;
+    
+  put(bytesArg: Buffer): BytesList {
+    let bytes = Buffer.from(bytesArg) // Temporary, to catch isntances of Uint8Array being passed in
+    this.length += bytes.byteLength;
+    this.arrays.push(bytes);
+    return this;
+  }
 
-const BytesList = makeClass(
-  {
-    implementing: BytesSink,
-    BytesList() {
-      this.arrays = [];
-      this.length = 0;
-    },
-    put(bytesArg) {
-      const bytes = parseBytes(bytesArg, Uint8Array);
-      this.length += bytes.length;
-      this.arrays.push(bytes);
-      return this;
-    },
-    toBytesSink(sink) {
-      this.arrays.forEach((arr) => {
-        sink.put(arr);
-      });
-    },
-    toBytes() {
-      const concatenated = new Uint8Array(this.length);
-      let pointer = 0;
-      this.arrays.forEach((arr) => {
-        concatenated.set(arr, pointer);
-        pointer += arr.length;
-      });
-      return concatenated;
-    },
-    toHex() {
-      return bytesToHex(this.toBytes());
-    },
-  },
-  undefined
-);
+  toBytesSink(sink: BytesList): void {
+    sink.put(this.toBytes());
+  }
 
-const BinarySerializer = makeClass(
-  {
-    BinarySerializer(sink) {
-      this.sink = sink;
-    },
-    write(value) {
+  toBytes(): Buffer {
+    return Buffer.concat(this.arrays)
+  }
+
+  toHex(): string {
+    return this.toBytes().toString('hex').toUpperCase();
+  }
+}
+
+class BinarySerializer {
+  sink: BytesList = new BytesList()
+
+  constructor(sink: BytesList) {
+    this.sink = sink;
+  }
+
+  write(value): void {
+    value.toBytesSink(this.sink);
+  }
+
+  put(bytes: Buffer): void {
+    this.sink.put(bytes);
+  }
+
+  writeType(type, value): void {
+    this.write(type.from(value));
+  }
+
+  writeBytesList(bl: BytesList): void {
+    bl.toBytesSink(this.sink);
+  }
+
+  encodeVL(len: number): Buffer {
+    let length = len;
+    const lenBytes = Buffer.alloc(3);
+    if (length <= 192) {
+      lenBytes[0] = length;
+      return lenBytes.slice(0, 1);
+    } else if (length <= 12480) {
+      length -= 193;
+      lenBytes[0] = 193 + (length >>> 8);
+      lenBytes[1] = length & 0xff;
+      return lenBytes.slice(0, 2);
+    } else if (length <= 918744) {
+      length -= 12481;
+      lenBytes[0] = 241 + (length >>> 16);
+      lenBytes[1] = (length >> 8) & 0xff;
+      lenBytes[2] = length & 0xff;
+      return lenBytes.slice(0, 3);
+    }
+    throw new Error("Overflow error");
+  }
+
+  writeFieldAndValue(field: FieldInstance, _value): void {
+    const value = field.associatedType.from(_value);
+    assert(value.toBytesSink, field.name);
+    this.sink.put(field.header);
+
+    if (field.isVariableLengthEncoded) {
+      this.writeLengthEncoded(value);
+    } else {
       value.toBytesSink(this.sink);
-    },
-    put(bytes) {
-      this.sink.put(bytes);
-    },
-    writeType(type, value) {
-      this.write(type.from(value));
-    },
-    writeBytesList(bl) {
-      bl.toBytesSink(this.sink);
-    },
-    encodeVL(len) {
-      let length = len;
-      const lenBytes = new Uint8Array(4);
-      if (length <= 192) {
-        lenBytes[0] = length;
-        return lenBytes.subarray(0, 1);
-      } else if (length <= 12480) {
-        length -= 193;
-        lenBytes[0] = 193 + (length >>> 8);
-        lenBytes[1] = length & 0xff;
-        return lenBytes.subarray(0, 2);
-      } else if (length <= 918744) {
-        length -= 12481;
-        lenBytes[0] = 241 + (length >>> 16);
-        lenBytes[1] = (length >> 8) & 0xff;
-        lenBytes[2] = length & 0xff;
-        return lenBytes.subarray(0, 3);
+      if (field.type.name === "STObject") {
+        this.sink.put(Field["ObjectEndMarker"].header);
+      } else if (field.type.name === "STArray") {
+        this.sink.put(Field["ArrayEndMarker"].header);
       }
-      throw new Error("Overflow error");
-    },
-    writeFieldAndValue(field, _value) {
-      const sink = this.sink;
-      const value = field.associatedType.from(_value);
-      assert(value.toBytesSink, field);
-      sink.put(field.header);
+    }
+  }
 
-      if (field.isVariableLengthEncoded) {
-        this.writeLengthEncoded(value);
-      } else {
-        value.toBytesSink(sink);
-        if (field.type.name === "STObject") {
-          sink.put(Field["ObjectEndMarker"].header);
-        } else if (field.type.name === "STArray") {
-          sink.put(Field["ArrayEndMarker"].header);
-        }
-      }
-    },
-    writeLengthEncoded(value) {
-      const bytes = new BytesList();
-      value.toBytesSink(bytes);
-      this.put(this.encodeVL(bytes.length));
-      this.writeBytesList(bytes);
-    },
-  },
-  undefined
-);
+  writeLengthEncoded(value): void {
+    const bytes = new BytesList();
+    value.toBytesSink(bytes);
+    this.put(this.encodeVL(bytes.length));
+    this.writeBytesList(bytes);
+  }
+}
 
 export { BytesList, BinarySerializer };
