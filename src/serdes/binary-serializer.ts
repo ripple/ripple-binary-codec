@@ -1,31 +1,43 @@
 import * as assert from "assert";
-import { Field, FieldInstance } from "../definitions";
+import { Field, FieldInstance } from "../enums";
 
-/*
- * @brief: Bytes list is a collection of buffer objects, with length denoting the totaly number of bytes
- */ 
+/** 
+ * Bytes list is a collection of buffer objects
+ */
 class BytesList {
-  arrays: Array<Buffer> = [];
-  length = 0;
+  private arrays: Array<Buffer> = [];
 
-  /*
-   * @brief: Push a single buffer onto the back of the sink
+  /**
+   * Get the total number of bytes in the BytesList
+   *
+   * @return the number of bytes 
    */
-  put(bytesArg: Buffer): BytesList {
-    const bytes = Buffer.from(bytesArg); // Temporary, to catch isntances of Uint8Array being passed in
-    this.length += bytes.byteLength;
+  public getLength(): number {
+    return Buffer.concat(this.arrays).byteLength
+  }
+
+  /**
+   * Put bytes in the BytesList
+   *
+   * @param bytesArg A Buffer
+   * @return this BytesList 
+   */
+  public put(bytesArg: Buffer): BytesList {
+    const bytes = Buffer.from(bytesArg); // Temporary, to catch instances of Uint8Array being passed in
     this.arrays.push(bytes);
     return this;
   }
 
-  /*
-   * @brief: Write this byteslist to the back of another bytes list
+  /**
+   * Write this BytesList to the back of another bytes list
+   * 
+   *  @param list The BytesList to write to
    */
-  toBytesSink(sink: BytesList): void {
-    sink.put(this.toBytes());
+  public toBytesSink(list: BytesList): void {
+    list.put(this.toBytes());
   }
 
-  toBytes(): Buffer {
+  public toBytes(): Buffer {
     return Buffer.concat(this.arrays);
   }
 
@@ -34,40 +46,59 @@ class BytesList {
   }
 }
 
+/** 
+ * BinarySerializer is used to write fields and values to buffers
+ */
 class BinarySerializer {
-  sink: BytesList = new BytesList();
+  private sink: BytesList = new BytesList();
 
   constructor(sink: BytesList) {
     this.sink = sink;
   }
 
-  /*
-   * @brief: writes a SerializedType to the Byteslist in the Binary Serializer
+  /**
+   * Write a value to this BinarySerializer
+   *
+   * @param value a SerializedType value
    */
   write(value): void {
     value.toBytesSink(this.sink);
   }
 
-  /*
-   * @brief: puts bytes into the sink
+  /**
+   * Write bytes to this BinarySerializer
+   *
+   * @param bytes the bytes to write
    */
   put(bytes: Buffer): void {
     this.sink.put(bytes);
   }
 
+  /**
+   * Write a value of a given type to this BinarySerializer
+   *
+   * @param type the type to write
+   * @param value a value of that type
+   */
   writeType(type, value): void {
     this.write(type.from(value));
   }
 
+  /**
+   * Write BytesList to this BinarySerializer
+   *
+   * @param bl BytesList to write to BinarySerializer
+   */
   writeBytesList(bl: BytesList): void {
     bl.toBytesSink(this.sink);
   }
 
-  /*
-   * @brief: returns the variable length header associated with given len 
+  /**
+   * Calculate the header of Variable Length encoded bytes
+   *
+   * @param length the length of the bytes
    */
-  encodeVL(len: number): Buffer {
-    let length = len;
+  private encodeVariableLength(length: number): Buffer {
     const lenBytes = Buffer.alloc(3);
     if (length <= 192) {
       lenBytes[0] = length;
@@ -87,8 +118,11 @@ class BinarySerializer {
     throw new Error("Overflow error");
   }
 
-  /*
-   * @brief: writes a field and a value to the bytessink
+  /**
+   * Write field and value to BinarySerializer
+   *
+   * @param field field to write to BinarySerializer
+   * @param _value value to write to BinarySerializer
    */
   writeFieldAndValue(field: FieldInstance, _value): void {
     const value = field.associatedType.from(_value);
@@ -107,13 +141,15 @@ class BinarySerializer {
     }
   }
 
-  /*
-   * @brief: Writes a variable length encoded Byteslist to the sink
+  /**
+   * Write a variable length encoded value to the BinarySerializer
+   *
+   * @param value length encoded value to write to BytesList
    */
-  writeLengthEncoded(value): void {
+  public writeLengthEncoded(value): void {
     const bytes = new BytesList();
     value.toBytesSink(bytes);
-    this.put(this.encodeVL(bytes.length));
+    this.put(this.encodeVariableLength(bytes.getLength()));
     this.writeBytesList(bytes);
   }
 }

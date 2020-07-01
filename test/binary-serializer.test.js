@@ -58,7 +58,7 @@ function bytesListTest () {
     expect(list.arrays[0] instanceof Buffer).toBe(true)
   })
   test('keeps track of the length itself', function () {
-    expect(list.length).toBe(5)
+    expect(list.getLength()).toBe(5)
   })
   test('can join all arrays into one via toBytes', function () {
     const joined = list.toBytes()

@@ -1,33 +1,53 @@
 import * as assert from "assert";
-import { Field, FieldInstance } from "../definitions";
+import { Field, FieldInstance } from "../enums";
 
+/**
+ * BinaryParser is used to compute fields and values from a HexString
+ */
 class BinaryParser {
-  _buf: Buffer;
+  private bytes: Buffer;
 
-  constructor(buf: string) {
-    this._buf = Buffer.from(buf, "hex");
+  /**
+   * Initialize bytes to a hex string
+   *
+   * @param hexBytes a hexString 
+   */
+  constructor(hexBytes: string) {
+    this.bytes = Buffer.from(hexBytes, "hex");
   }
 
+  /**
+   * Consume the first n bytes of the BinaryParser
+   *
+   * @param n the number of bytes to skip
+   */
   skip(n: number): void {
-    assert(n <= this._buf.byteLength);
-    this._buf = this._buf.slice(n);
+    assert(n <= this.bytes.byteLength);
+    this.bytes = this.bytes.slice(n);
   }
 
-  /*
-   * @brief: reads the first n bytes from the BinaryParser
-   */ 
+  /**
+   * read the first n bytes from the BinaryParser
+   *
+   * @param n The number of bytes to read
+   * @return The bytes
+   */
   read(n: number): Buffer {
-    assert(n <= this._buf.byteLength);
+    assert(n <= this.bytes.byteLength);
 
-    const slice = this._buf.slice(0, n);
+    const slice = this.bytes.slice(0, n);
     this.skip(n);
     return slice;
   }
 
-  /*
-   * @brief: reads unsigned int of specified length n
-   */ 
+  /**
+   * Read an integer of given size
+   *
+   * @param n The number of bytes to read
+   * @return The number represented by those bytes
+   */
   readUIntN(n: number): number {
+    assert(0 < n && n <= 4, "invalid n")
     return this.read(n).reduce((a, b) => (a << 8) | b) >>> 0;
   }
 
@@ -44,25 +64,29 @@ class BinaryParser {
   }
 
   size(): number {
-    return this._buf.byteLength;
+    return this.bytes.byteLength;
   }
 
   end(customEnd?: number): boolean {
-    const length = this._buf.byteLength;
+    const length = this.bytes.byteLength;
     return length === 0 || (customEnd !== undefined && length <= customEnd);
   }
 
-  /*
-   * @brief: Reads a variable length encoded chunk of bytes
+  /**
+   * Reads variable length encoded bytes
+   *
+   * @return The variable length bytes
    */
-  readVL(): Buffer {
-    return this.read(this.readVLLength());
+  readVariableLength(): Buffer {
+    return this.read(this.readVariableLengthLength());
   }
 
-  /*
-   * @brief: calculates the length of a variable length encoded chunk from the first three bytes.
+  /**
+   * Reads the length of the variable length encoded bytes
+   *
+   * @return The length of the variable length encoded bytes
    */
-  readVLLength(): number {
+  readVariableLengthLength(): number {
     const b1 = this.readUInt8();
     if (b1 <= 192) {
       return b1;
@@ -74,12 +98,14 @@ class BinaryParser {
       const b3 = this.readUInt8();
       return 12481 + (b1 - 241) * 65536 + b2 * 256 + b3;
     }
-    throw new Error("Invalid varint length indicator");
+    throw new Error("Invalid variable length indicator");
   }
 
-  /*
-   * @brief: Reads the field ordinal (number representing a field) from the parser
-   */ 
+  /**
+   * Reads the field ordinal from the BinaryParser
+   *
+   * @return Field ordinal
+   */
   readFieldOrdinal(): number {
     const tagByte = this.readUInt8();
     const type = (tagByte & 0xf0) >>> 4 || this.readUInt8();
@@ -87,40 +113,50 @@ class BinaryParser {
     return (type << 16) | nth;
   }
 
-  /*
-   * @brief: Return the Field assaciated with the head of the parser
+  /**
+   * Read the field from the BinaryParser
+   *
+   * @return The field represented by the bytes at the head of the BinaryParser
    */
   readField(): FieldInstance {
     return Field.fromString(this.readFieldOrdinal().toString());
   }
 
-  /*
-   * @brief: Reads the given type from the head of the parser
+  /**
+   * Read a given type from the BinaryParser
+   *
+   * @param type The type that you want to read from the BinaryParser
+   * @return The instance of that type read from the BinaryParser
    */
   readType(type) {
-    // Returns a serializedType, will type when implimented
     return type.fromParser(this);
   }
 
-  /*
-   * @brief: Returns the type associated with a given field
+  /**
+   * Get the type associated with a given field
+   *
+   * @param field The field that you wan to get the type of
+   * @return The type associated with the given field
    */
   typeForField(field: FieldInstance) {
-    //same
     return field.associatedType;
   }
 
-  /*
-   * @brief: Read the value associted with a given field
+  /**
+   * Read the value associated with a given field
+   *
+   * @param field The field that you want to get the associated value for
+   * @return The value associated with the given field
    */
   readFieldValue(field: FieldInstance) {
-    // same
-    const kls = this.typeForField(field);
-    if (!kls) {
+    const type = this.typeForField(field);
+    if (!type) {
       throw new Error(`unsupported: (${field.name}, ${field.type.name})`);
     }
-    const sizeHint = field.isVariableLengthEncoded ? this.readVLLength() : null;
-    const value = kls.fromParser(this, sizeHint);
+    const sizeHint = field.isVariableLengthEncoded
+      ? this.readVariableLengthLength()
+      : null;
+    const value = type.fromParser(this, sizeHint);
     if (value === undefined) {
       throw new Error(
         `fromParser for (${field.name}, ${field.type.name}) -> undefined `
@@ -129,11 +165,12 @@ class BinaryParser {
     return value;
   }
 
-  /*
-   * @brief: read both the field and the cooresponding value form the binary parser
+  /**
+   * Get the next field and value from the BinaryParser
+   *
+   * @return The field and value
    */
   readFieldAndValue() {
-    // same
     const field = this.readField();
     return [field, this.readFieldValue(field)];
   }

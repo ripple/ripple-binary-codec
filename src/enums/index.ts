@@ -69,7 +69,7 @@ class BytesLookup {
 }
 
 /*
- * type FieldInfo is the type of the objects constaining information about each field in definitions.json
+ * type FieldInfo is the type of the objects containing information about each field in definitions.json
  */
 interface FieldInfo {
   nth: number;
@@ -107,7 +107,7 @@ function buildField([name, info]: [string, FieldInfo]): FieldInstance {
 }
 
 /*
- * @brief: The collection of all fields as defined in definitons.json
+ * @brief: The collection of all fields as defined in definitions.json
  */
 class FieldLookup {
   constructor(fields: Array<[string, FieldInfo]>) {

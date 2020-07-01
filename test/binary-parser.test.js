@@ -8,7 +8,7 @@ const { encodeAccountID } = require('ripple-address-codec')
 const { binary } = require('../dist/coretypes')
 const { Amount, Hash160 } = coreTypes
 const { makeParser, readJSON } = binary
-const { Field, TransactionType } = require('./../dist/definitions')
+const { Field, TransactionType } = require('./../dist/enums')
 const { parseHexOnly, hexOnly, loadFixture } = require('./utils')
 const { bytesToHex } = require('../dist/utils/bytes-utils')
 const fixtures = loadFixture('data-driven-tests.json')
@@ -37,7 +37,7 @@ function basicApiTests () {
   const bytes = parseHexOnly('00,01020304,0506', Uint8Array)
   test('can read slices of bytes', () => {
     const parser = makeParser(bytes)
-    expect(parser._buf instanceof Buffer).toBe(true)
+    expect(parser.bytes instanceof Buffer).toBe(true)
     const read1 = parser.read(1)
     expect(read1 instanceof Buffer).toBe(true)
     expect(read1).toEqual(Buffer.from([0]))
@@ -107,12 +107,12 @@ function transactionParsingTests () {
     expect(parser.readField()).toEqual(Field.Fee)
     expect(parser.read(8)).not.toEqual([])
     expect(parser.readField()).toEqual(Field.SigningPubKey)
-    expect(parser.readVLLength()).toBe(33)
+    expect(parser.readVariableLengthLength()).toBe(33)
     expect(bytesToHex(parser.read(33))).toEqual(tx_json.SigningPubKey)
     expect(parser.readField()).toEqual(Field.TxnSignature)
-    expect(bytesToHex(parser.readVL())).toEqual(tx_json.TxnSignature)
+    expect(bytesToHex(parser.readVariableLength())).toEqual(tx_json.TxnSignature)
     expect(parser.readField()).toEqual(Field.Account)
-    expect(encodeAccountID(parser.readVL())).toEqual(tx_json.Account)
+    expect(encodeAccountID(parser.readVariableLength())).toEqual(tx_json.Account)
     expect(parser.end()).toBe(true)
   })
 
