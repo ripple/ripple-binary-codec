@@ -1,41 +1,56 @@
 import * as assert from "assert";
 import { Field, FieldInstance } from "../definitions";
 
+/*
+ * @brief: Bytes list is a collection of buffer objects, with length denoting the totaly number of bytes
+ */ 
 class BytesList {
   arrays: Array<Buffer> = [];
-  length: number = 0;
-    
+  length = 0;
+
+  /*
+   * @brief: Push a single buffer onto the back of the sink
+   */
   put(bytesArg: Buffer): BytesList {
-    let bytes = Buffer.from(bytesArg) // Temporary, to catch isntances of Uint8Array being passed in
+    const bytes = Buffer.from(bytesArg); // Temporary, to catch isntances of Uint8Array being passed in
     this.length += bytes.byteLength;
     this.arrays.push(bytes);
     return this;
   }
 
+  /*
+   * @brief: Write this byteslist to the back of another bytes list
+   */
   toBytesSink(sink: BytesList): void {
     sink.put(this.toBytes());
   }
 
   toBytes(): Buffer {
-    return Buffer.concat(this.arrays)
+    return Buffer.concat(this.arrays);
   }
 
   toHex(): string {
-    return this.toBytes().toString('hex').toUpperCase();
+    return this.toBytes().toString("hex").toUpperCase();
   }
 }
 
 class BinarySerializer {
-  sink: BytesList = new BytesList()
+  sink: BytesList = new BytesList();
 
   constructor(sink: BytesList) {
     this.sink = sink;
   }
 
+  /*
+   * @brief: writes a SerializedType to the Byteslist in the Binary Serializer
+   */
   write(value): void {
     value.toBytesSink(this.sink);
   }
 
+  /*
+   * @brief: puts bytes into the sink
+   */
   put(bytes: Buffer): void {
     this.sink.put(bytes);
   }
@@ -48,6 +63,9 @@ class BinarySerializer {
     bl.toBytesSink(this.sink);
   }
 
+  /*
+   * @brief: returns the variable length header associated with given len 
+   */
   encodeVL(len: number): Buffer {
     let length = len;
     const lenBytes = Buffer.alloc(3);
@@ -69,6 +87,9 @@ class BinarySerializer {
     throw new Error("Overflow error");
   }
 
+  /*
+   * @brief: writes a field and a value to the bytessink
+   */
   writeFieldAndValue(field: FieldInstance, _value): void {
     const value = field.associatedType.from(_value);
     assert(value.toBytesSink, field.name);
@@ -86,6 +107,9 @@ class BinarySerializer {
     }
   }
 
+  /*
+   * @brief: Writes a variable length encoded Byteslist to the sink
+   */
   writeLengthEncoded(value): void {
     const bytes = new BytesList();
     value.toBytesSink(bytes);

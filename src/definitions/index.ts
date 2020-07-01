@@ -137,4 +137,11 @@ const TransactionResult = new BytesLookup(
 );
 const Field = new FieldLookup(enums.FIELDS as Array<[string, FieldInfo]>);
 
-export { Field, FieldInstance, Type, LedgerEntryType, TransactionResult, TransactionType };
+export {
+  Field,
+  FieldInstance,
+  Type,
+  LedgerEntryType,
+  TransactionResult,
+  TransactionType,
+};
