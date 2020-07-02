@@ -2,7 +2,7 @@
 
 ## Types
 
-These are the [types](https://xrpl.org/serialization.html#type-list) associated with a given Serialization Field
+These are the [types](https://xrpl.org/serialization.html#type-list) associated with a given Serialization Field. Each type has an arbitrary [type_code] (https://xrpl.org/serialization.html#type-codes), with lower codes sorting first.
 
 ## Ledger Entry Types
 
@@ -18,7 +18,7 @@ The key is the string defined in the rippled source code, such as "LedgerEntry",
 
 ### nth
 
-`nth` is the index (sort code) used to construct the field code (Field ID) of this field, for use in ordering it with other fields of the same data type.
+`nth` is the index (field code) used to construct the field code (Field ID) of this field, for use in ordering it with other fields of the same data type.
 
 Each field has a field code, which is used to sort fields that have the same type as one another, with lower codes sorting first.
 
