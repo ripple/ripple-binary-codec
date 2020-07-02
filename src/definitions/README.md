@@ -2,7 +2,7 @@
 
 ## Types
 
-These are the [types](https://xrpl.org/serialization.html#type-list) associated with a given Serialization Field. Each type has an arbitrary [type_code] (https://xrpl.org/serialization.html#type-codes), with lower codes sorting first.
+These are the [types](https://xrpl.org/serialization.html#type-list) associated with a given Serialization Field. Each type has an arbitrary [type_code](https://xrpl.org/serialization.html#type-codes), with lower codes sorting first.
 
 ## Ledger Entry Types
 
