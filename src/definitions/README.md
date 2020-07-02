@@ -27,7 +27,7 @@ Each field has a field code, which is used to sort fields that have the same typ
 
 For example, the `Account` field has sort code (nth) `1`, so it comes before the `Destination` field which has sort code `3`.
 
-Field codes are reused for fields of different field types, but fields of the same type never have the same field code. When you comebine the type code with the field code, you get the field's unique _Field ID_.
+Field codes are reused for fields of different field types, but fields of the same type never have the same field code. When you combine the type code with the field code, you get the field's unique _Field ID_.
 
 The unique [Field ID](https://xrpl.org/serialization.html#field-ids) is prefixed before the field in the final serialized blob. The size of the Field ID is one to three bytes depending on the type code and the field codes it combines.
 
