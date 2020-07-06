@@ -5,7 +5,7 @@ import { Field, FieldInstance } from "../enums";
  * Bytes list is a collection of buffer objects
  */
 class BytesList {
-  private arrays: Array<Buffer> = [];
+  private bytesArray: Array<Buffer> = [];
 
   /**
    * Get the total number of bytes in the BytesList
@@ -13,7 +13,7 @@ class BytesList {
    * @return the number of bytes
    */
   public getLength(): number {
-    return Buffer.concat(this.arrays).byteLength;
+    return Buffer.concat(this.bytesArray).byteLength;
   }
 
   /**
@@ -24,7 +24,7 @@ class BytesList {
    */
   public put(bytesArg: Buffer): BytesList {
     const bytes = Buffer.from(bytesArg); // Temporary, to catch instances of Uint8Array being passed in
-    this.arrays.push(bytes);
+    this.bytesArray.push(bytes);
     return this;
   }
 
@@ -38,7 +38,7 @@ class BytesList {
   }
 
   public toBytes(): Buffer {
-    return Buffer.concat(this.arrays);
+    return Buffer.concat(this.bytesArray);
   }
 
   toHex(): string {

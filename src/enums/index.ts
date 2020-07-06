@@ -93,6 +93,7 @@ interface FieldInstance {
 
 function buildField([name, info]: [string, FieldInfo]): FieldInstance {
   const typeOrdinal = enums.TYPES[info.type];
+  const field = fieldHeader(typeOrdinal, info.nth);
   return {
     name: name,
     nth: info.nth,
@@ -101,7 +102,7 @@ function buildField([name, info]: [string, FieldInfo]): FieldInstance {
     isSigningField: info.isSigningField,
     ordinal: (typeOrdinal << 16) | info.nth,
     type: new Bytes(info.type, typeOrdinal, TYPE_WIDTH),
-    header: fieldHeader(typeOrdinal, info.nth),
+    header: field,
     associatedType: undefined, // For later assignment in ./types/index.js
   };
 }

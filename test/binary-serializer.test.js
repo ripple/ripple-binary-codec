@@ -54,8 +54,8 @@ const PaymentChannel = {
 function bytesListTest () {
   const list = new BytesList().put(Buffer.from([0])).put(Buffer.from([2, 3])).put(Buffer.from([4, 5]))
   test('is an Array<Buffer>', function () {
-    expect(Array.isArray(list.arrays)).toBe(true)
-    expect(list.arrays[0] instanceof Buffer).toBe(true)
+    expect(Array.isArray(list.bytesArray)).toBe(true)
+    expect(list.bytesArray[0] instanceof Buffer).toBe(true)
   })
   test('keeps track of the length itself', function () {
     expect(list.getLength()).toBe(5)
