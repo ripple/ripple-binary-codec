@@ -10,7 +10,7 @@ class BinaryParser {
   /**
    * Initialize bytes to a hex string
    *
-   * @param hexBytes a hexString 
+   * @param hexBytes a hex string
    */
   constructor(hexBytes: string) {
     this.bytes = Buffer.from(hexBytes, "hex");
@@ -47,7 +47,7 @@ class BinaryParser {
    * @return The number represented by those bytes
    */
   readUIntN(n: number): number {
-    assert(0 < n && n <= 4, "invalid n")
+    assert(0 < n && n <= 4, "invalid n");
     return this.read(n).reduce((a, b) => (a << 8) | b) >>> 0;
   }
 

@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import { Field, FieldInstance } from "../enums";
 
-/** 
+/**
  * Bytes list is a collection of buffer objects
  */
 class BytesList {
@@ -10,17 +10,17 @@ class BytesList {
   /**
    * Get the total number of bytes in the BytesList
    *
-   * @return the number of bytes 
+   * @return the number of bytes
    */
   public getLength(): number {
-    return Buffer.concat(this.arrays).byteLength
+    return Buffer.concat(this.arrays).byteLength;
   }
 
   /**
    * Put bytes in the BytesList
    *
    * @param bytesArg A Buffer
-   * @return this BytesList 
+   * @return this BytesList
    */
   public put(bytesArg: Buffer): BytesList {
     const bytes = Buffer.from(bytesArg); // Temporary, to catch instances of Uint8Array being passed in
@@ -30,7 +30,7 @@ class BytesList {
 
   /**
    * Write this BytesList to the back of another bytes list
-   * 
+   *
    *  @param list The BytesList to write to
    */
   public toBytesSink(list: BytesList): void {
@@ -46,7 +46,7 @@ class BytesList {
   }
 }
 
-/** 
+/**
  * BinarySerializer is used to write fields and values to buffers
  */
 class BinarySerializer {
@@ -122,17 +122,17 @@ class BinarySerializer {
    * Write field and value to BinarySerializer
    *
    * @param field field to write to BinarySerializer
-   * @param _value value to write to BinarySerializer
+   * @param value value to write to BinarySerializer
    */
-  writeFieldAndValue(field: FieldInstance, _value): void {
-    const value = field.associatedType.from(_value);
-    assert(value.toBytesSink, field.name);
+  writeFieldAndValue(field: FieldInstance, value): void {
+    const associatedValue = field.associatedType.from(value);
+    assert(associatedValue.toBytesSink, field.name);
     this.sink.put(field.header);
 
     if (field.isVariableLengthEncoded) {
-      this.writeLengthEncoded(value);
+      this.writeLengthEncoded(associatedValue);
     } else {
-      value.toBytesSink(this.sink);
+      associatedValue.toBytesSink(this.sink);
       if (field.type.name === "STObject") {
         this.sink.put(Field["ObjectEndMarker"].header);
       } else if (field.type.name === "STArray") {
