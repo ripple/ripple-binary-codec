@@ -143,7 +143,7 @@ class BinaryParser {
   }
 
   /**
-   * Read the value associated with a given field
+   * Read value of the type specified by field from the BinaryParser
    *
    * @param field The field that you want to get the associated value for
    * @return The value associated with the given field
