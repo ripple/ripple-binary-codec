@@ -108,7 +108,7 @@ class BinaryParser {
    */
   readFieldOrdinal(): number {
     let type = this.readUInt8();
-    let field = type & 15;
+    let nth = type & 15;
     type >>= 4;
 
     if (type === 0) {
@@ -118,14 +118,14 @@ class BinaryParser {
       }
     }
 
-    if (field === 0) {
-      field = this.readUInt8();
-      if (field === 0 || field < 16) {
+    if (nth === 0) {
+      nth = this.readUInt8();
+      if (nth === 0 || nth < 16) {
         throw new Error("Cannot read FieldOrdinal, field_code out of range");
       }
     }
 
-    return (type << 16) | field;
+    return (type << 16) | nth;
   }
 
   /**
