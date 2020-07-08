@@ -2,7 +2,7 @@ import { BytesList } from "../serdes/binary-serializer";
 const { bytesToHex, slice } = require("../utils/bytes-utils");
 
 /**
- * The base class for all xrp types
+ * The base class for all types
  */
 class SerializedTypeClass {
   protected bytes: Buffer = Buffer.alloc(0)
