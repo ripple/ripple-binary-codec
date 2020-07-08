@@ -1,30 +1,26 @@
-import { makeClass } from "../utils/make-class";
-import { parseBytes } from "../utils/bytes-utils";
-import { SerializedType } from "./serialized-type";
+import { SerializedTypeClass } from "./serialized-type";
+import { BinaryParser } from "../serdes/binary-parser";
 
-const Blob = makeClass(
-  {
-    mixins: SerializedType,
-    Blob(bytes) {
-      if (bytes) {
-        this._bytes = parseBytes(bytes, Uint8Array);
-      } else {
-        this._bytes = new Uint8Array(0);
-      }
-    },
-    statics: {
-      fromParser(parser, hint) {
-        return new this(parser.read(hint));
-      },
-      from(value) {
-        if (value instanceof this) {
-          return value;
-        }
-        return new this(value);
-      },
-    },
-  },
-  undefined
-);
+class Blob extends SerializedTypeClass {
+  constructor(bytes: Buffer) {
+    super()
+    if (bytes) {
+      this.bytes = bytes;
+    } else {
+      this.bytes = Buffer.alloc(0);
+    }
+  }
+
+  static fromParser(parser: BinaryParser, hint: number): Blob {
+    return new this(parser.read(hint));
+  }
+
+  static from(value: Blob | string) {
+    if (value instanceof Blob) {
+      return value;
+    }
+    return new this(Buffer.from(value, 'hex'));
+  }
+}
 
 export { Blob };
