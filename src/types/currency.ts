@@ -1,12 +1,10 @@
-import { makeClass } from "../utils/make-class";
 const _ = require("lodash");
-const { slice } = require("../utils/bytes-utils");
-const { Hash160 } = require("./hash-160");
+import { Hash160 } from "./hash-160";
 const ISO_REGEX = /^[A-Z0-9]{3}$/;
 const HEX_REGEX = /^[A-F0-9]{40}$/;
 
 function isoToBytes(iso) {
-  const bytes = new Uint8Array(20);
+  const bytes = Buffer.alloc(20);
   if (iso !== "XRP") {
     const isoBytes = iso.split("").map((c) => c.charCodeAt(0));
     bytes.set(isoBytes, 12);
@@ -43,51 +41,54 @@ function bytesFromRepr(val) {
   throw new Error(`Unsupported Currency repr: ${val}`);
 }
 
-const $uper = Hash160.prototype;
-const Currency = makeClass(
-  {
-    inherits: Hash160,
-    getters: ["isNative", "iso"],
-    statics: {
-      init() {
-        this.XRP = new this(new Uint8Array(20));
-      },
-      from(val) {
-        return val instanceof this ? val : new this(bytesFromRepr(val));
-      },
-    },
-    Currency(bytes) {
-      Hash160.call(this, bytes);
-      this.classify();
-    },
-    classify() {
-      // We only have a non null iso() property available if the currency can be
-      // losslessly represented by the 3 letter iso code. If none is available a
-      // hex encoding of the full 20 bytes is the canonical representation.
-      let onlyISO = true;
+class Currency extends Hash160 {
+  static XRP = new Currency(Buffer.alloc(20));
+  static width: number = 20
+  _iso?: string
+  _isNative: boolean
+  
+  isNative(): boolean {
+   return this._isNative
+  }
 
-      const bytes = this._bytes;
-      const code = slice(this._bytes, 12, 15, Array);
-      const iso = code.map((c) => String.fromCharCode(c)).join("");
+  iso(): string | undefined {
+    return this._iso
+  }
 
-      for (let i = bytes.length - 1; i >= 0; i--) {
-        if (bytes[i] !== 0 && !(i === 12 || i === 13 || i === 14)) {
-          onlyISO = false;
-          break;
-        }
+  static from(val: Currency | string): Currency {
+    return val instanceof this ? val : new Currency(Buffer.from(bytesFromRepr(val),'hex'));
+  }
+
+  constructor(byteBuf: Buffer) {
+    super(byteBuf);
+    // We only have a non null iso() property available if the currency can be
+    // losslessly represented by the 3 letter iso code. If none is available a
+    // hex encoding of the full 20 bytes is the canonical representation.
+    let onlyISO = true;
+
+    const bytes = this.bytes;
+    const code = this.bytes.slice(12, 15);
+    const iso = code.toString();
+
+    for (let i = bytes.length - 1; i >= 0; i--) {
+      if (bytes[i] !== 0 && !(i === 12 || i === 13 || i === 14)) {
+        onlyISO = false;
+        break;
       }
-      const lossLessISO = onlyISO && iso !== "XRP" && ISO_REGEX.test(iso);
-      this._isNative = onlyISO && _.isEqual(code, [0, 0, 0]);
-      this._iso = this._isNative ? "XRP" : lossLessISO ? iso : null;
-    },
-    toJSON() {
-      if (this.iso()) {
-        return this.iso();
-      }
-      return $uper.toJSON.call(this);
-    },
-  },
-  undefined
-);
+    }
+
+    const lossLessISO = onlyISO && iso !== "XRP" && ISO_REGEX.test(iso);
+    this._isNative = onlyISO && code.toString('hex') === "000000";
+    this._iso = this._isNative ? "XRP" : lossLessISO ? iso : undefined;
+  }
+
+  toJSON(): string {
+    const iso = this.iso()
+    if (iso !== undefined) {
+      return iso;
+    }
+    return this.bytes.toString('hex').toUpperCase();
+  }
+}
 
 export { Currency };

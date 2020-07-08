@@ -1,12 +1,7 @@
-import { makeClass } from "../utils/make-class";
-const { Hash } = require("./hash");
+import { Hash } from "./hash"
 
-const Hash160 = makeClass(
-  {
-    inherits: Hash,
-    statics: { width: 20 },
-  },
-  undefined
-);
+class Hash160 extends Hash {
+  static width: number = 20
+}
 
 export { Hash160 };

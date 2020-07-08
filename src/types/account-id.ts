@@ -1,45 +1,43 @@
-import { makeClass } from "../utils/make-class";
-const { decodeAccountID, encodeAccountID } = require("ripple-address-codec");
-const { Hash160 } = require("./hash-160");
+import { decodeAccountID, encodeAccountID } from "ripple-address-codec";
+import { Hash160 } from "./hash-160";
 
-const AccountID = makeClass(
-  {
-    AccountID(bytes) {
-      Hash160.call(this, bytes);
-    },
-    inherits: Hash160,
-    statics: {
-      from(value) {
-        return value instanceof this
-          ? value
-          : /^r/.test(value)
-          ? this.fromBase58(value)
-          : new this(value);
-      },
-      cache: {},
-      fromCache(base58) {
-        let cached = this.cache[base58];
-        if (!cached) {
-          cached = this.cache[base58] = this.fromBase58(base58);
-        }
-        return cached;
-      },
-      fromBase58(value) {
-        const acc = new this(decodeAccountID(value));
-        acc._toBase58 = value;
-        return acc;
-      },
-    },
-    toJSON() {
-      return this.toBase58();
-    },
-    cached: {
-      toBase58() {
-        return encodeAccountID(this._bytes);
-      },
-    },
-  },
-  undefined
-);
+class AccountID extends Hash160 {
+  static cache: object = {}
+  base58: string = ""
+
+  constructor(bytes: Buffer) {
+    super(bytes);
+  }
+
+  static from(value: AccountID | string) {
+      return value instanceof this
+        ? value
+        : /^r/.test(value)
+        ? this.fromBase58(value)
+        : new this(Buffer.from(value, 'hex'));
+    }
+
+  static fromCache(base58: string): AccountID {
+    let cached = this.cache[base58];
+    if (!cached) {
+      cached = this.cache[base58] = this.fromBase58(base58);
+    }
+    return cached;
+  }
+
+  static fromBase58(value: string): AccountID {
+    const acc = new AccountID(decodeAccountID(value));
+    acc.base58 = value;
+    return acc;
+  }
+
+  toJSON(): string {
+    return this.toBase58();
+  }
+
+  toBase58(): string {
+    return encodeAccountID(this.bytes);
+  }
+}
 
 export { AccountID };

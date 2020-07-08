@@ -1,12 +1,7 @@
-import { makeClass } from "../utils/make-class";
 import { Hash } from "./hash";
 
-const Hash128 = makeClass(
-  {
-    inherits: Hash,
-    statics: { width: 16 },
-  },
-  undefined
-);
+class Hash128 extends Hash {
+  static width: number = 16 
+}
 
 export { Hash128 };
