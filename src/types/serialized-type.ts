@@ -42,7 +42,7 @@ class SerializedTypeClass {
   /**
    * Return the JSON representation of a SerializedType
    * 
-   * @returns any type, if not overloaded, returns hexString representation of bytes
+   * @returns any type, if not overloaded returns hexString representation of bytes
    */
   toJSON(): any {
     return this.toHex();
