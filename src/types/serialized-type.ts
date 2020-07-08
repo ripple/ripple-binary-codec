@@ -2,14 +2,14 @@ import { BytesList } from "../serdes/binary-serializer";
 const { bytesToHex, slice } = require("../utils/bytes-utils");
 
 /**
- * The base class for all types
+ * The base class for all binary-codec types
  */
 class SerializedTypeClass {
-  protected bytes: Buffer = Buffer.alloc(0)
+  protected bytes: Buffer = Buffer.alloc(0);
 
   /**
    * Write the bytes representation of a SerializedType to a BytesList
-   * 
+   *
    * @param list The BytesList to write SerializedType bytes to
    */
   toBytesSink(list: BytesList): void {
@@ -18,16 +18,16 @@ class SerializedTypeClass {
 
   /**
    * Get the hex representation of a SerializedType's bytes
-   * 
+   *
    * @returns hex String of this.bytes
    */
   toHex(): string {
-    return (this.toBytes()).toString('hex').toUpperCase();
+    return this.toBytes().toString("hex").toUpperCase();
   }
 
   /**
    * Get the bytes representation of a SerializedType
-   * 
+   *
    * @returns A buffer of the bytes
    */
   toBytes(): Buffer {
@@ -41,7 +41,7 @@ class SerializedTypeClass {
 
   /**
    * Return the JSON representation of a SerializedType
-   * 
+   *
    * @returns any type, if not overloaded returns hexString representation of bytes
    */
   toJSON(): any {
@@ -54,7 +54,7 @@ class SerializedTypeClass {
   toString(): string {
     return this.toHex();
   }
-};
+}
 
 /**
  * Base class for SerializedTypes that are comparable
@@ -81,15 +81,15 @@ class ComparableClass extends SerializedTypeClass {
   }
 
   /**
-   * Overload this method to define how two SerializedTypes are compared
-   * 
+   * Overload this method to define how two Comparable SerializedTypes are compared
+   *
    * @param other The comparable object to compare this to
    * @returns A number denoting the relationship of this and other
    */
   compareTo(other: ComparableClass): number {
-    throw new Error("cannot compare " + this + " and " + other)
+    throw new Error("cannot compare " + this + " and " + other);
   }
-};
+}
 
 const Comparable = {
   lt(other) {
@@ -147,4 +147,10 @@ function ensureArrayLikeIs(Type, arrayLike) {
   };
 }
 
-export { ensureArrayLikeIs, SerializedType, SerializedTypeClass, Comparable, ComparableClass };
+export {
+  ensureArrayLikeIs,
+  SerializedType,
+  SerializedTypeClass,
+  Comparable,
+  ComparableClass,
+};

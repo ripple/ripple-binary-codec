@@ -1,9 +1,11 @@
-const _ = require("lodash");
 import { Hash160 } from "./hash-160";
 const ISO_REGEX = /^[A-Z0-9]{3}$/;
 const HEX_REGEX = /^[A-F0-9]{40}$/;
 
-function isoToBytes(iso) {
+/**
+ * Convert an iso code to a currency bytes representation
+ */
+function isoToBytes(iso: string): Buffer {
   const bytes = Buffer.alloc(20);
   if (iso !== "XRP") {
     const isoBytes = iso.split("").map((c) => c.charCodeAt(0));
@@ -12,58 +14,63 @@ function isoToBytes(iso) {
   return bytes;
 }
 
-function isISOCode(val) {
-  return val.length === 3; // ISO_REGEX.test(val);
+/**
+ * Tests if iso is a valid iso code
+ */
+function isISOCode(iso: string): boolean {
+  return ISO_REGEX.test(iso);
 }
 
-function isHex(val) {
-  return HEX_REGEX.test(val);
+/**
+ * Tests if hex is a valid hex-string
+ */
+function isHex(hex: string): boolean {
+  return HEX_REGEX.test(hex);
 }
 
-function isStringRepr(val) {
-  return _.isString(val) && (isISOCode(val) || isHex(val));
+/**
+ * Tests if a string is a valid representation of a currency
+ */
+function isStringRepresentation(str: string): boolean {
+  return isISOCode(str) || isHex(str);
 }
 
-function isBytesArray(val) {
-  return val.length === 20;
+/**
+ * Tests if a Buffer is a valid representation of a currency
+ */
+function isBytesArray(bytes: Buffer): boolean {
+  return bytes.byteLength === 20;
 }
 
-function isValidRepr(val) {
-  return isStringRepr(val) || isBytesArray(val);
+/**
+ * Ensures that a value is a valid representation of a currency
+ */
+function isValidRepresentation(val: Buffer | string): boolean {
+  return val instanceof Buffer
+    ? isBytesArray(val)
+    : isStringRepresentation(val);
 }
 
-function bytesFromRepr(val) {
-  if (isValidRepr(val)) {
-    // We assume at this point that we have an object with a length, either 3,
-    // 20 or 40.
-    return val.length === 3 ? isoToBytes(val) : val;
+/**
+ * Generate bytes from a string or buffer representation of a currency
+ */
+function bytesFromRepresentation(val: string): Buffer {
+  if (!isValidRepresentation(val)) {
+    throw new Error(`Unsupported Currency representation: ${val}`);
   }
-  throw new Error(`Unsupported Currency repr: ${val}`);
+  return val.length === 3 ? isoToBytes(val) : Buffer.from(val, "hex");
 }
 
+/**
+ * Class defining how to encode and decode Currencies
+ */
 class Currency extends Hash160 {
   static XRP = new Currency(Buffer.alloc(20));
-  static width: number = 20
-  _iso?: string
-  _isNative: boolean
-  
-  isNative(): boolean {
-   return this._isNative
-  }
-
-  iso(): string | undefined {
-    return this._iso
-  }
-
-  static from(val: Currency | string): Currency {
-    return val instanceof this ? val : new Currency(Buffer.from(bytesFromRepr(val),'hex'));
-  }
+  _iso?: string;
+  _isNative: boolean;
 
   constructor(byteBuf: Buffer) {
     super(byteBuf);
-    // We only have a non null iso() property available if the currency can be
-    // losslessly represented by the 3 letter iso code. If none is available a
-    // hex encoding of the full 20 bytes is the canonical representation.
     let onlyISO = true;
 
     const bytes = this.bytes;
@@ -78,16 +85,48 @@ class Currency extends Hash160 {
     }
 
     const lossLessISO = onlyISO && iso !== "XRP" && ISO_REGEX.test(iso);
-    this._isNative = onlyISO && code.toString('hex') === "000000";
+    this._isNative = onlyISO && code.toString("hex") === "000000";
     this._iso = this._isNative ? "XRP" : lossLessISO ? iso : undefined;
   }
 
+  /**
+   * Tells if this currency is native
+   *
+   * @returns true if native, false if not
+   */
+  isNative(): boolean {
+    return this._isNative;
+  }
+
+  /**
+   * Return the ISO code of this currency
+   *
+   * @returns ISO code if it exists, else undefined
+   */
+  iso(): string | undefined {
+    return this._iso;
+  }
+
+  /**
+   * Constructs a Currency object
+   *
+   * @param val Currency object or a string representation of a currency
+   */
+  static from(val: Currency | string): Currency {
+    return val instanceof this
+      ? val
+      : new Currency(bytesFromRepresentation(val));
+  }
+
+  /**
+   * Gets the JSON representation of a currency
+   */
   toJSON(): string {
-    const iso = this.iso()
+    const iso = this.iso();
     if (iso !== undefined) {
       return iso;
     }
-    return this.bytes.toString('hex').toUpperCase();
+    return this.bytes.toString("hex").toUpperCase();
   }
 }
 
