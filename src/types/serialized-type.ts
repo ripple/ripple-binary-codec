@@ -5,7 +5,11 @@ const { bytesToHex, slice } = require("../utils/bytes-utils");
  * The base class for all binary-codec types
  */
 class SerializedTypeClass {
-  protected bytes: Buffer = Buffer.alloc(0);
+  protected readonly bytes: Buffer = Buffer.alloc(0);
+
+  constructor(bytes: Buffer) {
+    this.bytes = bytes ?? Buffer.alloc(0);
+  }
 
   /**
    * Write the bytes representation of a SerializedType to a BytesList

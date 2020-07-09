@@ -1,4 +1,3 @@
-import * as assert from "assert";
 import { ComparableClass } from "./serialized-type";
 import { BinaryParser } from "../serdes/binary-parser";
 
@@ -9,11 +8,7 @@ class Hash extends ComparableClass {
   static readonly width: number;
 
   constructor(bytes: Buffer) {
-    super();
-
-    const width = (this.constructor as typeof Hash).width;
-    this.bytes = bytes ? Buffer.from(bytes) : Buffer.alloc(width);
-    assert.equal(this.bytes.byteLength, width);
+    super(bytes);
   }
 
   /**

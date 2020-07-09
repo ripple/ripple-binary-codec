@@ -6,11 +6,7 @@ import { BinaryParser } from "../serdes/binary-parser";
  */
 class Blob extends SerializedTypeClass {
   constructor(bytes: Buffer) {
-    super();
-
-    if (bytes) {
-      this.bytes = bytes;
-    }
+    super(bytes);
   }
 
   /**

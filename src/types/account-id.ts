@@ -5,8 +5,10 @@ import { Hash160 } from "./hash-160";
  * Class defining how to encode and decode an AccountID
  */
 class AccountID extends Hash160 {
+  static readonly defaultAccountID: AccountID = new AccountID(Buffer.alloc(20));
+
   constructor(bytes: Buffer) {
-    super(bytes);
+    super(bytes ?? AccountID.defaultAccountID.bytes);
   }
 
   /**

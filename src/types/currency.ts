@@ -70,7 +70,7 @@ class Currency extends Hash160 {
   readonly _isNative: boolean;
 
   constructor(byteBuf: Buffer) {
-    super(byteBuf);
+    super(byteBuf ?? Currency.XRP.bytes);
 
     let onlyISO = true;
 
