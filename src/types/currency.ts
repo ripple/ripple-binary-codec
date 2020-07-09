@@ -66,8 +66,8 @@ function bytesFromRepresentation(input: string): Buffer {
  */
 class Currency extends Hash160 {
   static readonly XRP = new Currency(Buffer.alloc(20));
-  readonly _iso?: string;
-  readonly _isNative: boolean;
+  private readonly _iso?: string;
+  private readonly _isNative: boolean;
 
   constructor(byteBuf: Buffer) {
     super(byteBuf ?? Currency.XRP.bytes);
