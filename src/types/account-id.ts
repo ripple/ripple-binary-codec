@@ -16,9 +16,10 @@ class AccountID extends Hash160 {
    * @returns an AccountID object
    */
   static from(value: AccountID | string): AccountID {
-    return value instanceof this
-      ? value
-      : /^r/.test(value)
+    if (value instanceof this) {
+      return value;
+    }
+    return /^r/.test(value)
       ? this.fromBase58(value)
       : new AccountID(Buffer.from(value, "hex"));
   }

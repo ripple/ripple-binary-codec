@@ -7,7 +7,10 @@ import { BinaryParser } from "../serdes/binary-parser";
 class Blob extends SerializedTypeClass {
   constructor(bytes: Buffer) {
     super();
-    this.bytes = bytes ?? Buffer.alloc(0);
+
+    if (bytes) {
+      this.bytes = bytes;
+    }
   }
 
   /**
@@ -18,7 +21,7 @@ class Blob extends SerializedTypeClass {
    * @returns A Blob object
    */
   static fromParser(parser: BinaryParser, hint: number): Blob {
-    return new this(parser.read(hint));
+    return new Blob(parser.read(hint));
   }
 
   /**
@@ -28,7 +31,7 @@ class Blob extends SerializedTypeClass {
    * @returns A Blob object
    */
   static from(value: Blob | string): Blob {
-    return value instanceof Blob ? value : new this(Buffer.from(value, "hex"));
+    return value instanceof Blob ? value : new Blob(Buffer.from(value, "hex"));
   }
 }
 

@@ -6,10 +6,11 @@ import { BinaryParser } from "../serdes/binary-parser";
  * Base class defining how to encode and decode hashes
  */
 class Hash extends ComparableClass {
-  static width: number;
+  static readonly width: number;
 
   constructor(bytes: Buffer) {
     super();
+
     const width = (this.constructor as typeof Hash).width;
     this.bytes = bytes ? Buffer.from(bytes) : Buffer.alloc(width);
     assert.equal(this.bytes.byteLength, width);
@@ -54,7 +55,10 @@ class Hash extends ComparableClass {
   }
 
   /**
+   * Returns four bits at the specified depth within a hash
    *
+   * @param depth The depth of the four bits
+   * @returns The number represented by the four bits
    */
   nibblet(depth: number): number {
     const byteIx = depth > 0 ? (depth / 2) | 0 : 0;

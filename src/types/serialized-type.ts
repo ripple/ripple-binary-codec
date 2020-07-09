@@ -34,9 +34,9 @@ class SerializedTypeClass {
     if (this.bytes) {
       return this.bytes;
     }
-    const bl = new BytesList();
-    this.toBytesSink(bl);
-    return bl.toBytes();
+    const bytes = new BytesList();
+    this.toBytesSink(bytes);
+    return bytes.toBytes();
   }
 
   /**
