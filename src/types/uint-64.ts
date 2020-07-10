@@ -1,4 +1,5 @@
 import { UInt } from "./uint";
+import { BinaryParser } from "../serdes/binary-parser";
 
 const HEX_REGEX = /^[A-F0-9]{16}$/;
 
@@ -6,11 +7,15 @@ const HEX_REGEX = /^[A-F0-9]{16}$/;
  * Derived UInt class for serializing/deserializing 64 bit UInt
  */
 class UInt64 extends UInt {
-  static readonly width: number = 8;
+  protected static readonly width: number = 64 / 8 //8
   static readonly defaultUInt64: UInt64 = new UInt64(Buffer.alloc(UInt64.width))
 
   constructor(bytes: Buffer) {
     super(bytes ?? UInt64.defaultUInt64.bytes)
+  }
+
+  static fromParser(parser: BinaryParser): UInt {
+    return new UInt64(parser.read(UInt64.width));
   }
 
   /**

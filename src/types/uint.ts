@@ -1,5 +1,4 @@
 import { ComparableClass } from "./serialized-type";
-import { BinaryParser } from "../serdes/binary-parser";
 
 /**
  * Compare numbers and bigints n1 and n2
@@ -15,15 +14,11 @@ function compare(n1: number | bigint, n2: number | bigint): number {
 /**
  * Base class for serializing and deserializing unsigned integers.
  */
-class UInt extends ComparableClass {
-  static width: number
+abstract class UInt extends ComparableClass {
+  protected static width: number
 
   constructor(bytes: Buffer) {
     super(bytes)
-  }
-
-  static fromParser(parser: BinaryParser): UInt {
-    return new this(parser.read(this.width));
   }
 
   /**
@@ -53,9 +48,7 @@ class UInt extends ComparableClass {
    * 
    * @returns the value
    */
-  valueOf(): number | bigint {
-    throw new Error("Cannot get value of the UInt Base Class")
-  }
+  abstract valueOf(): number | bigint;
 }
 
 export { UInt };
