@@ -1,64 +1,39 @@
-import { strict as assert } from "assert";
-import { BN } from "bn.js";
-import { makeClass } from "../utils/make-class";
-const { Comparable, SerializedType } = require("./serialized-type");
-const { serializeUIntN } = require("../utils/bytes-utils");
-const MAX_VALUES = [0, 255, 65535, 16777215, 4294967295];
+import { ComparableClass } from "./serialized-type";
+import { BytesList } from "../serdes/binary-serializer";
 
-function signum(a, b) {
-  return a < b ? -1 : a === b ? 0 : 1;
+function compare(n1: number | bigint, n2: number | bigint): number {
+  return n1 < n2 ? -1 : n1 == n2 ? 0 : 1
 }
 
-const UInt = makeClass(
-  {
-    mixins: [Comparable, SerializedType],
-    UInt(val = 0) {
-      const max = MAX_VALUES[this.constructor.width];
-      if (val < 0 || !(val <= max)) {
-        throw new Error(`${val} not in range 0 <= $val <= ${max}`);
-      }
-      this.val = val;
-    },
-    statics: {
-      width: 0,
-      fromParser(parser) {
-        const val =
-          this.width > 4
-            ? parser.read(this.width)
-            : parser.readUIntN(this.width);
-        return new this(val);
-      },
-      from(val) {
-        return val instanceof this ? val : new this(val);
-      },
-    },
-    toJSON() {
-      return this.val;
-    },
-    valueOf() {
-      return this.val;
-    },
-    compareTo(other) {
-      const thisValue = this.valueOf();
-      const otherValue = other.valueOf();
-      if (thisValue instanceof BN) {
-        return otherValue instanceof BN
-          ? thisValue.cmp(otherValue)
-          : thisValue.cmpn(otherValue);
-      } else if (otherValue instanceof BN) {
-        return -other.compareTo(this);
-      }
-      assert(typeof otherValue === "number");
-      return signum(thisValue, otherValue);
-    },
-    toBytesSink(sink) {
-      sink.put(this.toBytes());
-    },
-    toBytes() {
-      return serializeUIntN(this.val, this.constructor.width);
-    },
-  },
-  undefined
-);
+class UInt extends ComparableClass {
+  static width: number
+
+  constructor(bytes: Buffer) {
+    super(bytes)
+  }
+
+  static fromParser(parser) {
+    return new this(parser.read(this.width));
+  }
+
+  compareTo(other: UInt): number {
+    return compare(this.valueOf(), other.valueOf());
+  }
+
+  toJSON(): number | string {
+    let val = this.valueOf()
+    return typeof val === "number"
+      ? val
+      : val.toString();
+  }
+
+  valueOf(): number | bigint {
+    throw new Error("Cannot get value of the UInt Base Class")
+  }
+
+  toBytesSink(sink: BytesList): void {
+    sink.put(this.bytes);
+  }
+}
 
 export { UInt };
