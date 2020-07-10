@@ -121,7 +121,7 @@ function transactionParsingTests () {
       return parser.readFieldAndValue()
     }
     {
-    const [field, value] = readField()
+      const [field, value] = readField()
       expect(field).toEqual(Field.TransactionType)
       expect(value).toEqual(TransactionType.OfferCreate)
     }

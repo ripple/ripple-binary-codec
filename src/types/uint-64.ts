@@ -2,6 +2,9 @@ import { UInt } from "./uint";
 
 const HEX_REGEX = /^[A-F0-9]{16}$/;
 
+/**
+ * Derived UInt class for serializing/deserializing 64 bit UInt
+ */
 class UInt64 extends UInt {
   static readonly width: number = 8;
   static readonly defaultUInt64: UInt64 = new UInt64(Buffer.alloc(UInt64.width))
@@ -10,6 +13,12 @@ class UInt64 extends UInt {
     super(bytes ?? UInt64.defaultUInt64.bytes)
   }
 
+  /**
+   * Construct a UInt64 object
+   * 
+   * @param val A UInt64, hex-string, bigint, or number
+   * @returns A UInt64 object
+   */
   static from(val: UInt64 | string | bigint | number): UInt64 {
     if(val instanceof UInt64) {
       return val;
@@ -36,14 +45,29 @@ class UInt64 extends UInt {
     return new UInt64(buf);
   }
 
+  /**
+   * The JSON representation of a UInt64 object
+   * 
+   * @returns a hex-string
+   */
   toJSON(): string {
     return this.bytes.toString('hex').toUpperCase();
   }
 
+  /**
+   * Get the value of the UInt64 
+   * 
+   * @returns the number represented buy this.bytes
+   */
   valueOf(): bigint {
     return this.bytes.readBigUInt64BE();
   }
 
+  /**
+   * Get the bytes representation of the UInt64 object
+   * 
+   * @returns 8 bytes representing the UInt64
+   */
   toBytes(): Buffer {
     return this.bytes;
   }
