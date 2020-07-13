@@ -29,18 +29,14 @@ interface HopObject {
  * Serialize and Deserialize a Hop
  */
 class Hop extends SerializedTypeClass {
-  constructor(bytes: Buffer) {
-    super(bytes);
-  }
-
   /**
    * Create a Hop from a HopObject
-   * 
+   *
    * @param value Either a hop or HopObject to create a hop with
    * @returns a Hop
    */
   static from(value: Hop | HopObject): Hop {
-    if (value instanceof this) {
+    if (value instanceof Hop) {
       return value;
     }
 
@@ -66,7 +62,7 @@ class Hop extends SerializedTypeClass {
 
   /**
    * Construct a Hop from a BinaryParser
-   * 
+   *
    * @param parser BinaryParser to read the Hop from
    * @returns a Hop
    */
@@ -74,34 +70,35 @@ class Hop extends SerializedTypeClass {
     const type = parser.readUInt8();
     const bytes: Array<Buffer> = [Buffer.from([type])];
 
-    type & TYPE_ACCOUNT && bytes.push(parser.read(AccountID.width));
-    type & TYPE_CURRENCY && bytes.push(parser.read(Currency.width));
-    type & TYPE_ISSUER && bytes.push(parser.read(AccountID.width));
+    if (type & TYPE_ACCOUNT) bytes.push(parser.read(AccountID.width));
+    if (type & TYPE_CURRENCY) bytes.push(parser.read(Currency.width));
+    if (type & TYPE_ISSUER) bytes.push(parser.read(AccountID.width));
     return new Hop(Buffer.concat(bytes));
   }
 
   /**
    * Get the JSON interpretation of this hop
-   * 
+   *
    * @returns a HopObject, an JS object with optional account, issuer, and currency
    */
   toJSON(): HopObject {
     const hopParser = new BinaryParser(this.bytes.toString("hex"));
     const type = hopParser.readUInt8();
 
-    const ret: HopObject = {};
-    type & TYPE_ACCOUNT &&
-      (ret.account = AccountID.fromParser(hopParser).toJSON());
-    type & TYPE_CURRENCY &&
-      (ret.currency = Currency.fromParser(hopParser).toJSON());
-    type & TYPE_ISSUER &&
-      (ret.issuer = AccountID.fromParser(hopParser).toJSON());
-    return ret;
+    const result: HopObject = {};
+    if (type & TYPE_ACCOUNT)
+      result.account = AccountID.fromParser(hopParser).toJSON();
+    if (type & TYPE_CURRENCY)
+      result.currency = Currency.fromParser(hopParser).toJSON();
+    if (type & TYPE_ISSUER)
+      result.issuer = AccountID.fromParser(hopParser).toJSON();
+
+    return result;
   }
 
   /**
    * get a number representing the type of this hop
-   * 
+   *
    * @returns a number to be bitwise and-ed with TYPE_ constants to describe the types in the hop
    */
   type(): number {
@@ -113,13 +110,9 @@ class Hop extends SerializedTypeClass {
  * Class for serializing/deserializing Paths
  */
 class Path extends SerializedTypeClass {
-  constructor(bytes: Buffer) {
-    super(bytes);
-  }
-
   /**
    * construct a Path from an array of Hops
-   * 
+   *
    * @param value Path or array of HopObjects to construct a Path
    * @returns the Path
    */
@@ -138,7 +131,7 @@ class Path extends SerializedTypeClass {
 
   /**
    * Read a Path from a BinaryParser
-   * 
+   *
    * @param parser BinaryParser to read Path from
    * @returns the Path represented by the bytes read from the BinaryParser
    */
@@ -159,7 +152,7 @@ class Path extends SerializedTypeClass {
 
   /**
    * Get the JSON representation of this Path
-   * 
+   *
    * @returns an Array of HopObject constructed from this.bytes
    */
   toJSON() {
@@ -174,18 +167,13 @@ class Path extends SerializedTypeClass {
   }
 }
 
-
 /**
  * Deserialize and Serialize the PathSet type
  */
 class PathSet extends SerializedTypeClass {
-  constructor(bytes: Buffer) {
-    super(bytes);
-  }
-
   /**
    * Construct a PathSet from an Array of Arrays representing paths
-   * 
+   *
    * @param value A PathSet or Array of Array of HopObjects
    * @returns the PathSet constructed from value
    */
@@ -208,7 +196,7 @@ class PathSet extends SerializedTypeClass {
 
   /**
    * Construct a PathSet from a BinaryParser
-   * 
+   *
    * @param parser A BinaryParser to read PathSet from
    * @returns the PathSet read from parser
    */
@@ -229,7 +217,7 @@ class PathSet extends SerializedTypeClass {
 
   /**
    * Get the JSON representation of this PathSet
-   * 
+   *
    * @returns an Array of Array of HopObjects, representing this PathSet
    */
   toJSON(): Array<Array<HopObject>> {
