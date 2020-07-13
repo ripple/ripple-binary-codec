@@ -70,9 +70,18 @@ class Hop extends SerializedTypeClass {
     const type = parser.readUInt8();
     const bytes: Array<Buffer> = [Buffer.from([type])];
 
-    if (type & TYPE_ACCOUNT) bytes.push(parser.read(AccountID.width));
-    if (type & TYPE_CURRENCY) bytes.push(parser.read(Currency.width));
-    if (type & TYPE_ISSUER) bytes.push(parser.read(AccountID.width));
+    if (type & TYPE_ACCOUNT) {
+      bytes.push(parser.read(AccountID.width));
+    }
+
+    if (type & TYPE_CURRENCY) {
+      bytes.push(parser.read(Currency.width));
+    }
+
+    if (type & TYPE_ISSUER) {
+      bytes.push(parser.read(AccountID.width));
+    }
+
     return new Hop(Buffer.concat(bytes));
   }
 
@@ -86,12 +95,17 @@ class Hop extends SerializedTypeClass {
     const type = hopParser.readUInt8();
 
     const result: HopObject = {};
-    if (type & TYPE_ACCOUNT)
+    if (type & TYPE_ACCOUNT) {
       result.account = AccountID.fromParser(hopParser).toJSON();
-    if (type & TYPE_CURRENCY)
+    }
+
+    if (type & TYPE_CURRENCY) {
       result.currency = Currency.fromParser(hopParser).toJSON();
-    if (type & TYPE_ISSUER)
+    }
+    
+    if (type & TYPE_ISSUER) {
       result.issuer = AccountID.fromParser(hopParser).toJSON();
+    }
 
     return result;
   }
