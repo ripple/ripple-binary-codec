@@ -18,7 +18,7 @@ class BinaryParser {
 
   /**
    * Peek the first byte of the BinaryParser
-   * 
+   *
    * @returns The first byte of the BinaryParser
    */
   peek(): number {
@@ -43,7 +43,10 @@ class BinaryParser {
    * @return The bytes
    */
   read(n: number): Buffer {
-    assert(n <= this.bytes.byteLength, n + " greater than " + this.bytes.byteLength);
+    assert(
+      n <= this.bytes.byteLength,
+      n + " greater than " + this.bytes.byteLength
+    );
 
     const slice = this.bytes.slice(0, n);
     this.skip(n);
