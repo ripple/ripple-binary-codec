@@ -1,37 +1,60 @@
-import { makeClass } from "../utils/make-class";
-import { ensureArrayLikeIs, SerializedType } from "./serialized-type";
+import { SerializedTypeClass } from "./serialized-type";
 import { STObject } from "./st-object";
+import { BinaryParser } from "../serdes/binary-parser";
 
-const STArray = makeClass(
-  {
-    mixins: SerializedType,
-    inherits: Array,
-    statics: {
-      fromParser(parser) {
-        const array = new STArray();
-        while (!parser.end()) {
-          const field = parser.readField();
-          if (field.name === "ArrayEndMarker") {
-            break;
-          }
-          const outer = new STObject();
-          outer[field.name] = parser.readFieldValue(field);
-          array.push(outer);
-        }
-        return array;
-      },
-      from(value) {
-        return ensureArrayLikeIs(STArray, value).withChildren(STObject);
-      },
-    },
-    toJSON() {
-      return this.map((v) => v.toJSON());
-    },
-    toBytesSink(sink) {
-      this.forEach((so) => so.toBytesSink(sink));
-    },
-  },
-  undefined
-);
+const ARRAY_END_MARKER = 0xF1;
+
+class STArray extends SerializedTypeClass {
+
+  constructor(bytes: Buffer) {
+    super(bytes);
+  }
+
+  static fromParser(parser: BinaryParser): STArray {
+    let bytes: Array<Buffer> = []
+
+    while (!parser.end()) {
+      const field = parser.readField();
+      if (field.name === "ArrayEndMarker") {
+        bytes.push(Buffer.from([ARRAY_END_MARKER]))
+        break;
+      }
+      bytes.push(field.header, parser.readFieldValue(field).toBytes())
+    }
+
+    return new STArray(Buffer.concat(bytes));
+  }
+
+  static from(value: STArray | Array<object>): STArray {
+    if(value instanceof STArray) {
+      return value;
+    }
+
+    let bytes: Array<Buffer> = []
+
+    value.forEach(obj => {
+      bytes.push(STObject.from(obj).toBytes());
+    })
+
+    return new STArray(Buffer.concat(bytes));
+  }
+
+  toJSON(): Array<object> {
+    let result: Array<object> = [];
+
+    let arrayParser = new BinaryParser(this.toString())
+
+    while(!arrayParser.end()) {
+      console.log(arrayParser);
+      if(arrayParser.peek() === ARRAY_END_MARKER) {
+        arrayParser.read(1);
+        break;
+      }
+      result.push(STObject.fromParser(arrayParser).toJSON())
+    }
+
+    return result;
+  }
+}
 
 export { STArray };
