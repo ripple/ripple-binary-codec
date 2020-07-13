@@ -144,6 +144,9 @@ function ensureArrayLikeIs(Type, arrayLike) {
       }
       const obj = new Type();
       for (let i = 0; i < arrayLike.length; i++) {
+        if(Child.from === undefined) {
+          console.log(Child);
+        }
         obj.push(Child.from(arrayLike[i]));
       }
       return obj;
