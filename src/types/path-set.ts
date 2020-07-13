@@ -3,23 +3,42 @@ import { Currency } from "./currency";
 import { BinaryParser } from "../serdes/binary-parser";
 import { SerializedTypeClass } from "./serialized-type";
 
+/**
+ * Constants for separating Paths in a PathSet
+ */
 const PATHSET_END_BYTE = 0x00;
 const PATH_SEPARATOR_BYTE = 0xff;
+
+/**
+ * Constant for masking types of a Hop
+ */
 const TYPE_ACCOUNT = 0x01;
 const TYPE_CURRENCY = 0x10;
 const TYPE_ISSUER = 0x20;
 
+/**
+ * The object representation of a Hop, an issuer AccountID, an account AccountID, and a Currency
+ */
 interface HopObject {
   issuer?: string;
   account?: string;
   currency?: string;
 }
 
+/**
+ * Serialize and Deserialize a Hop
+ */
 class Hop extends SerializedTypeClass {
   constructor(bytes: Buffer) {
     super(bytes);
   }
 
+  /**
+   * Create a Hop from a HopObject
+   * 
+   * @param value Either a hop or HopObject to create a hop with
+   * @returns a Hop
+   */
   static from(value: Hop | HopObject): Hop {
     if (value instanceof this) {
       return value;
@@ -45,6 +64,12 @@ class Hop extends SerializedTypeClass {
     return new Hop(Buffer.concat(bytes));
   }
 
+  /**
+   * Construct a Hop from a BinaryParser
+   * 
+   * @param parser BinaryParser to read the Hop from
+   * @returns a Hop
+   */
   static fromParser(parser: BinaryParser): Hop {
     const type = parser.readUInt8();
     const bytes: Array<Buffer> = [Buffer.from([type])];
@@ -55,6 +80,11 @@ class Hop extends SerializedTypeClass {
     return new Hop(Buffer.concat(bytes));
   }
 
+  /**
+   * Get the JSON interpretation of this hop
+   * 
+   * @returns a HopObject, an JS object with optional account, issuer, and currency
+   */
   toJSON(): HopObject {
     const hopParser = new BinaryParser(this.bytes.toString("hex"));
     const type = hopParser.readUInt8();
@@ -69,16 +99,30 @@ class Hop extends SerializedTypeClass {
     return ret;
   }
 
+  /**
+   * get a number representing the type of this hop
+   * 
+   * @returns a number to be bitwise and-ed with TYPE_ constants to describe the types in the hop
+   */
   type(): number {
     return this.bytes[0];
   }
 }
 
+/**
+ * Class for serializing/deserializing Paths
+ */
 class Path extends SerializedTypeClass {
   constructor(bytes: Buffer) {
     super(bytes);
   }
 
+  /**
+   * construct a Path from an array of Hops
+   * 
+   * @param value Path or array of HopObjects to construct a Path
+   * @returns the Path
+   */
   static from(value: Path | Array<HopObject>): Path {
     if (value instanceof Path) {
       return value;
@@ -92,6 +136,12 @@ class Path extends SerializedTypeClass {
     return new Path(Buffer.concat(bytes));
   }
 
+  /**
+   * Read a Path from a BinaryParser
+   * 
+   * @param parser BinaryParser to read Path from
+   * @returns the Path represented by the bytes read from the BinaryParser
+   */
   static fromParser(parser: BinaryParser): Path {
     const bytes: Array<Buffer> = [];
     while (!parser.end()) {
@@ -107,6 +157,11 @@ class Path extends SerializedTypeClass {
     return new Path(Buffer.concat(bytes));
   }
 
+  /**
+   * Get the JSON representation of this Path
+   * 
+   * @returns an Array of HopObject constructed from this.bytes
+   */
   toJSON() {
     const json: Array<HopObject> = [];
     const pathParser = new BinaryParser(this.bytes.toString("hex"));
@@ -119,11 +174,21 @@ class Path extends SerializedTypeClass {
   }
 }
 
+
+/**
+ * Deserialize and Serialize the PathSet type
+ */
 class PathSet extends SerializedTypeClass {
   constructor(bytes: Buffer) {
     super(bytes);
   }
 
+  /**
+   * Construct a PathSet from an Array of Arrays representing paths
+   * 
+   * @param value A PathSet or Array of Array of HopObjects
+   * @returns the PathSet constructed from value
+   */
   static from(value: PathSet | Array<Array<HopObject>>): PathSet {
     if (value instanceof PathSet) {
       return value;
@@ -141,6 +206,12 @@ class PathSet extends SerializedTypeClass {
     return new PathSet(Buffer.concat(bytes));
   }
 
+  /**
+   * Construct a PathSet from a BinaryParser
+   * 
+   * @param parser A BinaryParser to read PathSet from
+   * @returns the PathSet read from parser
+   */
   static fromParser(parser: BinaryParser): PathSet {
     const bytes: Array<Buffer> = [];
 
@@ -156,6 +227,11 @@ class PathSet extends SerializedTypeClass {
     return new PathSet(Buffer.concat(bytes));
   }
 
+  /**
+   * Get the JSON representation of this PathSet
+   * 
+   * @returns an Array of Array of HopObjects, representing this PathSet
+   */
   toJSON(): Array<Array<HopObject>> {
     const json: Array<Array<HopObject>> = [];
     const pathParser = new BinaryParser(this.bytes.toString("hex"));
