@@ -1,6 +1,7 @@
 import { strict as assert } from "assert";
 import { quality, binary } from "./coretypes";
 import { coreTypes } from "./types";
+import { STArray } from "./types/st-array";
 const {
   bytesToHex,
   signingData,
@@ -73,3 +74,36 @@ module.exports = {
   decodeQuality,
   decodeLedgerData,
 };
+
+let memo = [{"Memo": {
+  "MemoType": "584D4D2076616C7565",
+  "MemoData": "322E3230393635"
+},
+}]
+
+
+let parser = new BinaryParser("EA7C09584D4D2076616C75657D07322E3230393635E1F1")
+let starr = STArray.fromParser(parser)
+// console.log(starr);
+console.log(starr.toBytes().toString('hex').toUpperCase());
+console.log(memo);
+console.log(starr.toJSON());
+// let tx = {
+//   "TakerPays": "223174650",
+//   "Account": "rPk2dXr27rMw9G5Ej9ad2Tt7RJzGy8ycBp",
+//   "TransactionType": "OfferCreate",
+//   "Memos": [{"Memo": {
+//       "MemoType": "584D4D2076616C7565",
+//       "MemoData": "322E3230393635"
+//   }}],
+//   "Fee": "15",
+//   "OfferSequence": 1002,
+//   "TakerGets": {
+//       "currency": "XMM",
+//       "value": "100",
+//       "issuer": "rExAPEZvbkZqYPuNcZ7XEBLENEshsWDQc8"
+//   },
+//   "Flags": 524288,
+//   "Sequence": 1003,
+//   "LastLedgerSequence": 6220135
+// }

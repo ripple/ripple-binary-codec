@@ -86,7 +86,7 @@ class Hop extends SerializedTypeClass {
    * @returns a HopObject, an JS object with optional account, issuer, and currency
    */
   toJSON(): HopObject {
-    const hopParser = new BinaryParser(this.bytes.toString("hex"));
+    const hopParser = new BinaryParser(this.toString());
     const type = hopParser.readUInt8();
 
     const ret: HopObject = {};
@@ -164,7 +164,7 @@ class Path extends SerializedTypeClass {
    */
   toJSON() {
     const json: Array<HopObject> = [];
-    const pathParser = new BinaryParser(this.bytes.toString("hex"));
+    const pathParser = new BinaryParser(this.toString());
 
     while (!pathParser.end()) {
       json.push(Hop.fromParser(pathParser).toJSON());
@@ -234,7 +234,7 @@ class PathSet extends SerializedTypeClass {
    */
   toJSON(): Array<Array<HopObject>> {
     const json: Array<Array<HopObject>> = [];
-    const pathParser = new BinaryParser(this.bytes.toString("hex"));
+    const pathParser = new BinaryParser(this.toString());
 
     while (!pathParser.end()) {
       json.push(Path.fromParser(pathParser).toJSON());
