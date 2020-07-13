@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */
-
 import { AccountID } from "./account-id";
 import { Currency } from "./currency";
 import { BinaryParser } from "../serdes/binary-parser";
