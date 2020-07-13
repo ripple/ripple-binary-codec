@@ -7,7 +7,7 @@ const HEX_REGEX = /^[A-F0-9]{16}$/;
  * Derived UInt class for serializing/deserializing 64 bit UInt
  */
 class UInt64 extends UInt {
-  protected static readonly width: number = 64 / 8; //8
+  protected static readonly width: number = 64 / 8; // 8
   static readonly defaultUInt64: UInt64 = new UInt64(
     Buffer.alloc(UInt64.width)
   );

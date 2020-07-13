@@ -5,7 +5,7 @@ import { BinaryParser } from "../serdes/binary-parser";
  * Derived UInt class for serializing/deserializing 32 bit UInt
  */
 class UInt32 extends UInt {
-  protected static readonly width: number = 32 / 8; //4
+  protected static readonly width: number = 32 / 8; // 4
   static readonly defaultUInt32: UInt32 = new UInt32(
     Buffer.alloc(UInt32.width)
   );
