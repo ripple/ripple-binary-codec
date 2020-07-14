@@ -3,6 +3,7 @@ import { STObject } from "./st-object";
 import { BinaryParser } from "../serdes/binary-parser";
 
 const ARRAY_END_MARKER = 0xF1;
+const OBJECT_END_MARKER = 0xE1;
 
 class STArray extends SerializedTypeClass {
 
@@ -16,12 +17,13 @@ class STArray extends SerializedTypeClass {
     while (!parser.end()) {
       const field = parser.readField();
       if (field.name === "ArrayEndMarker") {
-        bytes.push(Buffer.from([ARRAY_END_MARKER]))
         break;
       }
-      bytes.push(field.header, parser.readFieldValue(field).toBytes())
+
+      bytes.push(field.header, parser.readFieldValue(field).toBytes(), Buffer.from([OBJECT_END_MARKER]))
     }
 
+    bytes.push(Buffer.from([ARRAY_END_MARKER]))
     return new STArray(Buffer.concat(bytes));
   }
 
@@ -31,11 +33,11 @@ class STArray extends SerializedTypeClass {
     }
 
     let bytes: Array<Buffer> = []
-
     value.forEach(obj => {
-      bytes.push(STObject.from(obj).toBytes());
+      bytes.push(STObject.from(obj).toBytes())
     })
 
+    bytes.push(Buffer.from([ARRAY_END_MARKER]))
     return new STArray(Buffer.concat(bytes));
   }
 
@@ -45,12 +47,14 @@ class STArray extends SerializedTypeClass {
     let arrayParser = new BinaryParser(this.toString())
 
     while(!arrayParser.end()) {
-      console.log(arrayParser);
-      if(arrayParser.peek() === ARRAY_END_MARKER) {
-        arrayParser.read(1);
+      const field = arrayParser.readField();
+      if(field.name === "ArrayEndMarker") {
         break;
       }
-      result.push(STObject.fromParser(arrayParser).toJSON())
+
+      const outer = {};
+      outer[field.name] = STObject.fromParser(arrayParser).toJSON()
+      result.push(outer);
     }
 
     return result;
