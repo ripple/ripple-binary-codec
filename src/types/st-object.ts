@@ -67,8 +67,8 @@ const STObject = makeClass(
           return;
         }
         serializer.writeFieldAndValue(field, value);
-        if(field.type.name === "STObject") {
-          serializer.put(Buffer.from([0xE1]))
+        if (field.type.name === "STObject") {
+          serializer.put(Buffer.from([0xe1]));
         }
       });
     },
