@@ -2,8 +2,8 @@ import { SerializedTypeClass } from "./serialized-type";
 import { STObject } from "./st-object";
 import { BinaryParser } from "../serdes/binary-parser";
 
-const ARRAY_END_MARKER = 0xf1;
-const OBJECT_END_MARKER = 0xe1;
+const ARRAY_END_MARKER = Buffer.from([0xf1])
+const OBJECT_END_MARKER = Buffer.from([0xe1]);
 
 /**
  * Class for serializing and deserializing Arrays of Objects
@@ -27,11 +27,11 @@ class STArray extends SerializedTypeClass {
       bytes.push(
         field.header,
         parser.readFieldValue(field).toBytes(),
-        Buffer.from([OBJECT_END_MARKER])
+        OBJECT_END_MARKER
       );
     }
 
-    bytes.push(Buffer.from([ARRAY_END_MARKER]));
+    bytes.push(ARRAY_END_MARKER);
     return new STArray(Buffer.concat(bytes));
   }
 
@@ -48,10 +48,10 @@ class STArray extends SerializedTypeClass {
 
     const bytes: Array<Buffer> = [];
     value.forEach((obj) => {
-      bytes.push(STObject.from(obj).toBytes());
+      bytes.push(STObject.from(obj).toBytes(), OBJECT_END_MARKER);
     });
 
-    bytes.push(Buffer.from([ARRAY_END_MARKER]));
+    bytes.push(ARRAY_END_MARKER);
     return new STArray(Buffer.concat(bytes));
   }
 

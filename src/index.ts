@@ -1,6 +1,7 @@
 import { strict as assert } from "assert";
 import { quality, binary } from "./coretypes";
 import { coreTypes } from "./types";
+// import { STArray } from "./types/st-array";
 const {
   bytesToHex,
   signingData,
@@ -73,3 +74,33 @@ module.exports = {
   decodeQuality,
   decodeLedgerData,
 };
+
+
+
+// let bin = "110061220000000024000000012500001F352D0000000055FE8A433C90ED67E78FB7F8B8DED39E1ECD8DEC17DC748DB3E2671695E141D38962400000049B936F808114B45254658C3762C24897587A13724DABF7F18415"
+// // let json = {
+// //         "OwnerCount": 0,
+// //         "Account": "rHSTEtAcRZBg1SjcR4KKNQzJKF3y86MNxT",
+// //         "PreviousTxnLgrSeq": 7989,
+// //         "LedgerEntryType": "AccountRoot",
+// //         "PreviousTxnID": "FE8A433C90ED67E78FB7F8B8DED39E1ECD8DEC17DC748DB3E2671695E141D389",
+// //         "Flags": 0,
+// //         "Sequence": 1,
+// //         "Balance": "19790000000"
+// //       }
+
+// let memo = [{"Memo": {
+//   "MemoType": "584D4D2076616C7565",
+//   "MemoData": "322E3230393635"
+// }}]
+
+// let arr = STArray.from(memo);
+// console.log(arr.toJSON());
+// /////Note that AccountID is a VL encoded field
+// let p = new BinaryParser(bin);
+// // let st = STObject.from(json);
+// let sto = STObject.fromParser(p);
+
+// // console.log(sto.toString())
+// console.log(sto.toString())
+// console.log(bin);
