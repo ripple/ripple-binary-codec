@@ -71,7 +71,7 @@ class Amount extends SerializedType {
         amount[0] |= 0x80;
       } else {
         const integerNumberString = number
-          .times("1e" + -(number.e - 15))
+          .times(`1e${-(number.e - 15)}`)
           .abs()
           .toString();
         amount.writeBigUInt64BE(BigInt(integerNumberString));
@@ -119,7 +119,7 @@ class Amount extends SerializedType {
       const sign = isPositive ? "" : "-";
 
       bytes[0] &= 0x3f;
-      return sign + bytes.readBigUInt64BE().toString();
+      return `${sign}${bytes.readBigUInt64BE().toString()}`;
     } else {
       const parser = new BinaryParser(this.toString());
       const mantissa = parser.read(8);
@@ -136,7 +136,7 @@ class Amount extends SerializedType {
       mantissa[0] = 0;
       mantissa[1] &= 0x3f;
       const value = new Decimal(`${sign}0x${mantissa.toString("hex")}`).times(
-        "1e" + exponent
+        `1e${exponent}`
       );
       Amount.assertIouIsValid(value);
 
@@ -196,7 +196,7 @@ class Amount extends SerializedType {
    */
   private static verifyNoDecimal(decimal: Decimal): void {
     const integerNumberString = decimal
-      .times("1e" + -(decimal.e - 15))
+      .times(`1e${-(decimal.e - 15)}`)
       .abs()
       .toString();
 

@@ -2,7 +2,7 @@ import { SerializedType } from "./serialized-type";
 import { STObject } from "./st-object";
 import { BinaryParser } from "../serdes/binary-parser";
 
-const ARRAY_END_MARKER = Buffer.from([0xf1])
+const ARRAY_END_MARKER = Buffer.from([0xf1]);
 const OBJECT_END_MARKER = Buffer.from([0xe1]);
 
 /**

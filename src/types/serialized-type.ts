@@ -1,4 +1,5 @@
 import { BytesList } from "../serdes/binary-serializer";
+import { BinaryParser } from "../serdes/binary-parser";
 
 /**
  * The base class for all binary-codec types
@@ -8,6 +9,16 @@ class SerializedType {
 
   constructor(bytes: Buffer) {
     this.bytes = bytes ?? Buffer.alloc(0);
+  }
+
+  static fromParser(parser: BinaryParser, hint?: number): SerializedType {
+    throw new Error("fromParser not implemented");
+    return this.fromParser(parser, hint);
+  }
+
+  static from(value: any): SerializedType {
+    throw new Error("from not implemented");
+    return this.from(value);
   }
 
   /**
@@ -90,13 +101,8 @@ class Comparable extends SerializedType {
    * @returns A number denoting the relationship of this and other
    */
   compareTo(other: Comparable): number {
-    throw new Error("cannot compare " + this + " and " + other);
+    throw new Error(`cannot compare ${this} and ${other}`);
   }
 }
 
-
-
-export {
-  SerializedType,
-  Comparable,
-};
+export { SerializedType, Comparable };

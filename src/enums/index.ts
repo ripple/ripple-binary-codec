@@ -1,5 +1,6 @@
 import { serializeUIntN } from "../utils/bytes-utils";
 import * as enums from "./definitions.json";
+import { SerializedType } from "../types/serialized-type";
 
 const TYPE_WIDTH = 2;
 const LEDGER_ENTRY_WIDTH = 2;
@@ -47,8 +48,8 @@ class Bytes {
     sink.put(this.bytes);
   }
 
-  toBytes() : Uint8Array {
-    return this.bytes
+  toBytes(): Uint8Array {
+    return this.bytes;
   }
 }
 
@@ -92,7 +93,7 @@ interface FieldInstance {
   readonly ordinal: number;
   readonly name: string;
   readonly header: Buffer;
-  readonly associatedType: any;
+  readonly associatedType: typeof SerializedType;
 }
 
 function buildField([name, info]: [string, FieldInfo]): FieldInstance {
@@ -107,7 +108,7 @@ function buildField([name, info]: [string, FieldInfo]): FieldInstance {
     ordinal: (typeOrdinal << 16) | info.nth,
     type: new Bytes(info.type, typeOrdinal, TYPE_WIDTH),
     header: field,
-    associatedType: undefined, // For later assignment in ./types/index.js
+    associatedType: SerializedType, // For later assignment in ./types/index.js
   };
 }
 
