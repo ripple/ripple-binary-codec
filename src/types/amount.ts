@@ -1,5 +1,5 @@
 import { Decimal } from "decimal.js";
-import { SerializedTypeClass } from "./serialized-type";
+import { SerializedType } from "./serialized-type";
 import { BinaryParser } from "../serdes/binary-parser";
 import { Currency } from "./currency";
 import { AccountID } from "./account-id";
@@ -33,7 +33,7 @@ interface AmountObject {
 /**
  * Class for serializing/Deserializing Amounts
  */
-class Amount extends SerializedTypeClass {
+class Amount extends SerializedType {
   static defaultAmount: Amount = new Amount(
     Buffer.from("4000000000000000", "hex")
   );

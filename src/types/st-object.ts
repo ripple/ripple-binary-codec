@@ -1,11 +1,11 @@
 import { Field } from "../enums";
-import { SerializedTypeClass } from "./serialized-type";
+import { SerializedType } from "./serialized-type";
 import { BinaryParser } from "../serdes/binary-parser";
 import { BinarySerializer, BytesList } from "../serdes/binary-serializer";
 
 const OBJECT_END_MARKER = Buffer.from([0xe1]);
 
-class STObject extends SerializedTypeClass {
+class STObject extends SerializedType {
   
   static fromParser(parser: BinaryParser): STObject {
     let list: BytesList = new BytesList();

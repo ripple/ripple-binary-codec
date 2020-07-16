@@ -1,4 +1,4 @@
-import { SerializedTypeClass } from "./serialized-type";
+import { SerializedType } from "./serialized-type";
 import { STObject } from "./st-object";
 import { BinaryParser } from "../serdes/binary-parser";
 
@@ -8,7 +8,7 @@ const OBJECT_END_MARKER = Buffer.from([0xe1]);
 /**
  * Class for serializing and deserializing Arrays of Objects
  */
-class STArray extends SerializedTypeClass {
+class STArray extends SerializedType {
   /**
    * Construct an STArray from a BinaryParser
    *
