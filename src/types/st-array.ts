@@ -48,7 +48,7 @@ class STArray extends SerializedTypeClass {
 
     const bytes: Array<Buffer> = [];
     value.forEach((obj) => {
-      bytes.push(STObject.from(obj).toBytes(), OBJECT_END_MARKER);
+      bytes.push(STObject.from(obj).toBytes());
     });
 
     bytes.push(ARRAY_END_MARKER);

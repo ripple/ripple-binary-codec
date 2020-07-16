@@ -2,7 +2,6 @@ import { Field } from "../enums";
 import { SerializedTypeClass } from "./serialized-type";
 import { BinaryParser } from "../serdes/binary-parser";
 import { BinarySerializer, BytesList } from "../serdes/binary-serializer";
-// const { BinarySerializer } = require("../serdes/binary-serializer");
 
 const OBJECT_END_MARKER = Buffer.from([0xe1]);
 
@@ -29,7 +28,7 @@ class STObject extends SerializedTypeClass {
     return new STObject(list.toBytes());
   }
 
-  static from(value: STObject | object): STObject {
+  static from(value: STObject | object, filter?: (string) => boolean): STObject {
     if (value instanceof STObject) {
       return value;
     }
@@ -37,13 +36,19 @@ class STObject extends SerializedTypeClass {
     let list: BytesList = new BytesList();
     let bytes: BinarySerializer = new BinarySerializer(list)
 
-    let sorted = Object.keys(value).sort((a, b) => {
-      return Field[a].ordinal - Field[b].ordinal
+    let sorted = Object.keys(value)
+      .map(f => Field[f])
+      .filter(f => f !== undefined && f.isSerialized)
+      .sort((a, b) => {
+      return a.ordinal - b.ordinal
     })
 
-    sorted.forEach((f) => {
-      const field = Field[f];
-      const associatedValue = field.associatedType.from(value[f]);
+    if(filter !== undefined) {
+      sorted = sorted.filter(filter);
+    }
+
+    sorted.forEach((field) => {
+      const associatedValue = field.associatedType.from(value[field.name]);
 
       bytes.writeFieldAndValue(field, associatedValue);
       if(field.type.name === "STObject") {
