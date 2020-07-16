@@ -46,6 +46,10 @@ class Bytes {
   toBytesSink(sink): void {
     sink.put(this.bytes);
   }
+
+  toBytes() : Uint8Array {
+    return this.bytes
+  }
 }
 
 /*
