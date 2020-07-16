@@ -5,8 +5,17 @@ import { BinarySerializer, BytesList } from "../serdes/binary-serializer";
 
 const OBJECT_END_MARKER = Buffer.from([0xe1]);
 
+/**
+ * Class for Serializing/Deserializing objects
+ */
 class STObject extends SerializedType {
   
+  /**
+   * Construct a STObject from a BinaryParser
+   * 
+   * @param parser BinaryParser to read STObject from
+   * @returns A STObject object
+   */
   static fromParser(parser: BinaryParser): STObject {
     let list: BytesList = new BytesList();
     let bytes: BinarySerializer = new BinarySerializer(list)
@@ -28,7 +37,14 @@ class STObject extends SerializedType {
     return new STObject(list.toBytes());
   }
 
-  static from(value: STObject | object, filter?: (string) => boolean): STObject {
+  /**
+   * Construct a STObject from a JSON object
+   * 
+   * @param value An object to include
+   * @param filter optional, denote which field to include in serialized object
+   * @returns a STObject object
+   */
+  static from(value: STObject | object, filter?: (...any) => boolean): STObject {
     if (value instanceof STObject) {
       return value;
     }
@@ -59,6 +75,11 @@ class STObject extends SerializedType {
     return new STObject(list.toBytes())
   }
 
+  /**
+   * Get the JSON interpretation of this.bytes
+   * 
+   * @returns a JSON object
+   */
   toJSON(): object {
     let objectParser = new BinaryParser(this.toString());
     const accumulator = {};
