@@ -4,6 +4,8 @@ import { BinaryParser } from "../serdes/binary-parser";
 import { BinarySerializer, BytesList } from "../serdes/binary-serializer";
 
 const OBJECT_END_MARKER = Buffer.from([0xe1]);
+const OBJECT_END_MARKER_NAME = "ObjectEndMarker";
+const OBJECT_FIELD_TYPE_NAME = "STObject";
 
 /**
  * Class for Serializing/Deserializing objects
@@ -21,14 +23,14 @@ class STObject extends SerializedType {
 
     while (!parser.end()) {
       const field = parser.readField();
-      if (field.name === "ObjectEndMarker") {
+      if (field.name === OBJECT_END_MARKER_NAME) {
         break;
       }
 
       const associatedValue = parser.readFieldValue(field);
 
       bytes.writeFieldAndValue(field, associatedValue);
-      if (field.type.name === "STObject") {
+      if (field.type.name === OBJECT_FIELD_TYPE_NAME) {
         bytes.put(OBJECT_END_MARKER);
       }
     }
@@ -69,7 +71,7 @@ class STObject extends SerializedType {
       const associatedValue = field.associatedType.from(value[field.name]);
 
       bytes.writeFieldAndValue(field, associatedValue);
-      if (field.type.name === "STObject") {
+      if (field.type.name === OBJECT_FIELD_TYPE_NAME) {
         bytes.put(OBJECT_END_MARKER);
       }
     });
@@ -88,7 +90,7 @@ class STObject extends SerializedType {
 
     while (!objectParser.end()) {
       const field = objectParser.readField();
-      if (field.name === "ObjectEndMarker") {
+      if (field.name === OBJECT_END_MARKER_NAME) {
         break;
       }
       accumulator[field.name] = objectParser.readFieldValue(field).toJSON();

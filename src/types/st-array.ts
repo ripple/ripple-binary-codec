@@ -3,6 +3,8 @@ import { STObject } from "./st-object";
 import { BinaryParser } from "../serdes/binary-parser";
 
 const ARRAY_END_MARKER = Buffer.from([0xf1]);
+const ARRAY_END_MARKER_NAME = "ArrayEndMarker";
+
 const OBJECT_END_MARKER = Buffer.from([0xe1]);
 
 /**
@@ -20,7 +22,7 @@ class STArray extends SerializedType {
 
     while (!parser.end()) {
       const field = parser.readField();
-      if (field.name === "ArrayEndMarker") {
+      if (field.name === ARRAY_END_MARKER_NAME) {
         break;
       }
 
@@ -67,7 +69,7 @@ class STArray extends SerializedType {
 
     while (!arrayParser.end()) {
       const field = arrayParser.readField();
-      if (field.name === "ArrayEndMarker") {
+      if (field.name === ARRAY_END_MARKER_NAME) {
         break;
       }
 
