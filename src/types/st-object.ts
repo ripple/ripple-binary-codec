@@ -84,7 +84,7 @@ class STObject extends SerializedType {
    *
    * @returns a JSON object
    */
-  toJSON(): object {
+  toJSON(): any {
     const objectParser = new BinaryParser(this.toString());
     const accumulator = {};
 

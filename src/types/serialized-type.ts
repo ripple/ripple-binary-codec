@@ -16,7 +16,7 @@ class SerializedType {
     return this.fromParser(parser, hint);
   }
 
-  static from(value: any): SerializedType {
+  static from(value: unknown): SerializedType {
     throw new Error("from not implemented");
     return this.from(value);
   }
@@ -101,7 +101,7 @@ class Comparable extends SerializedType {
    * @returns A number denoting the relationship of this and other
    */
   compareTo(other: Comparable): number {
-    throw new Error(`cannot compare ${this} and ${other}`);
+    throw new Error(`cannot compare ${this.toJSON()} and ${other.toJSON()}`);
   }
 }
 

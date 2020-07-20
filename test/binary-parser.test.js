@@ -10,7 +10,6 @@ const { Amount, Hash160 } = coreTypes
 const { makeParser, readJSON } = binary
 const { Field, TransactionType } = require('./../dist/enums')
 const { parseHexOnly, hexOnly, loadFixture } = require('./utils')
-const { bytesToHex } = require('../dist/utils/bytes-utils')
 const fixtures = loadFixture('data-driven-tests.json')
 const { BytesList } = require('../dist/serdes/binary-serializer')
 
@@ -107,9 +106,9 @@ function transactionParsingTests () {
     expect(parser.read(8)).not.toEqual([])
     expect(parser.readField()).toEqual(Field.SigningPubKey)
     expect(parser.readVariableLengthLength()).toBe(33)
-    expect(bytesToHex(parser.read(33))).toEqual(tx_json.SigningPubKey)
+    expect(parser.read(33).toString('hex').toUpperCase()).toEqual(tx_json.SigningPubKey)
     expect(parser.readField()).toEqual(Field.TxnSignature)
-    expect(bytesToHex(parser.readVariableLength())).toEqual(tx_json.TxnSignature)
+    expect(parser.readVariableLength().toString('hex').toUpperCase()).toEqual(tx_json.TxnSignature)
     expect(parser.readField()).toEqual(Field.Account)
     expect(encodeAccountID(parser.readVariableLength())).toEqual(tx_json.Account)
     expect(parser.end()).toBe(true)

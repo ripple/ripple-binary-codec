@@ -1,36 +1,56 @@
 /* eslint-disable func-style */
 
 import { coreTypes } from "./types";
-const { HashPrefix } = require("./hash-prefixes");
-const { BinaryParser } = require("./serdes/binary-parser");
-const { BinarySerializer, BytesList } = require("./serdes/binary-serializer");
-const { bytesToHex, slice, parseBytes } = require("./utils/bytes-utils");
+import { BinaryParser } from "./serdes/binary-parser";
+import { AccountID } from "./types/account-id";
+import { HashPrefix } from "./hash-prefixes";
+import { BinarySerializer, BytesList } from "./serdes/binary-serializer";
+import { sha512Half, transactionID } from "./hashes";
+import { FieldInstance } from "./enums";
 
-const { sha512Half, transactionID } = require("./hashes");
+const makeParser = (bytes: string): BinaryParser => new BinaryParser(bytes);
+const readJSON = (parser: BinaryParser): any =>
+  parser.readType(coreTypes.STObject).toJSON();
+const binaryToJSON = (bytes: string): any => readJSON(makeParser(bytes));
 
-const makeParser = (bytes) => new BinaryParser(bytes);
-const readJSON = (parser) => parser.readType(coreTypes.STObject).toJSON();
-const binaryToJSON = (bytes) => readJSON(makeParser(bytes));
+interface OptionObject {
+  prefix?: Buffer;
+  suffix?: Buffer;
+  signingFieldsOnly?: boolean;
+}
 
-function serializeObject(object, opts = <any>{}) {
+function serializeObject(object: any, opts: OptionObject = {}): Buffer {
   const { prefix, suffix, signingFieldsOnly = false } = opts;
   const bytesList = new BytesList();
+
   if (prefix) {
     bytesList.put(prefix);
   }
-  const filter = signingFieldsOnly ? (f) => f.isSigningField : undefined;
+
+  const filter = signingFieldsOnly
+    ? (f: FieldInstance): boolean => f.isSigningField
+    : undefined;
   coreTypes.STObject.from(object, filter).toBytesSink(bytesList);
+
   if (suffix) {
     bytesList.put(suffix);
   }
+
   return bytesList.toBytes();
 }
 
-function signingData(tx, prefix = HashPrefix.transactionSig) {
+function signingData(
+  tx: any,
+  prefix: Buffer = HashPrefix.transactionSig
+): Buffer {
   return serializeObject(tx, { prefix, signingFieldsOnly: true });
 }
 
-function signingClaimData(claim) {
+interface ClaimObject {
+  channel: string;
+  amount: string | number | bigint;
+}
+function signingClaimData(claim: ClaimObject): Buffer {
   const prefix = HashPrefix.paymentChannelClaim;
   const channel = coreTypes.Hash256.from(claim.channel).toBytes();
   const amount = coreTypes.UInt64.from(BigInt(claim.amount)).toBytes();
@@ -43,7 +63,7 @@ function signingClaimData(claim) {
   return bytesList.toBytes();
 }
 
-function multiSigningData(tx, signingAccount) {
+function multiSigningData(tx: any, signingAccount: string | AccountID): Buffer {
   const prefix = HashPrefix.transactionMultiSig;
   const suffix = coreTypes.AccountID.from(signingAccount).toBytes();
   return serializeObject(tx, { prefix, suffix, signingFieldsOnly: true });
@@ -53,16 +73,14 @@ export {
   BinaryParser,
   BinarySerializer,
   BytesList,
+  ClaimObject,
   makeParser,
   serializeObject,
   readJSON,
-  bytesToHex,
-  parseBytes,
   multiSigningData,
   signingData,
   signingClaimData,
   binaryToJSON,
   sha512Half,
   transactionID,
-  slice,
 };

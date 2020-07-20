@@ -1,118 +1,117 @@
 import { strict as assert } from "assert";
-import { makeClass } from "./utils/make-class";
 import { coreTypes } from "./types";
 import { HashPrefix } from "./hash-prefixes";
 import { Sha512Half } from "./hashes";
+import { Hash256 } from "./types/hash-256";
+import { SerializedType } from "./types/serialized-type";
+import { BytesList } from "./serdes/binary-serializer";
 
-const ShaMapNode = makeClass(
-  {
-    virtuals: {
-      hashPrefix() {},
-      isLeaf() {},
-      isInner() {},
-    },
-    cached: {
-      hash() {
-        const hasher = Sha512Half.put(this.hashPrefix());
-        this.toBytesSink(hasher);
-        return hasher.finish();
-      },
-    },
-  },
-  undefined
-);
+abstract class ShaMapNode extends SerializedType {
+  abstract hashPrefix(): Buffer;
+  abstract isLeaf(): boolean;
+  abstract isInner(): boolean;
+  abstract hash(): Hash256;
 
-const ShaMapLeaf = makeClass(
-  {
-    inherits: ShaMapNode,
-    ShaMapLeaf(index, item) {
-      ShaMapNode.call(this);
-      this.index = index;
-      this.item = item;
-    },
-    isLeaf() {
-      return true;
-    },
-    isInner() {
-      return false;
-    },
-    hashPrefix() {
-      return this.item.hashPrefix();
-    },
-    toBytesSink(sink) {
-      this.item.toBytesSink(sink);
-      this.index.toBytesSink(sink);
-    },
-  },
-  undefined
-);
+  constructor() {
+    super(Buffer.alloc(0));
+  }
+}
 
-const $uper = ShaMapNode.prototype;
+class ShaMapLeaf extends ShaMapNode {
+  constructor(public index, public item) {
+    super();
+  }
 
-const ShaMapInner = makeClass(
-  {
-    inherits: ShaMapNode,
-    ShaMapInner(depth = 0) {
-      ShaMapNode.call(this);
-      this.depth = depth;
-      this.slotBits = 0;
-      this.branches = Array(16);
-    },
-    isInner() {
-      return true;
-    },
-    isLeaf() {
-      return false;
-    },
-    hashPrefix() {
-      return HashPrefix.innerNode;
-    },
-    setBranch(slot, branch) {
-      this.slotBits = this.slotBits | (1 << slot);
-      this.branches[slot] = branch;
-    },
-    empty() {
-      return this.slotBits === 0;
-    },
-    hash() {
-      if (this.empty()) {
-        return coreTypes.Hash256.ZERO_256;
-      }
-      return $uper.hash.call(this);
-    },
-    toBytesSink(sink) {
-      for (let i = 0; i < this.branches.length; i++) {
-        const branch = this.branches[i];
-        const hash = branch ? branch.hash() : coreTypes.Hash256.ZERO_256;
-        hash.toBytesSink(sink);
-      }
-    },
-    addItem(index, item, leaf) {
-      assert(index instanceof coreTypes.Hash256);
-      const nibble = index.nibblet(this.depth);
-      const existing = this.branches[nibble];
-      if (!existing) {
-        this.setBranch(nibble, leaf || new ShaMapLeaf(index, item));
-      } else if (existing.isLeaf()) {
-        const newInner = new ShaMapInner(this.depth + 1);
-        newInner.addItem(existing.index, null, existing);
-        newInner.addItem(index, item, leaf);
-        this.setBranch(nibble, newInner);
-      } else if (existing.isInner()) {
-        existing.addItem(index, item, leaf);
-      } else {
-        assert(false);
-      }
-    },
-  },
-  undefined
-);
+  isLeaf(): boolean {
+    return true;
+  }
 
-const ShaMap = makeClass(
-  {
-    inherits: ShaMapInner,
-  },
-  undefined
-);
+  isInner(): boolean {
+    return false;
+  }
 
-export { ShaMap };
+  hashPrefix(): Buffer {
+    return this.item.hashPrefix();
+  }
+
+  hash(): Hash256 {
+    const hash = Sha512Half.put(this.hashPrefix());
+    this.toBytesSink(hash);
+    return hash.finish();
+  }
+
+  toBytesSink(sink: BytesList): void {
+    this.item.toBytesSink(sink);
+    this.index.toBytesSink(sink);
+  }
+}
+
+class ShaMapInner extends ShaMapNode {
+  private slotBits = 0;
+  private branches: Array<ShaMapNode> = Array(16);
+
+  constructor(private depth: number = 0) {
+    super();
+  }
+
+  isInner(): boolean {
+    return true;
+  }
+
+  isLeaf(): boolean {
+    return false;
+  }
+
+  hashPrefix(): Buffer {
+    return HashPrefix.innerNode;
+  }
+
+  setBranch(slot: number, branch: ShaMapNode): void {
+    this.slotBits = this.slotBits | (1 << slot);
+    this.branches[slot] = branch;
+  }
+
+  empty(): boolean {
+    return this.slotBits === 0;
+  }
+
+  hash(): Hash256 {
+    if (this.empty()) {
+      return coreTypes.Hash256.ZERO_256;
+    }
+    const hash = Sha512Half.put(this.hashPrefix());
+    this.toBytesSink(hash);
+    return hash.finish();
+  }
+
+  toBytesSink(sink: BytesList): void {
+    for (let i = 0; i < this.branches.length; i++) {
+      const branch = this.branches[i];
+      const hash = branch ? branch.hash() : coreTypes.Hash256.ZERO_256;
+      hash.toBytesSink(sink);
+    }
+  }
+
+  addItem(index?: Hash256, item?: ShaMapNode, leaf?: ShaMapLeaf) {
+    assert(index instanceof coreTypes.Hash256);
+    const nibble = index.nibblet(this.depth);
+    const existing = this.branches[nibble];
+
+    if (existing === undefined) {
+      this.setBranch(nibble, leaf || new ShaMapLeaf(index, item));
+    } else if (existing instanceof ShaMapLeaf) {
+      const newInner = new ShaMapInner(this.depth + 1);
+      newInner.addItem(existing.index, undefined, existing);
+      newInner.addItem(index, item, leaf);
+      this.setBranch(nibble, newInner);
+    } else if (existing instanceof ShaMapInner) {
+      existing.addItem(index, item, leaf);
+    } else {
+      throw new Error("invalid ShaMap.addItem call");
+    }
+  }
+}
+
+class ShaMap extends ShaMapInner {}
+
+export { ShaMap, ShaMapNode };

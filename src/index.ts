@@ -1,8 +1,7 @@
-import { strict as assert } from "assert";
-import { quality, binary } from "./coretypes";
+import * as assert from "assert";
 import { coreTypes } from "./types";
+import { quality, binary } from "./coretypes";
 const {
-  bytesToHex,
   signingData,
   signingClaimData,
   multiSigningData,
@@ -11,7 +10,7 @@ const {
   BinaryParser,
 } = binary;
 
-function decodeLedgerData(binary) {
+function decodeLedgerData(binary: string): any {
   assert(typeof binary === "string", "binary must be a hex string");
   const parser = new BinaryParser(binary);
   return {
@@ -27,38 +26,38 @@ function decodeLedgerData(binary) {
   };
 }
 
-function decode(binary) {
+function decode(binary: string): Record<string, any> {
   assert(typeof binary === "string", "binary must be a hex string");
   return binaryToJSON(binary);
 }
 
-function encode(json) {
+function encode(json: string): string {
   assert(typeof json === "object");
-  return bytesToHex(serializeObject(json));
+  return serializeObject(json).toString("hex").toUpperCase();
 }
 
-function encodeForSigning(json) {
+function encodeForSigning(json: any): string {
   assert(typeof json === "object");
-  return bytesToHex(signingData(json));
+  return signingData(json).toString("hex").toUpperCase();
 }
 
-function encodeForSigningClaim(json) {
+function encodeForSigningClaim(json): string {
   assert(typeof json === "object");
-  return bytesToHex(signingClaimData(json));
+  return signingClaimData(json).toString("hex").toUpperCase();
 }
 
-function encodeForMultisigning(json, signer) {
+function encodeForMultisigning(json, signer): string {
   assert(typeof json === "object");
   assert.equal(json.SigningPubKey, "");
-  return bytesToHex(multiSigningData(json, signer));
+  return multiSigningData(json, signer).toString("hex").toUpperCase();
 }
 
-function encodeQuality(value) {
+function encodeQuality(value: string): string {
   assert(typeof value === "string");
-  return bytesToHex(quality.encode(value));
+  return quality.encode(value).toString("hex").toUpperCase();
 }
 
-function decodeQuality(value) {
+function decodeQuality(value: string): string {
   assert(typeof value === "string");
   return quality.decode(value).toString();
 }
