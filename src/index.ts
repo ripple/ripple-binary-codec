@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import { quality, binary } from "./coretypes";
-import { decodeLedgerData, ledgerHash } from "./ledger-hashes";
+import { decodeLedgerData } from "./ledger-hashes";
 import { ClaimObject } from "./binary";
 const {
   signingData,
@@ -58,5 +58,4 @@ export {
   encodeQuality,
   decodeQuality,
   decodeLedgerData,
-  ledgerHash,
 };
