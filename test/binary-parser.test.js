@@ -179,12 +179,13 @@ function transactionParsingTests () {
     const parser = makeParser(transaction.binary)
     const jsonFromBinary = readJSON(parser)
     expect(jsonFromBinary instanceof coreTypes.STObject).toBe(false)
-    expect(_.isPlainObject(jsonFromBinary)).toBe(true)
+    expect(jsonFromBinary instanceof Object).toBe(true);
+    expect(jsonFromBinary.prototype).toBe(undefined)
   })
 }
 
 function amountParsingTests () {
-  _.filter(fixtures.values_tests, { type: 'Amount' }).forEach((f, i) => {
+  fixtures.values_tests.filter(obj => obj.type === 'Amount').forEach((f, i) => {
     if (f.error) {
       return
     }
@@ -245,7 +246,7 @@ function assertRecyclable (json, forField) {
 function nestedObjectTests () {
   function disabled (i) {
     unused(i)
-    return false // !_.includes([2], i);
+    return false
   }
 
   fixtures.whole_objects.forEach((f, i) => {

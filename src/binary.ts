@@ -7,19 +7,56 @@ import { HashPrefix } from "./hash-prefixes";
 import { BinarySerializer, BytesList } from "./serdes/binary-serializer";
 import { sha512Half, transactionID } from "./hashes";
 import { FieldInstance } from "./enums";
+import { STObject } from "./types/st-object";
 
+/**
+ * Construct a BinaryParser
+ *
+ * @param bytes hex-string to construct BinaryParser from
+ * @returns A BinaryParser
+ */
 const makeParser = (bytes: string): BinaryParser => new BinaryParser(bytes);
-const readJSON = (parser: BinaryParser): any =>
-  parser.readType(coreTypes.STObject).toJSON();
-const binaryToJSON = (bytes: string): any => readJSON(makeParser(bytes));
 
+/**
+ * Parse BinaryParser into JSON
+ *
+ * @param parser BinaryParser object
+ * @returns JSON for the bytes in the BinaryParser
+ */
+const readJSON = (parser: BinaryParser): Record<string, unknown> =>
+  (parser.readType(coreTypes.STObject) as STObject).toJSON();
+
+/**
+ * Parse a hex-string into its JSON interpretation
+ *
+ * @param bytes hex-string to parse into JSON
+ * @returns JSON
+ */
+const binaryToJSON = (bytes: string): Record<string, unknown> =>
+  readJSON(makeParser(bytes));
+
+/**
+ * Interface for passing parameters to SerializeObject
+ *
+ * @field set signingFieldOnly to true if you want to serialize only signing fields
+ */
 interface OptionObject {
   prefix?: Buffer;
   suffix?: Buffer;
   signingFieldsOnly?: boolean;
 }
 
-function serializeObject(object: any, opts: OptionObject = {}): Buffer {
+/**
+ * Function to serialize JSON object representing a transaction
+ *
+ * @param object JSON object to serialize
+ * @param opts options for serializing, including optional prefix, suffix, and signingFieldOnly
+ * @returns A Buffer containing the serialized object
+ */
+function serializeObject(
+  object: Record<string, unknown>,
+  opts: OptionObject = {}
+): Buffer {
   const { prefix, suffix, signingFieldsOnly = false } = opts;
   const bytesList = new BytesList();
 
@@ -39,17 +76,34 @@ function serializeObject(object: any, opts: OptionObject = {}): Buffer {
   return bytesList.toBytes();
 }
 
+/**
+ * Serialize an object for signing
+ *
+ * @param tx Transaction to serialize
+ * @param prefix Prefix bytes to put before the serialized object
+ * @returns A Buffer with the serialized object
+ */
 function signingData(
-  tx: any,
+  tx: Record<string, unknown>,
   prefix: Buffer = HashPrefix.transactionSig
 ): Buffer {
   return serializeObject(tx, { prefix, signingFieldsOnly: true });
 }
 
-interface ClaimObject {
+/**
+ * Interface describing fields required for a Claim
+ */
+interface ClaimObject extends Record<string, unknown> {
   channel: string;
   amount: string | number | bigint;
 }
+
+/**
+ * Serialize a signingClaim
+ *
+ * @param claim A claim object to serialize
+ * @returns the serialized object with appropriate prefix
+ */
 function signingClaimData(claim: ClaimObject): Buffer {
   const prefix = HashPrefix.paymentChannelClaim;
   const channel = coreTypes.Hash256.from(claim.channel).toBytes();
@@ -63,7 +117,17 @@ function signingClaimData(claim: ClaimObject): Buffer {
   return bytesList.toBytes();
 }
 
-function multiSigningData(tx: any, signingAccount: string | AccountID): Buffer {
+/**
+ * Serialize a transaction object for multiSigning
+ *
+ * @param tx transaction to serialize
+ * @param signingAccount Account to sign the transaction with
+ * @returns serialized transaction with appropriate prefix and suffix
+ */
+function multiSigningData(
+  tx: Record<string, unknown>,
+  signingAccount: string | AccountID
+): Buffer {
   const prefix = HashPrefix.transactionMultiSig;
   const suffix = coreTypes.AccountID.from(signingAccount).toBytes();
   return serializeObject(tx, { prefix, suffix, signingFieldsOnly: true });

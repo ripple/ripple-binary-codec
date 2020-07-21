@@ -123,8 +123,8 @@ class Amount extends SerializedType {
     } else {
       const parser = new BinaryParser(this.toString());
       const mantissa = parser.read(8);
-      const currency = Currency.fromParser(parser);
-      const issuer = AccountID.fromParser(parser);
+      const currency = Currency.fromParser(parser) as Currency;
+      const issuer = AccountID.fromParser(parser) as AccountID;
 
       const b1 = mantissa[0];
       const b2 = mantissa[1];

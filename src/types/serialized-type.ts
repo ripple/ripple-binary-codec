@@ -58,7 +58,7 @@ class SerializedType {
    *
    * @returns any type, if not overloaded returns hexString representation of bytes
    */
-  toJSON(): any {
+  toJSON(): unknown {
     return this.toHex();
   }
 
@@ -101,7 +101,9 @@ class Comparable extends SerializedType {
    * @returns A number denoting the relationship of this and other
    */
   compareTo(other: Comparable): number {
-    throw new Error(`cannot compare ${this.toJSON()} and ${other.toJSON()}`);
+    throw new Error(
+      `cannot compare ${this.toString()} and ${other.toString()}`
+    );
   }
 }
 

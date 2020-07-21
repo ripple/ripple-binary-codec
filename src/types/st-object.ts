@@ -1,4 +1,4 @@
-import { Field } from "../enums";
+import { Field, FieldInstance } from "../enums";
 import { SerializedType } from "./serialized-type";
 import { BinaryParser } from "../serdes/binary-parser";
 import { BinarySerializer, BytesList } from "../serdes/binary-serializer";
@@ -46,7 +46,7 @@ class STObject extends SerializedType {
    * @returns a STObject object
    */
   static from(
-    value: STObject | object,
+    value: STObject | Record<string, unknown>,
     filter?: (...any) => boolean
   ): STObject {
     if (value instanceof STObject) {
@@ -57,8 +57,8 @@ class STObject extends SerializedType {
     const bytes: BinarySerializer = new BinarySerializer(list);
 
     let sorted = Object.keys(value)
-      .map((f) => Field[f])
-      .filter((f) => f !== undefined && f.isSerialized)
+      .map((f: string): FieldInstance => Field[f] as FieldInstance)
+      .filter((f: FieldInstance): boolean => f !== undefined && f.isSerialized)
       .sort((a, b) => {
         return a.ordinal - b.ordinal;
       });
@@ -84,7 +84,7 @@ class STObject extends SerializedType {
    *
    * @returns a JSON object
    */
-  toJSON(): any {
+  toJSON(): Record<string, unknown> {
     const objectParser = new BinaryParser(this.toString());
     const accumulator = {};
 

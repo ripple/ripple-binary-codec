@@ -1,18 +1,33 @@
 import { coreTypes } from "./types";
 import { Decimal } from "decimal.js";
 
+/**
+ * class for encoding and decoding quality
+ */
 class quality {
-  static encode(arg: string): Buffer {
-    const quality = new Decimal(arg);
-    const exponent = quality.e - 15;
-    const qualityString = quality.times(`1e${-exponent}`).abs().toString();
+  /**
+   * Encode quality amount
+   *
+   * @param arg string representation of an amount
+   * @returns Serialized quality
+   */
+  static encode(quality: string): Buffer {
+    const decimal = new Decimal(quality);
+    const exponent = decimal.e - 15;
+    const qualityString = decimal.times(`1e${-exponent}`).abs().toString();
     const bytes = coreTypes.UInt64.from(BigInt(qualityString)).toBytes();
     bytes[0] = exponent + 100;
     return bytes;
   }
 
-  static decode(arg: string): Decimal {
-    const bytes = Buffer.from(arg, "hex").slice(-8);
+  /**
+   * Decode quality amount
+   *
+   * @param arg hex-string denoting serialized quality
+   * @returns deserialized quality
+   */
+  static decode(quality: string): Decimal {
+    const bytes = Buffer.from(quality, "hex").slice(-8);
     const exponent = bytes[0] - 100;
     const mantissa = new Decimal(`0x${bytes.slice(1).toString("hex")}`);
     return mantissa.times(`1e${exponent}`);

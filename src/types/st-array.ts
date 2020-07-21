@@ -43,7 +43,7 @@ class STArray extends SerializedType {
    * @param value STArray or Array of Objects to parse into an STArray
    * @returns An STArray object
    */
-  static from(value: STArray | Array<object>): STArray {
+  static from(value: STArray | Array<Record<string, unknown>>): STArray {
     if (value instanceof STArray) {
       return value;
     }
@@ -62,8 +62,8 @@ class STArray extends SerializedType {
    *
    * @returns An Array of JSON objects
    */
-  toJSON(): Array<object> {
-    const result: Array<object> = [];
+  toJSON(): Array<Record<string, unknown>> {
+    const result: Array<Record<string, unknown>> = [];
 
     const arrayParser = new BinaryParser(this.toString());
 
