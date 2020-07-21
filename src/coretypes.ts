@@ -5,7 +5,7 @@ import {
   Type,
   TransactionResult,
 } from "./enums";
-import { coreTypes } from "./types";
+import * as types from "./types";
 import * as binary from "./binary";
 import { ShaMap } from "./shamap";
 import * as ledgerHashes from "./ledger-hashes";
@@ -25,5 +25,5 @@ export {
   quality,
   HashPrefix,
   ShaMap,
-  coreTypes,
+  types,
 };
