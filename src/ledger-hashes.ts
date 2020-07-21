@@ -42,7 +42,9 @@ interface transactionItemObject extends Record<string, unknown> {
  * @param json transaction with metadata
  * @returns a tuple of index and item to be added to SHAMap
  */
-function transactionItem(json: transactionItemObject): [Hash256, ShaMapNode] {
+function transactionItemizer(
+  json: transactionItemObject
+): [Hash256, ShaMapNode, undefined] {
   assert(json.hash);
   const index = Hash256.from(json.hash);
   const item = {
@@ -55,7 +57,7 @@ function transactionItem(json: transactionItemObject): [Hash256, ShaMapNode] {
       serializer.writeLengthEncoded(STObject.from(json.metaData));
     },
   } as ShaMapNode;
-  return [index, item];
+  return [index, item, undefined];
 }
 
 /**
@@ -71,7 +73,9 @@ interface entryItemObject extends Record<string, unknown> {
  * @param json JSON describing a ledger entry item
  * @returns a tuple of index and item to be added to SHAMap
  */
-function entryItem(json: entryItemObject): [Hash256, ShaMapNode] {
+function entryItemizer(
+  json: entryItemObject
+): [Hash256, ShaMapNode, undefined] {
   const index = Hash256.from(json.index);
   const bytes = serializeObject(json);
   const item = {
@@ -82,34 +86,34 @@ function entryItem(json: entryItemObject): [Hash256, ShaMapNode] {
       sink.put(bytes);
     },
   } as ShaMapNode;
-  return [index, item];
+  return [index, item, undefined];
 }
 
 /**
- * function for partially applying arguments to a functions
+ * Function computing the hash of a transaction tree
  *
- * @param f the function
- * @param a first argument
- * @param b second argument
- * @returns the return type of f
+ * @param param An array of transaction objects to hash
+ * @returns A Has256 object
  */
-/* eslint-disable */
-const partial = (f) => (a) => (b) => f(a, b);
-/* eslint-enable */
-
-/**
- * Function computing the hash of a TransactionTree
- */
-const transactionTreeHash: (
-  a: Array<Record<string, unknown>>
-) => Hash256 = partial(computeHash)(transactionItem);
+function transactionTreeHash(param: Array<Record<string, unknown>>): Hash256 {
+  const itemizer = transactionItemizer as (
+    json: Record<string, unknown>
+  ) => [Hash256, ShaMapNode, undefined];
+  return computeHash(itemizer, param);
+}
 
 /**
  * Function computing the hash of accountState
+ *
+ * @param param A list of accountStates hash
+ * @returns A Hash256 object
  */
-const accountStateHash: (
-  a: Array<Record<string, unknown>>
-) => Hash256 = partial(computeHash)(entryItem);
+function accountStateHash(param: Array<Record<string, unknown>>): Hash256 {
+  const itemizer = entryItemizer as (
+    json: Record<string, unknown>
+  ) => [Hash256, ShaMapNode, undefined];
+  return computeHash(itemizer, param);
+}
 
 /**
  * Interface describing a ledger header
