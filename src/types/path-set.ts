@@ -1,7 +1,7 @@
 import { AccountID } from "./account-id";
 import { Currency } from "./currency";
 import { BinaryParser } from "../serdes/binary-parser";
-import { SerializedType } from "./serialized-type";
+import { SerializedType, JsonObject } from "./serialized-type";
 
 /**
  * Constants for separating Paths in a PathSet
@@ -19,7 +19,7 @@ const TYPE_ISSUER = 0x20;
 /**
  * The object representation of a Hop, an issuer AccountID, an account AccountID, and a Currency
  */
-interface HopObject {
+interface HopObject extends JsonObject {
   issuer?: string;
   account?: string;
   currency?: string;
@@ -169,7 +169,7 @@ class Path extends SerializedType {
    *
    * @returns an Array of HopObject constructed from this.bytes
    */
-  toJSON() {
+  toJSON(): Array<HopObject> {
     const json: Array<HopObject> = [];
     const pathParser = new BinaryParser(this.toString());
 

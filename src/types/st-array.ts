@@ -1,4 +1,4 @@
-import { SerializedType } from "./serialized-type";
+import { SerializedType, JsonObject } from "./serialized-type";
 import { STObject } from "./st-object";
 import { BinaryParser } from "../serdes/binary-parser";
 
@@ -43,7 +43,7 @@ class STArray extends SerializedType {
    * @param value STArray or Array of Objects to parse into an STArray
    * @returns An STArray object
    */
-  static from(value: STArray | Array<Record<string, unknown>>): STArray {
+  static from(value: STArray | Array<JsonObject>): STArray {
     if (value instanceof STArray) {
       return value;
     }
@@ -62,8 +62,8 @@ class STArray extends SerializedType {
    *
    * @returns An Array of JSON objects
    */
-  toJSON(): Array<Record<string, unknown>> {
-    const result: Array<Record<string, unknown>> = [];
+  toJSON(): Array<JsonObject> {
+    const result: Array<JsonObject> = [];
 
     const arrayParser = new BinaryParser(this.toString());
 

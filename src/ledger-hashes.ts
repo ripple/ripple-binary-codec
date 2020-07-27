@@ -9,6 +9,7 @@ import { UInt64 } from "./types/uint-64";
 import { UInt32 } from "./types/uint-32";
 import { UInt8 } from "./types/uint-8";
 import { BinaryParser } from "./serdes/binary-parser";
+import { JsonObject } from "./types/serialized-type";
 
 /**
  * Computes the hash of a list of objects
@@ -18,10 +19,8 @@ import { BinaryParser } from "./serdes/binary-parser";
  * @returns the hash of the SHAMap
  */
 function computeHash(
-  itemizer: (
-    item: Record<string, unknown>
-  ) => [Hash256?, ShaMapNode?, ShaMapLeaf?],
-  itemsJson: Array<Record<string, unknown>>
+  itemizer: (item: JsonObject) => [Hash256?, ShaMapNode?, ShaMapLeaf?],
+  itemsJson: Array<JsonObject>
 ): Hash256 {
   const map = new ShaMap();
   itemsJson.forEach((item) => map.addItem(...itemizer(item)));
@@ -31,9 +30,9 @@ function computeHash(
 /**
  * Interface describing a transaction item
  */
-interface transactionItemObject extends Record<string, unknown> {
+interface transactionItemObject extends JsonObject {
   hash: string;
-  metaData: Record<string, unknown>;
+  metaData: JsonObject;
 }
 
 /**
@@ -63,7 +62,7 @@ function transactionItemizer(
 /**
  * Interface describing an entry item
  */
-interface entryItemObject extends Record<string, unknown> {
+interface entryItemObject extends JsonObject {
   index: string;
 }
 
@@ -95,9 +94,9 @@ function entryItemizer(
  * @param param An array of transaction objects to hash
  * @returns A Has256 object
  */
-function transactionTreeHash(param: Array<Record<string, unknown>>): Hash256 {
+function transactionTreeHash(param: Array<JsonObject>): Hash256 {
   const itemizer = transactionItemizer as (
-    json: Record<string, unknown>
+    json: JsonObject
   ) => [Hash256, ShaMapNode, undefined];
   return computeHash(itemizer, param);
 }
@@ -108,9 +107,9 @@ function transactionTreeHash(param: Array<Record<string, unknown>>): Hash256 {
  * @param param A list of accountStates hash
  * @returns A Hash256 object
  */
-function accountStateHash(param: Array<Record<string, unknown>>): Hash256 {
+function accountStateHash(param: Array<JsonObject>): Hash256 {
   const itemizer = entryItemizer as (
-    json: Record<string, unknown>
+    json: JsonObject
   ) => [Hash256, ShaMapNode, undefined];
   return computeHash(itemizer, param);
 }

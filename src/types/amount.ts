@@ -1,5 +1,5 @@
 import { Decimal } from "decimal.js";
-import { SerializedType } from "./serialized-type";
+import { SerializedType, JsonObject } from "./serialized-type";
 import { BinaryParser } from "../serdes/binary-parser";
 import { Currency } from "./currency";
 import { AccountID } from "./account-id";
@@ -24,7 +24,7 @@ Decimal.config({
 /**
  * Interface for JSON objects that represent amounts
  */
-interface AmountObject {
+interface AmountObject extends JsonObject {
   value: string;
   currency: string;
   issuer: string;

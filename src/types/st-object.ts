@@ -1,5 +1,5 @@
 import { Field, FieldInstance } from "../enums";
-import { SerializedType } from "./serialized-type";
+import { SerializedType, JsonObject } from "./serialized-type";
 import { BinaryParser } from "../serdes/binary-parser";
 import { BinarySerializer, BytesList } from "../serdes/binary-serializer";
 
@@ -46,7 +46,7 @@ class STObject extends SerializedType {
    * @returns a STObject object
    */
   static from(
-    value: STObject | Record<string, unknown>,
+    value: STObject | JsonObject,
     filter?: (...any) => boolean
   ): STObject {
     if (value instanceof STObject) {
@@ -84,7 +84,7 @@ class STObject extends SerializedType {
    *
    * @returns a JSON object
    */
-  toJSON(): Record<string, unknown> {
+  toJSON(): JsonObject {
     const objectParser = new BinaryParser(this.toString());
     const accumulator = {};
 
