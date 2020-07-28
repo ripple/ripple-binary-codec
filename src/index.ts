@@ -11,37 +11,82 @@ const {
   serializeObject,
 } = binary;
 
+/**
+ * Decode a transaction
+ * 
+ * @param binary hex-string of the encoded transaction
+ * @returns the JSON representation of the transaction
+ */
 function decode(binary: string): JsonObject {
   assert(typeof binary === "string", "binary must be a hex string");
   return binaryToJSON(binary);
 }
 
-function encode(json: string): string {
+/**
+ * Encode a transaction
+ * 
+ * @param json The JSON representation of a transaction
+ * @returns A hex-string of the encoded transaction
+ */
+function encode(json: JsonObject): string {
   assert(typeof json === "object");
   return serializeObject(json).toString("hex").toUpperCase();
 }
 
+/**
+ * Encode a transaction and prepare for signing
+ * 
+ * @param json JSON object representing the transaction
+ * @param signer string representing the account to sign the transaction with 
+ * @returns a hex string of the encoded transaction
+ */
 function encodeForSigning(json: JsonObject): string {
   assert(typeof json === "object");
   return signingData(json).toString("hex").toUpperCase();
 }
 
+/**
+ * Encode a transaction and prepare for signing with a claim
+ * 
+ * @param json JSON object representing the transaction
+ * @param signer string representing the account to sign the transaction with 
+ * @returns a hex string of the encoded transaction
+ */
 function encodeForSigningClaim(json: ClaimObject): string {
   assert(typeof json === "object");
   return signingClaimData(json).toString("hex").toUpperCase();
 }
 
+/**
+ * Encode a transaction and prepare for multi-signing
+ * 
+ * @param json JSON object representing the transaction
+ * @param signer string representing the account to sign the transaction with 
+ * @returns a hex string of the encoded transaction
+ */
 function encodeForMultisigning(json: JsonObject, signer: string): string {
   assert(typeof json === "object");
   assert.equal(json.SigningPubKey, "");
   return multiSigningData(json, signer).toString("hex").toUpperCase();
 }
 
+/**
+ * Encode a quality value
+ * 
+ * @param value string representation of a number
+ * @returns a hex-string representing the quality
+ */
 function encodeQuality(value: string): string {
   assert(typeof value === "string");
   return quality.encode(value).toString("hex").toUpperCase();
 }
 
+/**
+ * Decode a quality value
+ * 
+ * @param value hex-string of a quality
+ * @returns a string representing the quality
+ */
 function decodeQuality(value: string): string {
   assert(typeof value === "string");
   return quality.decode(value).toString();
