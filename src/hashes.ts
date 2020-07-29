@@ -42,7 +42,7 @@ class Sha512Half extends BytesList {
   }
 
   /**
-   * Constructs a Hash256 from teh Sha512Half object
+   * Constructs a Hash256 from the Sha512Half object
    *
    * @returns a Hash256 object
    */

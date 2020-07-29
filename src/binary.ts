@@ -76,15 +76,15 @@ function serializeObject(object: JsonObject, opts: OptionObject = {}): Buffer {
 /**
  * Serialize an object for signing
  *
- * @param tx Transaction to serialize
+ * @param transaction Transaction to serialize
  * @param prefix Prefix bytes to put before the serialized object
  * @returns A Buffer with the serialized object
  */
 function signingData(
-  tx: JsonObject,
+  transaction: JsonObject,
   prefix: Buffer = HashPrefix.transactionSig
 ): Buffer {
-  return serializeObject(tx, { prefix, signingFieldsOnly: true });
+  return serializeObject(transaction, { prefix, signingFieldsOnly: true });
 }
 
 /**
@@ -117,17 +117,17 @@ function signingClaimData(claim: ClaimObject): Buffer {
 /**
  * Serialize a transaction object for multiSigning
  *
- * @param tx transaction to serialize
+ * @param transaction transaction to serialize
  * @param signingAccount Account to sign the transaction with
  * @returns serialized transaction with appropriate prefix and suffix
  */
 function multiSigningData(
-  tx: JsonObject,
+  transaction: JsonObject,
   signingAccount: string | AccountID
 ): Buffer {
   const prefix = HashPrefix.transactionMultiSig;
   const suffix = coreTypes.AccountID.from(signingAccount).toBytes();
-  return serializeObject(tx, { prefix, suffix, signingFieldsOnly: true });
+  return serializeObject(transaction, { prefix, suffix, signingFieldsOnly: true });
 }
 
 export {

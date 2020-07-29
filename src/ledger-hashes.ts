@@ -92,7 +92,7 @@ function entryItemizer(
  * Function computing the hash of a transaction tree
  *
  * @param param An array of transaction objects to hash
- * @returns A Has256 object
+ * @returns A Hash256 object
  */
 function transactionTreeHash(param: Array<JsonObject>): Hash256 {
   const itemizer = transactionItemizer as (
