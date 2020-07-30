@@ -127,7 +127,11 @@ function multiSigningData(
 ): Buffer {
   const prefix = HashPrefix.transactionMultiSig;
   const suffix = coreTypes.AccountID.from(signingAccount).toBytes();
-  return serializeObject(transaction, { prefix, suffix, signingFieldsOnly: true });
+  return serializeObject(transaction, {
+    prefix,
+    suffix,
+    signingFieldsOnly: true,
+  });
 }
 
 export {

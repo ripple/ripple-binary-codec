@@ -13,7 +13,7 @@ const {
 
 /**
  * Decode a transaction
- * 
+ *
  * @param binary hex-string of the encoded transaction
  * @returns the JSON representation of the transaction
  */
@@ -24,7 +24,7 @@ function decode(binary: string): JsonObject {
 
 /**
  * Encode a transaction
- * 
+ *
  * @param json The JSON representation of a transaction
  * @returns A hex-string of the encoded transaction
  */
@@ -35,9 +35,9 @@ function encode(json: JsonObject): string {
 
 /**
  * Encode a transaction and prepare for signing
- * 
+ *
  * @param json JSON object representing the transaction
- * @param signer string representing the account to sign the transaction with 
+ * @param signer string representing the account to sign the transaction with
  * @returns a hex string of the encoded transaction
  */
 function encodeForSigning(json: JsonObject): string {
@@ -47,9 +47,9 @@ function encodeForSigning(json: JsonObject): string {
 
 /**
  * Encode a transaction and prepare for signing with a claim
- * 
+ *
  * @param json JSON object representing the transaction
- * @param signer string representing the account to sign the transaction with 
+ * @param signer string representing the account to sign the transaction with
  * @returns a hex string of the encoded transaction
  */
 function encodeForSigningClaim(json: ClaimObject): string {
@@ -59,9 +59,9 @@ function encodeForSigningClaim(json: ClaimObject): string {
 
 /**
  * Encode a transaction and prepare for multi-signing
- * 
+ *
  * @param json JSON object representing the transaction
- * @param signer string representing the account to sign the transaction with 
+ * @param signer string representing the account to sign the transaction with
  * @returns a hex string of the encoded transaction
  */
 function encodeForMultisigning(json: JsonObject, signer: string): string {
@@ -72,7 +72,7 @@ function encodeForMultisigning(json: JsonObject, signer: string): string {
 
 /**
  * Encode a quality value
- * 
+ *
  * @param value string representation of a number
  * @returns a hex-string representing the quality
  */
@@ -83,7 +83,7 @@ function encodeQuality(value: string): string {
 
 /**
  * Decode a quality value
- * 
+ *
  * @param value hex-string of a quality
  * @returns a string representing the quality
  */

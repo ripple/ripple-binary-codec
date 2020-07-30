@@ -45,8 +45,8 @@ class STObject extends SerializedType {
    * @param filter optional, denote which field to include in serialized object
    * @returns a STObject object
    */
-  static from(
-    value: STObject | JsonObject,
+  static from<T extends STObject | JsonObject>(
+    value: T,
     filter?: (...any) => boolean
   ): STObject {
     if (value instanceof STObject) {

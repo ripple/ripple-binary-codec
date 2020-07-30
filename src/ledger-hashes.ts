@@ -141,15 +141,15 @@ function ledgerHash(header: ledgerObject): Hash256 {
   assert(header.parent_close_time !== undefined);
   assert(header.close_flags !== undefined);
 
-  UInt32.from(header.ledger_index).toBytesSink(hash);
-  UInt64.from(BigInt(header.total_coins)).toBytesSink(hash);
+  UInt32.from<number>(header.ledger_index).toBytesSink(hash);
+  UInt64.from<bigint>(BigInt(header.total_coins)).toBytesSink(hash);
   Hash256.from(header.parent_hash).toBytesSink(hash);
   Hash256.from(header.transaction_hash).toBytesSink(hash);
   Hash256.from(header.account_hash).toBytesSink(hash);
-  UInt32.from(header.parent_close_time).toBytesSink(hash);
-  UInt32.from(header.close_time).toBytesSink(hash);
-  UInt8.from(header.close_time_resolution).toBytesSink(hash);
-  UInt8.from(header.close_flags).toBytesSink(hash);
+  UInt32.from<number>(header.parent_close_time).toBytesSink(hash);
+  UInt32.from<number>(header.close_time).toBytesSink(hash);
+  UInt8.from<number>(header.close_time_resolution).toBytesSink(hash);
+  UInt8.from<number>(header.close_flags).toBytesSink(hash);
   return hash.finish();
 }
 

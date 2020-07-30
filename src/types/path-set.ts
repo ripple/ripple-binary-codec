@@ -26,6 +26,27 @@ interface HopObject extends JsonObject {
 }
 
 /**
+ * TypeGuard for HopObject
+ */
+function isHopObject(arg): arg is HopObject {
+  return (arg.issuer !== undefined ||
+      arg.account !== undefined ||
+      arg.currency !== undefined
+  );
+}
+
+/**
+ * TypeGuard for PathSet
+ */
+function isPathSet(arg): arg is Array<Array<HopObject>> {
+  return (
+    Array.isArray(arg) && arg.length === 0 ||
+    Array.isArray(arg) && Array.isArray(arg[0]) && arg[0].length === 0 ||
+    Array.isArray(arg) && Array.isArray(arg[0]) && isHopObject(arg[0][0])
+  );
+}
+
+/**
  * Serialize and Deserialize a Hop
  */
 class Hop extends SerializedType {
@@ -191,21 +212,25 @@ class PathSet extends SerializedType {
    * @param value A PathSet or Array of Array of HopObjects
    * @returns the PathSet constructed from value
    */
-  static from(value: PathSet | Array<Array<HopObject>>): PathSet {
+  static from<T extends PathSet | Array<Array<HopObject>>>(value: T): PathSet {
     if (value instanceof PathSet) {
       return value;
     }
 
-    const bytes: Array<Buffer> = [];
+    if (isPathSet(value)) {
+      const bytes: Array<Buffer> = [];
 
-    value.forEach((path: Array<HopObject>) => {
-      bytes.push(Path.from(path).toBytes());
-      bytes.push(Buffer.from([PATH_SEPARATOR_BYTE]));
-    });
+      value.forEach((path: Array<HopObject>) => {
+        bytes.push(Path.from(path).toBytes());
+        bytes.push(Buffer.from([PATH_SEPARATOR_BYTE]));
+      });
 
-    bytes[bytes.length - 1] = Buffer.from([PATHSET_END_BYTE]);
+      bytes[bytes.length - 1] = Buffer.from([PATHSET_END_BYTE]);
 
-    return new PathSet(Buffer.concat(bytes));
+      return new PathSet(Buffer.concat(bytes));
+    }
+
+    throw new Error("Cannot construct PathSet from given value");
   }
 
   /**
