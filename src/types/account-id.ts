@@ -1,4 +1,8 @@
-import { decodeAccountID, encodeAccountID } from "ripple-address-codec";
+import {
+  decodeAccountID,
+  encodeAccountID,
+  isValidClassicAddress,
+} from "ripple-address-codec";
 import { Hash160 } from "./hash-160";
 
 /**
@@ -38,6 +42,10 @@ class AccountID extends Hash160 {
    * @returns an AccountID object
    */
   static fromBase58(value: string): AccountID {
+    if (!isValidClassicAddress(value)) {
+      throw new Error("Invalid Classic address");
+    }
+
     return new AccountID(decodeAccountID(value));
   }
 
@@ -56,6 +64,8 @@ class AccountID extends Hash160 {
    * @returns the base58 string defined by this.bytes
    */
   toBase58(): string {
+    if (this.bytes.byteLength === 0) return "";
+
     return encodeAccountID(this.bytes);
   }
 }
