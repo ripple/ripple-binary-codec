@@ -83,7 +83,6 @@ describe("X-Address account is equivilent to an r-address w/ SourceTag", () => {
 
     test("decoded X-address is object w/ source and tag", () => {
         let decoded_x = decode(encoded_x);
-        let decoded_r = decode(encoded_r);
         expect(decoded_x).toEqual(json_r1);
     })
 
@@ -98,6 +97,6 @@ describe("Invalid X-Address behavior", () => {
     })
 
     test("Throws when Account has both X-Addr and Destination Tag", () => {
-        expect(() => encode(invalid_json_x_and_tagged)).toThrow(new Error("Cannot have X-Address and Tag"));
+        expect(() => encode(invalid_json_x_and_tagged)).toThrow(new Error("Cannot have Account X-Address and SourceTag"));
     });
 })
