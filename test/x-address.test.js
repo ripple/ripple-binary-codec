@@ -1,4 +1,5 @@
 const { encode, decode } = require("./../dist/index");
+const fixtures = require('./fixtures/x-codec-fixtures.json')
 
 let json_x1 = {
     OwnerCount: 0,
@@ -99,4 +100,29 @@ describe("Invalid X-Address behavior", () => {
     test("Throws when Account has both X-Addr and Destination Tag", () => {
         expect(() => encode(invalid_json_x_and_tagged)).toThrow(new Error("Cannot have Account X-Address and SourceTag"));
     });
+})
+
+function truncateForDisplay (longStr) {
+    return longStr.slice(0, 10) + '...' + longStr.slice(-10)
+}
+
+function json (object) {
+    return JSON.stringify(object)   
+}
+  
+describe('ripple-binary-codec x-address test', function () {
+    function makeSuite (name, entries) {
+        describe(name, function () {
+        entries.forEach((t, testN) => {
+            test(`${name}[${testN}] encodes x-address json equivilent to as r-address json`,
+            () => {
+                expect(encode(t.rjson)).toEqual(encode(t.xjson))
+            })
+            test(`${name}[${testN}] decodes encoded x-address json equivilent to as r-address json`, () => {
+                expect(decode(encode(t.xjson))).toEqual(t.rjson);
+            })
+        })
+        })
+    }
+    makeSuite('transactions', fixtures.transactions)
 })
