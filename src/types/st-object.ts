@@ -14,7 +14,7 @@ const ACCOUNT_ID_TYPE_NAME = "AccountID";
 const DESTINATION_FIELD_NAME = "Destination";
 const ACCOUNT_FIELD_NAME = "Account";
 const SOURCE_TAG_FIELD_NAME = "SourceTag";
-const DESTINATION_TAG_FIELD_NAME = "SourceTag";
+const DESTINATION_TAG_FIELD_NAME = "DestinationTag";
 
 /**
  * Break down an X-Address into an account and a tag
@@ -42,7 +42,7 @@ function handleXAddress(field: string, xAddress: string): JsonObject {
 
 /**
  * Validate that two objects don't both have the same tag fields
- * 
+ *
  * @param obj1 First object to check for tags
  * @param obj2 Second object to check for tags
  * @throws When both objects have SourceTag or DestinationTag
@@ -127,10 +127,7 @@ class STObject extends SerializedType {
     });
 
     let sorted = Object.keys(value)
-      .reduce((acc: FieldInstance[], f: string): FieldInstance[] => {
-        acc.push(Field[f]);
-        return acc;
-      }, [])
+      .map((f: string): FieldInstance => Field[f] as FieldInstance)
       .filter((f: FieldInstance): boolean => f !== undefined && f.isSerialized)
       .sort((a, b) => {
         return a.ordinal - b.ordinal;
