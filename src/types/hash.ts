@@ -9,9 +9,7 @@ class Hash extends Comparable {
 
   constructor(bytes: Buffer) {
     super(bytes);
-    if (
-      this.bytes.byteLength !== (this.constructor as typeof Hash).width
-    ) {
+    if (this.bytes.byteLength !== (this.constructor as typeof Hash).width) {
       throw new Error(`Invalid Hash length ${this.bytes.byteLength}`);
     }
   }

@@ -27,7 +27,7 @@ class AccountID extends Hash160 {
     }
 
     if (typeof value === "string") {
-      if(value === "") {
+      if (value === "") {
         return new AccountID();
       }
 
@@ -68,8 +68,6 @@ class AccountID extends Hash160 {
    * @returns the base58 string defined by this.bytes
    */
   toBase58(): string {
-    if (this.bytes.byteLength === 0) return "";
-
     return encodeAccountID(this.bytes);
   }
 }
