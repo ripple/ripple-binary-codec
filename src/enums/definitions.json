@@ -1365,7 +1365,7 @@
       }
     ],
     [
-      "NegativeUNL",
+      "DisabledValidators",
       {
         "nth": 17,
         "isVLEncoded": false,
