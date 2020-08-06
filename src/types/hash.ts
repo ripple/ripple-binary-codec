@@ -19,7 +19,6 @@ class Hash extends Comparable {
    *
    * @param value A hash object or hex-string of a hash
    */
-
   static from<T extends Hash | string>(value: T): Hash {
     if (value instanceof this) {
       return value;
