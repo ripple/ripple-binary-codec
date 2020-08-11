@@ -62,7 +62,7 @@ Encode the transaction object for multi-signing.
 
 ### decodeQuality(value: string): string 
 ```js
-> api.decodeQuality('4627DFFCFF8B5A265EDBD8AE8C14A52325DBFEDAF4F5C32E5D06F4C3362FE1D0')
+> api.decodeQuality('5D06F4C3362FE1D0')
 '195796912.5171664'
 ```
 
