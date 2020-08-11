@@ -7,31 +7,37 @@ import {
 import { BinaryParser } from "../serdes/binary-parser";
 import { BinarySerializer, BytesList } from "../serdes/binary-serializer";
 
-const OBJECT_END_MARKER = Buffer.from([0xe1]);
-const OBJECT_END_MARKER_NAME = "ObjectEndMarker";
-const OBJECT_FIELD_TYPE_NAME = "STObject";
-const ACCOUNT_ID_TYPE_NAME = "AccountID";
-const DESTINATION_FIELD_NAME = "Destination";
-const ACCOUNT_FIELD_NAME = "Account";
-const SOURCE_TAG_FIELD_NAME = "SourceTag";
-const DESTINATION_TAG_FIELD_NAME = "DestinationTag";
+const OBJECT_END_MARKER_BYTES = Buffer.from([0xe1]);
+const OBJECT_END_MARKER = "ObjectEndMarker";
+const ST_OBJECT = "STObject";
+const DESTINATION = "Destination";
+const ACCOUNT = "Account";
+const SOURCE_TAG = "SourceTag";
+const DEST_TAG = "DestinationTag";
+
+/**
+ * Test if a field is an AccountID
+ *
+ * @param fieldName name of field
+ * @returns true if the value of the field has type AccountID
+ */
+function isAccountID(fieldName: string): boolean {
+  const fieldInstance = Field[fieldName];
+  return fieldInstance && fieldInstance.type.name === "AccountID";
+}
 
 /**
  * Break down an X-Address into an account and a tag
  *
  * @param field Name of field
- * @param xAddress X-Address cooresponding to field f
+ * @param xAddress X-Address corresponding to the field
  */
 function handleXAddress(field: string, xAddress: string): JsonObject {
-  if (!isValidXAddress(xAddress)) {
-    throw new Error(`Invalid X address ${xAddress}`);
-  }
-
   const decoded = xAddressToClassicAddress(xAddress);
 
   let tagName;
-  if (field === DESTINATION_FIELD_NAME) tagName = DESTINATION_TAG_FIELD_NAME;
-  else if (field === ACCOUNT_FIELD_NAME) tagName = SOURCE_TAG_FIELD_NAME;
+  if (field === DESTINATION) tagName = DEST_TAG;
+  else if (field === ACCOUNT) tagName = SOURCE_TAG;
   else if (decoded.tag !== false)
     throw new Error(`${field} cannot have an associated tag`);
 
@@ -48,19 +54,9 @@ function handleXAddress(field: string, xAddress: string): JsonObject {
  * @throws When both objects have SourceTag or DestinationTag
  */
 function checkForDuplicateTags(obj1: JsonObject, obj2: JsonObject): void {
-  if (
-    !(
-      obj1[SOURCE_TAG_FIELD_NAME] === undefined ||
-      obj2[SOURCE_TAG_FIELD_NAME] === undefined
-    )
-  )
+  if (!(obj1[SOURCE_TAG] === undefined || obj2[SOURCE_TAG] === undefined))
     throw new Error("Cannot have Account X-Address and SourceTag");
-  if (
-    !(
-      obj1[DESTINATION_TAG_FIELD_NAME] === undefined ||
-      obj2[DESTINATION_TAG_FIELD_NAME] === undefined
-    )
-  )
+  if (!(obj1[DEST_TAG] === undefined || obj2[DEST_TAG] === undefined))
     throw new Error("Cannot have Destination X-Address and DestinationTag");
 }
 
@@ -80,15 +76,15 @@ class STObject extends SerializedType {
 
     while (!parser.end()) {
       const field = parser.readField();
-      if (field.name === OBJECT_END_MARKER_NAME) {
+      if (field.name === OBJECT_END_MARKER) {
         break;
       }
 
       const associatedValue = parser.readFieldValue(field);
 
       bytes.writeFieldAndValue(field, associatedValue);
-      if (field.type.name === OBJECT_FIELD_TYPE_NAME) {
-        bytes.put(OBJECT_END_MARKER);
+      if (field.type.name === ST_OBJECT) {
+        bytes.put(OBJECT_END_MARKER_BYTES);
       }
     }
 
@@ -113,18 +109,13 @@ class STObject extends SerializedType {
     const list: BytesList = new BytesList();
     const bytes: BinarySerializer = new BinarySerializer(list);
 
-    Object.keys(value).forEach((f) => {
-      if (
-        Field[f] !== undefined &&
-        Field[f].type.name === ACCOUNT_ID_TYPE_NAME &&
-        /^X/.test(value[f])
-      ) {
-        const handled = handleXAddress(f, value[f]);
+    Object.keys(value)
+      .filter((field) => isAccountID(field) && isValidXAddress(value[field]))
+      .forEach((field) => {
+        const handled = handleXAddress(field, value[field]);
         checkForDuplicateTags(handled, value as JsonObject);
-
         Object.assign(value, handled);
-      }
-    });
+      });
 
     let sorted = Object.keys(value)
       .map((f: string): FieldInstance => Field[f] as FieldInstance)
@@ -141,8 +132,8 @@ class STObject extends SerializedType {
       const associatedValue = field.associatedType.from(value[field.name]);
 
       bytes.writeFieldAndValue(field, associatedValue);
-      if (field.type.name === OBJECT_FIELD_TYPE_NAME) {
-        bytes.put(OBJECT_END_MARKER);
+      if (field.type.name === ST_OBJECT) {
+        bytes.put(OBJECT_END_MARKER_BYTES);
       }
     });
 
@@ -160,7 +151,7 @@ class STObject extends SerializedType {
 
     while (!objectParser.end()) {
       const field = objectParser.readField();
-      if (field.name === OBJECT_END_MARKER_NAME) {
+      if (field.name === OBJECT_END_MARKER) {
         break;
       }
       accumulator[field.name] = objectParser.readFieldValue(field).toJSON();
