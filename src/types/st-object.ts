@@ -16,17 +16,6 @@ const SOURCE_TAG = "SourceTag";
 const DEST_TAG = "DestinationTag";
 
 /**
- * Test if a field is an AccountID
- *
- * @param fieldName name of field
- * @returns true if the value of the field has type AccountID
- */
-function isAccountID(fieldName: string): boolean {
-  const fieldInstance = Field[fieldName];
-  return fieldInstance && fieldInstance.type.name === "AccountID";
-}
-
-/**
  * Break down an X-Address into an account and a tag
  *
  * @param field Name of field
@@ -109,15 +98,19 @@ class STObject extends SerializedType {
     const list: BytesList = new BytesList();
     const bytes: BinarySerializer = new BinarySerializer(list);
 
-    Object.keys(value)
-      .filter((field) => isAccountID(field) && isValidXAddress(value[field]))
-      .forEach((field) => {
-        const handled = handleXAddress(field, value[field]);
-        checkForDuplicateTags(handled, value as JsonObject);
-        Object.assign(value, handled);
-      });
+    const xAddressDecoded = Object.entries(value).reduce(
+      (acc , [key, val]) => {
+        let handled: JsonObject | undefined = undefined;
+        if (isValidXAddress(val)) {
+          handled = handleXAddress(key, val);
+          checkForDuplicateTags(handled, value as JsonObject);
+        }
+        return Object.assign(acc, handled ?? { [key]: val });
+      },
+      {}
+    );
 
-    let sorted = Object.keys(value)
+    let sorted = Object.keys(xAddressDecoded)
       .map((f: string): FieldInstance => Field[f] as FieldInstance)
       .filter((f: FieldInstance): boolean => f !== undefined && f.isSerialized)
       .sort((a, b) => {
@@ -129,7 +122,7 @@ class STObject extends SerializedType {
     }
 
     sorted.forEach((field) => {
-      const associatedValue = field.associatedType.from(value[field.name]);
+      const associatedValue = field.associatedType.from(xAddressDecoded[field.name]);
 
       bytes.writeFieldAndValue(field, associatedValue);
       if (field.type.name === ST_OBJECT) {

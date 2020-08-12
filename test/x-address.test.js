@@ -102,14 +102,6 @@ describe("Invalid X-Address behavior", () => {
     });
 })
 
-function truncateForDisplay (longStr) {
-    return longStr.slice(0, 10) + '...' + longStr.slice(-10)
-}
-
-function json (object) {
-    return JSON.stringify(object)   
-}
-  
 describe('ripple-binary-codec x-address test', function () {
     function makeSuite (name, entries) {
         describe(name, function () {
