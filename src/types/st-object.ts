@@ -98,17 +98,14 @@ class STObject extends SerializedType {
     const list: BytesList = new BytesList();
     const bytes: BinarySerializer = new BinarySerializer(list);
 
-    const xAddressDecoded = Object.entries(value).reduce(
-      (acc , [key, val]) => {
-        let handled: JsonObject | undefined = undefined;
-        if (isValidXAddress(val)) {
-          handled = handleXAddress(key, val);
-          checkForDuplicateTags(handled, value as JsonObject);
-        }
-        return Object.assign(acc, handled ?? { [key]: val });
-      },
-      {}
-    );
+    const xAddressDecoded = Object.entries(value).reduce((acc, [key, val]) => {
+      let handled: JsonObject | undefined = undefined;
+      if (isValidXAddress(val)) {
+        handled = handleXAddress(key, val);
+        checkForDuplicateTags(handled, value as JsonObject);
+      }
+      return Object.assign(acc, handled ?? { [key]: val });
+    }, {});
 
     let sorted = Object.keys(xAddressDecoded)
       .map((f: string): FieldInstance => Field[f] as FieldInstance)
@@ -122,7 +119,9 @@ class STObject extends SerializedType {
     }
 
     sorted.forEach((field) => {
-      const associatedValue = field.associatedType.from(xAddressDecoded[field.name]);
+      const associatedValue = field.associatedType.from(
+        xAddressDecoded[field.name]
+      );
 
       bytes.writeFieldAndValue(field, associatedValue);
       if (field.type.name === ST_OBJECT) {

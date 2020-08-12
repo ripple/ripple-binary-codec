@@ -41,7 +41,7 @@ class UInt32 extends UInt {
       return new UInt32(buf);
     }
 
-    throw new Error(`Cannot construct UInt32 from given value ${val}`);
+    throw new Error(`Cannot construct UInt32 from given value`);
   }
 
   /**
