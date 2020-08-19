@@ -1,6 +1,6 @@
 {
   "name": "ripple-binary-codec",
-  "version": "1.0.0-rc1",
+  "version": "1.0.0-rc3",
   "description": "XRP Ledger binary codec",
   "files": [
     "dist/*",
@@ -46,5 +46,8 @@
   },
   "homepage": "https://github.com/ripple/ripple-binary-codec#readme",
   "license": "ISC",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "prettier": {
+    "semi": true
+  }
 }
