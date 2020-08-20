@@ -1,7 +1,6 @@
 import {
   decodeAccountID,
-  encodeAccountID,
-  isValidClassicAddress,
+  encodeAccountID
 } from "ripple-address-codec";
 import { Hash160 } from "./hash-160";
 
@@ -42,10 +41,6 @@ class AccountID extends Hash160 {
    * @returns an AccountID object
    */
   static fromBase58(value: string): AccountID {
-    if (!isValidClassicAddress(value)) {
-      throw new Error("Invalid Classic address");
-    }
-
     return new AccountID(decodeAccountID(value));
   }
 

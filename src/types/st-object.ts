@@ -7,7 +7,7 @@ import {
 import { BinaryParser } from "../serdes/binary-parser";
 import { BinarySerializer, BytesList } from "../serdes/binary-serializer";
 
-const OBJECT_END_MARKER_BYTES = Buffer.from([0xe1]);
+const OBJECT_END_MARKER_BYTE = Buffer.from([0xe1]);
 const OBJECT_END_MARKER = "ObjectEndMarker";
 const ST_OBJECT = "STObject";
 const DESTINATION = "Destination";
@@ -30,7 +30,7 @@ function handleXAddress(field: string, xAddress: string): JsonObject {
   else if (decoded.tag !== false)
     throw new Error(`${field} cannot have an associated tag`);
 
-  return decoded.tag
+  return decoded.tag !== false
     ? { [field]: decoded.classicAddress, [tagName]: decoded.tag }
     : { [field]: decoded.classicAddress };
 }
@@ -73,7 +73,7 @@ class STObject extends SerializedType {
 
       bytes.writeFieldAndValue(field, associatedValue);
       if (field.type.name === ST_OBJECT) {
-        bytes.put(OBJECT_END_MARKER_BYTES);
+        bytes.put(OBJECT_END_MARKER_BYTE);
       }
     }
 
@@ -125,7 +125,7 @@ class STObject extends SerializedType {
 
       bytes.writeFieldAndValue(field, associatedValue);
       if (field.type.name === ST_OBJECT) {
-        bytes.put(OBJECT_END_MARKER_BYTES);
+        bytes.put(OBJECT_END_MARKER_BYTE);
       }
     });
 

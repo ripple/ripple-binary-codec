@@ -75,7 +75,7 @@ let invalid_json_x_and_tagged = {
     SourceTag: 12345,
   }
 
-describe("X-Address account is equivilent to an r-address w/ SourceTag", () => {
+describe("X-Address Account is equivalent to a classic address w/ SourceTag", () => {
     let encoded_x = encode(json_x1);
     let encoded_r = encode(json_r1); 
     test("Can encode with x-Address", () => {
@@ -87,7 +87,7 @@ describe("X-Address account is equivilent to an r-address w/ SourceTag", () => {
         expect(decoded_x).toEqual(json_r1);
     })
 
-    test("Encoding issuer X-Address w/ null destintion tag", () => {
+    test("Encoding issuer X-Address w/ undefined destination tag", () => {
         expect(encode(json_null_x)).toEqual(encode(json_null_r))
     })
 })
@@ -106,11 +106,11 @@ describe('ripple-binary-codec x-address test', function () {
     function makeSuite (name, entries) {
         describe(name, function () {
         entries.forEach((t, testN) => {
-            test(`${name}[${testN}] encodes x-address json equivilent to as r-address json`,
+            test(`${name}[${testN}] encodes X-address json equivalent to classic address json`,
             () => {
                 expect(encode(t.rjson)).toEqual(encode(t.xjson))
             })
-            test(`${name}[${testN}] decodes encoded x-address json equivilent to as r-address json`, () => {
+            test(`${name}[${testN}] decodes X-address json equivalent to classic address json`, () => {
                 expect(decode(encode(t.xjson))).toEqual(t.rjson);
             })
         })
