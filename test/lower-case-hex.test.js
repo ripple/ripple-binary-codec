@@ -14,7 +14,7 @@ let json = {
     "Sequence": 1,
     "Balance": "10000000000"
   }
-  let jsonUpper = {
+let jsonUpper = {
     "OwnerCount": 0,
     "Account": "rUnFEsHjxqTswbivzL2DNHBb34rhAgZZZK",
     "PreviousTxnLgrSeq": 8,
@@ -33,7 +33,7 @@ describe("Lowercase hex test", () => {
         expect(encode(decode(lower))).toEqual(str)
     })
     test("Encode when hex field lowercase", () => {
-        expect(encode(json)).toBe((bin))
+        expect(encode(json)).toBe(bin)
     })
     test("Re-decodes to uppercase hex", () => {
         expect(decode(encode(json))).toEqual(jsonUpper)
