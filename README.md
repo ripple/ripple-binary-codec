@@ -44,8 +44,8 @@ Encode a transaction object into a hex-string.
 
 #### X-Address Compatibility 
   * ripple-binary-codec handles X-addresses by looking for a few specific files (Account/SourceTag, Destination/DestinationTag).
-  * If we want other fields (in the future) to support X-addresses with tags, this library will need to be updated.
-  * When decoding rippled binary, the output will always use classic address + tag, with no X-addresses. X-address support helps when encoding to binary.
+  * If other fields (in the future) must to support X-addresses with tags, this library will need to be updated.
+  * When decoding rippled binary, the output will always output classic address + tag, with no X-addresses. X-address support only applies when encoding to binary.
 
 ### encodeForSigning(json: object): string
 
