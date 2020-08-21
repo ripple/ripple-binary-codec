@@ -20,7 +20,7 @@ jobs:
     - name: Set up node using nvm
       uses: setup-node@v1
       with:
-        node-version: $nvmrc
+        node-version: ${nvmrc}
     - run: yarn install
     - run: yarn run test
     - run: yarn run lint
