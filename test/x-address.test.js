@@ -37,6 +37,19 @@ let json_null_x = {
     "Balance": "10000000000"
 }
 
+let json_invalid_x = {
+    "OwnerCount": 0,
+    "Account": "rLs1MzkFWCxTbuAHgjeTZK4fcCDDnf2KRv",
+    "Destination": "rLs1MzkFWCxTbuAHgjeTZK4fcCDDnf2KRv",
+    "Issuer": "XVXdn5wEVm5g4UhEHWDPqjvdeH361P4GETfNyyXGaoqBj71",
+    "PreviousTxnLgrSeq": 7,
+    "LedgerEntryType": "AccountRoot",
+    "PreviousTxnID": "DF530FB14C5304852F20080B0A8EEF3A6BDD044F41F4EBBD68B8B321145FE4FF",
+    "Flags": 0,
+    "Sequence": 1,
+    "Balance": "10000000000"
+}
+
 let json_null_r = {
     "OwnerCount": 0,
     "Account": "rLs1MzkFWCxTbuAHgjeTZK4fcCDDnf2KRv",
@@ -88,7 +101,11 @@ describe("X-Address Account is equivalent to a classic address w/ SourceTag", ()
     })
 
     test("Encoding issuer X-Address w/ undefined destination tag", () => {
-        expect(encode(json_null_x)).toEqual(encode(json_null_r))
+        expect(encode(json_null_x)).toEqual(encode(json_null_r));
+    })
+
+    test("Throws when X-Address is invalid", () => {
+        expect(() => encode(json_invalid_x)).toThrow("checksum_invalid");
     })
 })
 
