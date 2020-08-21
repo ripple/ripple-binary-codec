@@ -31,7 +31,7 @@ class AccountID extends Hash160 {
 
       return HEX_REGEX.test(value)
         ? new AccountID(Buffer.from(value, "hex"))
-        : this.fromBase58(value)
+        : this.fromBase58(value);
     }
 
     throw new Error("Cannot construct AccountID from value given");
