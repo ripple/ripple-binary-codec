@@ -1,35 +1,41 @@
 const { coreTypes } = require("../dist/types");
 const { Hash160, Hash256, AccountID, Currency } = coreTypes;
 
-describe('Hash160', function () {
-  test('has a static width member', function () {
-    expect(Hash160.width).toBe(20)
-  })
-  test('inherited by subclasses', function () {
-    expect(AccountID.width).toBe(20)
-    expect(Currency.width).toBe(20)
-  })
-  test('can be compared against another', function () {
-    const h1 = Hash160.from('1000000000000000000000000000000000000000')
-    const h2 = Hash160.from('2000000000000000000000000000000000000000')
-    const h3 = Hash160.from('0000000000000000000000000000000000000003')
-    expect(h1.lt(h2)).toBe(true)
-    expect(h3.lt(h2)).toBe(true)
-  })
-  test('throws when constructed from invalid hash length', () => {
-    expect(() => Hash160.from('10000000000000000000000000000000000000')).toThrow('Invalid Hash length 19')
-    expect(() => Hash160.from('100000000000000000000000000000000000000000')).toThrow('Invalid Hash length 21')
-  })
-})
+describe("Hash160", function () {
+  test("has a static width member", function () {
+    expect(Hash160.width).toBe(20);
+  });
+  test("inherited by subclasses", function () {
+    expect(AccountID.width).toBe(20);
+    expect(Currency.width).toBe(20);
+  });
+  test("can be compared against another", function () {
+    const h1 = Hash160.from("1000000000000000000000000000000000000000");
+    const h2 = Hash160.from("2000000000000000000000000000000000000000");
+    const h3 = Hash160.from("0000000000000000000000000000000000000003");
+    expect(h1.lt(h2)).toBe(true);
+    expect(h3.lt(h2)).toBe(true);
+  });
+  test("throws when constructed from invalid hash length", () => {
+    expect(() =>
+      Hash160.from("10000000000000000000000000000000000000")
+    ).toThrow("Invalid Hash length 19");
+    expect(() =>
+      Hash160.from("100000000000000000000000000000000000000000")
+    ).toThrow("Invalid Hash length 21");
+  });
+});
 
-describe('Hash256', function () {
-  test('has a static width member', function () {
-    expect(Hash256.width).toBe(32)
-  })
-  test('has a ZERO_256 member', function () {
-    expect(Hash256.ZERO_256.toJSON()).toBe('0000000000000000000000000000000000000000000000000000000000000000')
-  })
-  test('supports getting the nibblet values at given positions', function () {
+describe("Hash256", function () {
+  test("has a static width member", function () {
+    expect(Hash256.width).toBe(32);
+  });
+  test("has a ZERO_256 member", function () {
+    expect(Hash256.ZERO_256.toJSON()).toBe(
+      "0000000000000000000000000000000000000000000000000000000000000000"
+    );
+  });
+  test("supports getting the nibblet values at given positions", function () {
     const h = Hash256.from(
       "1359BD0000000000000000000000000000000000000000000000000000000000"
     );

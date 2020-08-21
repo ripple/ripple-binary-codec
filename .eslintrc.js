@@ -59,7 +59,7 @@ module.exports = {
   overrides: [
     // Overrides for all test files
     {
-      files: 'test/*.test.js',
+      files: 'test/**/*.test.js',
       extends: ["plugin:jest/recommended"],
       rules: {
         // For our Mocha test files, the pattern has been to have unnamed functions
