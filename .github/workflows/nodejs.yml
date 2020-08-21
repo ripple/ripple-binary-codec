@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v2
     - run: nvmrc=$(cat .nvmrc)
     - name: Set up node using nvm
-      uses: setup-node@v1
+      uses: actions/setup-node@v1
       with:
         node-version: $nvmrc
     - run: yarn install
