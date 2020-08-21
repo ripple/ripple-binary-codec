@@ -1,13 +1,13 @@
 {
   "name": "ripple-binary-codec",
-  "version": "0.3.0",
+  "version": "1.0.0-rc3",
   "description": "XRP Ledger binary codec",
   "files": [
-    "distrib/npm/*",
+    "dist/*",
     "bin/*",
     "test/*"
   ],
-  "main": "distrib/npm/",
+  "main": "dist/",
   "directories": {
     "test": "test"
   },
@@ -34,7 +34,7 @@
   "scripts": {
     "compile": "tsc && cp ./src/enums/definitions.json ./dist/enums",
     "prepare": "npm run compile && npm test",
-    "test": "jest --coverage=true",
+    "test": "jest",
     "lint": "eslint . --ext .ts --fix"
   },
   "repository": {
@@ -46,5 +46,8 @@
   },
   "homepage": "https://github.com/ripple/ripple-binary-codec#readme",
   "license": "ISC",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "prettier": {
+    "semi": true
+  }
 }
