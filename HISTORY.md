@@ -1,5 +1,14 @@
 # ripple-binary-codec Release History
 
+## 0.2.7 (2020-08-22)
+
+- Last release of 0.2.x
+- Since 1.0 requires Node.js 10.22+, one reason 0.2.x could be useful is if you cannot upgrade Node.js and do not need new transaction types / features
+- Bump ripple-address-codec to 4.1.1 (#57)
+- Project internals
+  - Improve documentation of definitions.json (#80)
+  - Bump dependencies including babel-runtime (#50), babel-eslint (#52), fs-extra (#55), mocha (#58), handlebars (#62), eslint (#60)
+
 ## 0.2.6 (2019-12-31)
 
 - Update dependencies
@@ -51,7 +60,7 @@
 ## 0.1.8
 
 ## 0.1.7
- 
+
 ## 0.1.6
- 
+
 ## 0.1.3
