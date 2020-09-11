@@ -47,8 +47,8 @@ Encode a transaction object into a hex-string. Note that encode filters out fiel
   * If other fields (in the future) must to support X-addresses with tags, this library will need to be updated.
   * When decoding rippled binary, the output will always output classic address + tag, with no X-addresses. X-address support only applies when encoding to binary.
 
-#### Encoding Currencies
-  * ripple-binary-codec allows for any 3 Letter ASCII string to be encoded into a currency.
+#### Encoding Currency Codes
+  * ripple-binary-codec allows for any 3 character ASCII string to be encoded into a [currency code](https://xrpl.org/currency-formats.html#currency-codes).
   * ripple-binary-codec will decode currencies into that are valid ISO 4217 codes.
   * If a currency is not a valid ISO 4217 code, it will return a 160-bit hex-string.
 
