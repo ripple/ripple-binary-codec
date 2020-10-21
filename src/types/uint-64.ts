@@ -1,8 +1,10 @@
 import { UInt } from "./uint";
 import { BinaryParser } from "../serdes/binary-parser";
+import * as bigInt from "big-integer";
+import { isInstance } from "big-integer";
 
 const HEX_REGEX = /^[A-F0-9]{16}$/;
-const mask = BigInt(0x00000000ffffffff);
+const mask = bigInt(0x00000000ffffffff);
 
 /**
  * Derived UInt class for serializing/deserializing 64 bit UInt
@@ -24,10 +26,12 @@ class UInt64 extends UInt {
   /**
    * Construct a UInt64 object
    *
-   * @param val A UInt64, hex-string, bigint, or number
+   * @param val A UInt64, hex-string, bigInt, or number
    * @returns A UInt64 object
    */
-  static from<T extends UInt64 | string | bigint | number>(val: T): UInt64 {
+  static from<T extends UInt64 | string | bigInt.BigInteger | number>(
+    val: T
+  ): UInt64 {
     if (val instanceof UInt64) {
       return val;
     }
@@ -39,11 +43,11 @@ class UInt64 extends UInt {
         throw new Error("value must be an unsigned integer");
       }
 
-      const number = BigInt(val);
+      const number = bigInt(val);
 
       const intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
-      intBuf[0].writeUInt32BE(Number(number >> BigInt(32)));
-      intBuf[1].writeUInt32BE(Number(number & mask));
+      intBuf[0].writeUInt32BE(Number(number.shiftRight(32)));
+      intBuf[1].writeUInt32BE(Number(number.and(mask)));
 
       return new UInt64(Buffer.concat(intBuf));
     }
@@ -56,10 +60,10 @@ class UInt64 extends UInt {
       return new UInt64(buf);
     }
 
-    if (typeof val === "bigint") {
+    if (isInstance(val)) {
       const intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
-      intBuf[0].writeUInt32BE(Number(val >> BigInt(32)));
-      intBuf[1].writeUInt32BE(Number(val & mask));
+      intBuf[0].writeUInt32BE(Number(val.shiftRight(bigInt(32))));
+      intBuf[1].writeUInt32BE(Number(val.and(mask)));
 
       return new UInt64(Buffer.concat(intBuf));
     }
@@ -81,10 +85,10 @@ class UInt64 extends UInt {
    *
    * @returns the number represented buy this.bytes
    */
-  valueOf(): bigint {
-    const msb = BigInt(this.bytes.slice(0, 4).readUInt32BE());
-    const lsb = BigInt(this.bytes.slice(4).readUInt32BE());
-    return (msb << BigInt(32)) | lsb;
+  valueOf(): bigInt.BigInteger {
+    const msb = bigInt(this.bytes.slice(0, 4).readUInt32BE());
+    const lsb = bigInt(this.bytes.slice(4).readUInt32BE());
+    return msb.shiftLeft(bigInt(32)).or(lsb);
   }
 
   /**

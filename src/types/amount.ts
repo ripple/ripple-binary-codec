@@ -5,6 +5,7 @@ import { BinaryParser } from "../serdes/binary-parser";
 import { AccountID } from "./account-id";
 import { Currency } from "./currency";
 import { JsonObject, SerializedType } from "./serialized-type";
+import * as bigInt from "big-integer";
 
 /**
  * Constants for validating amounts
@@ -14,7 +15,7 @@ const MAX_IOU_EXPONENT = 80;
 const MAX_IOU_PRECISION = 16;
 const MAX_DROPS = new Decimal("1e17");
 const MIN_XRP = new Decimal("1e-6");
-const mask = BigInt(0x00000000ffffffff);
+const mask = bigInt(0x00000000ffffffff);
 
 /**
  * decimal.js configuration for Amount IOUs
@@ -74,11 +75,11 @@ class Amount extends SerializedType {
     if (typeof value === "string") {
       Amount.assertXrpIsValid(value);
 
-      const number = BigInt(value);
+      const number = bigInt(value);
 
       const intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
-      intBuf[0].writeUInt32BE(Number(number >> BigInt(32)));
-      intBuf[1].writeUInt32BE(Number(number & mask));
+      intBuf[0].writeUInt32BE(Number(number.shiftRight(32)));
+      intBuf[1].writeUInt32BE(Number(number.and(mask)));
 
       amount = Buffer.concat(intBuf);
 
@@ -99,10 +100,10 @@ class Amount extends SerializedType {
           .abs()
           .toString();
 
-        const bigInt = BigInt(integerNumberString);
+        const num = bigInt(integerNumberString);
         const intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
-        intBuf[0].writeUInt32BE(Number(bigInt >> BigInt(32)));
-        intBuf[1].writeUInt32BE(Number(bigInt & mask));
+        intBuf[0].writeUInt32BE(Number(num.shiftRight(32)));
+        intBuf[1].writeUInt32BE(Number(num.and(mask)));
 
         amount = Buffer.concat(intBuf);
 
@@ -150,11 +151,11 @@ class Amount extends SerializedType {
       const sign = isPositive ? "" : "-";
       bytes[0] &= 0x3f;
 
-      const msb = BigInt(bytes.slice(0, 4).readUInt32BE());
-      const lsb = BigInt(bytes.slice(4).readUInt32BE());
-      const bigInt = (msb << BigInt(32)) | lsb;
+      const msb = bigInt(bytes.slice(0, 4).readUInt32BE());
+      const lsb = bigInt(bytes.slice(4).readUInt32BE());
+      const num = msb.shiftLeft(32).or(lsb);
 
-      return `${sign}${bigInt.toString()}`;
+      return `${sign}${num.toString()}`;
     } else {
       const parser = new BinaryParser(this.toString());
       const mantissa = parser.read(8);
