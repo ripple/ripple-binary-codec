@@ -96,7 +96,7 @@ Encode the transaction object for multi-signing.
 
 ## Browser Compatibility
 
-`ripple-binary-codec` is compatible with Browsers that support `BigInt` types.
+`ripple-binary-codec` is compatible with Browsers that support `BigInt` types. All new browsers support `BigInt`, but Internet Explorer and old Safari (versions prior to Safari 14) do not. 
 
 ## Tests
 
