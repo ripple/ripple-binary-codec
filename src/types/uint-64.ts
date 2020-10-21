@@ -2,7 +2,7 @@ import { UInt } from "./uint";
 import { BinaryParser } from "../serdes/binary-parser";
 
 const HEX_REGEX = /^[A-F0-9]{16}$/;
-const mask = BigInt(0x00000000FFFFFFFF)
+const mask = BigInt(0x00000000ffffffff);
 
 /**
  * Derived UInt class for serializing/deserializing 64 bit UInt
@@ -39,11 +39,11 @@ class UInt64 extends UInt {
         throw new Error("value must be an unsigned integer");
       }
 
-      let number = BigInt(val)
+      const number = BigInt(val);
 
-      let intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
-      intBuf[0].writeUInt32BE(Number(number >> BigInt(32)))
-      intBuf[1].writeUInt32BE(Number(number & mask))
+      const intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
+      intBuf[0].writeUInt32BE(Number(number >> BigInt(32)));
+      intBuf[1].writeUInt32BE(Number(number & mask));
 
       return new UInt64(Buffer.concat(intBuf));
     }
@@ -57,10 +57,9 @@ class UInt64 extends UInt {
     }
 
     if (typeof val === "bigint") {
-
-      let intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
-      intBuf[0].writeUInt32BE(Number(val >> BigInt(32)))
-      intBuf[1].writeUInt32BE(Number(val & mask))
+      const intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
+      intBuf[0].writeUInt32BE(Number(val >> BigInt(32)));
+      intBuf[1].writeUInt32BE(Number(val & mask));
 
       return new UInt64(Buffer.concat(intBuf));
     }
@@ -83,8 +82,8 @@ class UInt64 extends UInt {
    * @returns the number represented buy this.bytes
    */
   valueOf(): bigint {
-    let msb = BigInt(this.bytes.slice(0,4).readUInt32BE())
-    let lsb = BigInt(this.bytes.slice(4).readUInt32BE())
+    const msb = BigInt(this.bytes.slice(0, 4).readUInt32BE());
+    const lsb = BigInt(this.bytes.slice(4).readUInt32BE());
     return (msb << BigInt(32)) | lsb;
   }
 

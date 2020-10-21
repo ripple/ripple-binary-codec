@@ -14,7 +14,7 @@ const MAX_IOU_EXPONENT = 80;
 const MAX_IOU_PRECISION = 16;
 const MAX_DROPS = new Decimal("1e17");
 const MIN_XRP = new Decimal("1e-6");
-const mask = BigInt(0x00000000FFFFFFFF)
+const mask = BigInt(0x00000000ffffffff);
 
 /**
  * decimal.js configuration for Amount IOUs
@@ -76,9 +76,9 @@ class Amount extends SerializedType {
 
       const number = BigInt(value);
 
-      let intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
-      intBuf[0].writeUInt32BE(Number(number >> BigInt(32)))
-      intBuf[1].writeUInt32BE(Number(number & mask))
+      const intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
+      intBuf[0].writeUInt32BE(Number(number >> BigInt(32)));
+      intBuf[1].writeUInt32BE(Number(number & mask));
 
       amount = Buffer.concat(intBuf);
 
@@ -99,12 +99,12 @@ class Amount extends SerializedType {
           .abs()
           .toString();
 
-        let bigInt = BigInt(integerNumberString);
-        let intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
-        intBuf[0].writeUInt32BE(Number(bigInt >> BigInt(32)))
-        intBuf[1].writeUInt32BE(Number(bigInt & mask))
+        const bigInt = BigInt(integerNumberString);
+        const intBuf = [Buffer.alloc(4), Buffer.alloc(4)];
+        intBuf[0].writeUInt32BE(Number(bigInt >> BigInt(32)));
+        intBuf[1].writeUInt32BE(Number(bigInt & mask));
 
-      amount = Buffer.concat(intBuf);
+        amount = Buffer.concat(intBuf);
 
         amount[0] |= 0x80;
 
@@ -150,10 +150,10 @@ class Amount extends SerializedType {
       const sign = isPositive ? "" : "-";
       bytes[0] &= 0x3f;
 
-      let msb = BigInt(bytes.slice(0,4).readUInt32BE())
-      let lsb = BigInt(bytes.slice(4).readUInt32BE())
-      let bigInt = (msb << BigInt(32)) | lsb
-      
+      const msb = BigInt(bytes.slice(0, 4).readUInt32BE());
+      const lsb = BigInt(bytes.slice(4).readUInt32BE());
+      const bigInt = (msb << BigInt(32)) | lsb;
+
       return `${sign}${bigInt.toString()}`;
     } else {
       const parser = new BinaryParser(this.toString());
