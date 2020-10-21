@@ -94,6 +94,10 @@ Encode the transaction object for multi-signing.
 }
 ```
 
+## Browser Compatibility
+
+`ripple-binary-codec` is compatible with Browsers that support `BigInt` types.
+
 ## Tests
 
 Run unit tests with:
