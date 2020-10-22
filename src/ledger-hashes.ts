@@ -142,11 +142,6 @@ function ledgerHash(header: ledgerObject): Hash256 {
   assert(header.parent_close_time !== undefined);
   assert(header.close_flags !== undefined);
 
-  if (typeof header.total_coins === "number") {
-    console.log(header.total_coins);
-    console.log(header.total_coins.toString());
-  }
-
   UInt32.from<number>(header.ledger_index).toBytesSink(hash);
   UInt64.from<bigInt.BigInteger>(
     bigInt(String(header.total_coins))
