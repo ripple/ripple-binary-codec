@@ -1,5 +1,7 @@
 const { encode, decode } = require("../dist");
 
+const expect = require('chai').expect
+
 // Notice: no Amount or Fee
 const tx_json = {
   Account: "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ",
@@ -19,62 +21,62 @@ const tx_json = {
 };
 
 describe("encoding and decoding tx_json", function () {
-  test("can encode tx_json without Amount or Fee", function () {
+  it("can encode tx_json without Amount or Fee", function () {
     const encoded = encode(tx_json);
     const decoded = decode(encoded);
-    expect(tx_json).toEqual(decoded);
+    expect(tx_json).to.eql(decoded);
   });
-  test("can encode tx_json with Amount and Fee", function () {
+  it("can encode tx_json with Amount and Fee", function () {
     const my_tx = Object.assign({}, tx_json, {
       Amount: "1000",
       Fee: "10",
     });
     const encoded = encode(my_tx);
     const decoded = decode(encoded);
-    expect(my_tx).toEqual(decoded);
+    expect(my_tx).to.eql(decoded);
   });
-  test("throws when Amount is invalid", function () {
+  it("throws when Amount is invalid", function () {
     const my_tx = Object.assign({}, tx_json, {
       Amount: "1000.001",
       Fee: "10",
     });
     expect(() => {
       encode(my_tx);
-    }).toThrow();
+    }).to.throw();
   });
-  test("throws when Fee is invalid", function () {
+  it("throws when Fee is invalid", function () {
     const my_tx = Object.assign({}, tx_json, {
       Amount: "1000",
       Fee: "10.123",
     });
     expect(() => {
       encode(my_tx);
-    }).toThrow();
+    }).to.throw();
   });
-  test("throws when Amount and Fee are invalid", function () {
+  it("throws when Amount and Fee are invalid", function () {
     const my_tx = Object.assign({}, tx_json, {
       Amount: "1000.789",
       Fee: "10.123",
     });
     expect(() => {
       encode(my_tx);
-    }).toThrow();
+    }).to.throw();
   });
-  test("throws when Amount is a number instead of a string-encoded integer", function () {
+  it("throws when Amount is a number instead of a string-encoded integer", function () {
     const my_tx = Object.assign({}, tx_json, {
       Amount: 1000.789,
     });
     expect(() => {
       encode(my_tx);
-    }).toThrow();
+    }).to.throw();
   });
 
-  test("throws when Fee is a number instead of a string-encoded integer", function () {
+  it("throws when Fee is a number instead of a string-encoded integer", function () {
     const my_tx = Object.assign({}, tx_json, {
       Amount: 1234.56,
     });
     expect(() => {
       encode(my_tx);
-    }).toThrow();
+    }).to.throw();
   });
 });

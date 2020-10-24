@@ -1,5 +1,7 @@
 const { encode, decode } = require("../dist");
 
+const expect = require('chai').expect
+
 let str =
   "1100612200000000240000000125000068652D0000000055B6632D6376A2D9319F20A1C6DCCB486432D1E4A79951229D4C3DE2946F51D56662400009184E72A00081140DD319918CD5AE792BF7EC80D63B0F01B4573BBC";
 let lower = str.toLowerCase();
@@ -30,16 +32,16 @@ let jsonUpper = {
 };
 
 describe("Lowercase hex test", () => {
-  test("Correctly decodes", () => {
-    expect(decode(lower)).toEqual(decode(str));
+  it("Correctly decodes", () => {
+    expect(decode(lower)).to.eql(decode(str));
   });
-  test("Re-encodes to uppercase hex", () => {
-    expect(encode(decode(lower))).toEqual(str);
+  it("Re-encodes to uppercase hex", () => {
+    expect(encode(decode(lower))).to.eql(str);
   });
-  test("Encode when hex field lowercase", () => {
-    expect(encode(json)).toBe(bin);
+  it("Encode when hex field lowercase", () => {
+    expect(encode(json)).to.eql(bin);
   });
-  test("Re-decodes to uppercase hex", () => {
-    expect(decode(encode(json))).toEqual(jsonUpper);
+  it("Re-decodes to uppercase hex", () => {
+    expect(decode(encode(json))).to.eql(jsonUpper);
   });
 });

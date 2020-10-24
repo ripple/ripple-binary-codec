@@ -1,7 +1,11 @@
 const { ShaMap } = require("../dist/shamap.js");
 const { binary, HashPrefix } = require("../dist/coretypes");
 const { coreTypes } = require("../dist/types");
-const { loadFixture } = require("./utils");
+
+const expect = require('chai').expect
+
+const ledger38129 = require("./fixtures/ledger-full-38129.json");
+const ledger40000 = require("./fixtures/ledger-full-40000.json");
 
 function now() {
   return Number(Date.now()) / 1000;
@@ -29,11 +33,11 @@ function makeItem(indexArg) {
 describe("ShaMap", () => {
   now();
 
-  test("hashes to zero when empty", () => {
+  it("hashes to zero when empty", () => {
     const map = new ShaMap();
-    expect(map.hash().toHex()).toBe(ZERO);
+    expect(map.hash().toHex()).to.eql(ZERO);
   });
-  test("creates the same hash no matter which order items are added", () => {
+  it("creates the same hash no matter which order items are added", () => {
     let map = new ShaMap();
     const items = [
       "0",
@@ -48,15 +52,14 @@ describe("ShaMap", () => {
     ];
     items.forEach((i) => map.addItem(...makeItem(i)));
     const h1 = map.hash();
-    expect(h1.eq(h1)).toBe(true);
+    expect(h1.eq(h1)).to.eql(true);
     map = new ShaMap();
     items.reverse().forEach((i) => map.addItem(...makeItem(i)));
-    expect(map.hash()).toStrictEqual(h1);
+    expect(map.hash()).to.eql(h1);
   });
-  function factory(fixture) {
-    test(`recreate account state hash from ${fixture}`, () => {
+  function factory(ledger) {
+    it(`recreate account state hash from ${ledger.ledger_index}`, () => {
       const map = new ShaMap();
-      const ledger = loadFixture(fixture);
       // const t = now();
       const leafNodePrefix = HashPrefix.accountStateEntry;
       ledger.accountState
@@ -77,12 +80,12 @@ describe("ShaMap", () => {
           };
         })
         .forEach((so) => map.addItem(so.index, so));
-      expect(map.hash().toHex()).toBe(ledger.account_hash);
+      expect(map.hash().toHex()).to.eql(ledger.account_hash);
       // console.log('took seconds: ', (now() - t));
     });
   }
-  factory("ledger-full-38129.json");
-  factory("ledger-full-40000.json");
+  factory(ledger38129);
+  factory(ledger40000);
   // factory('ledger-4320277.json');
   // factory('14280680.json');
 });

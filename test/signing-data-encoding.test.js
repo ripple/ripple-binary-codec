@@ -4,6 +4,8 @@ const {
   encodeForMultisigning,
 } = require("../dist");
 
+const expect = require('chai').expect
+
 const tx_json = {
   Account: "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ",
   Amount: "1000",
@@ -25,9 +27,9 @@ const tx_json = {
 };
 
 describe("Signing data", function () {
-  test("can create single signing blobs", function () {
+  it("can create single signing blobs", function () {
     const actual = encodeForSigning(tx_json);
-    expect(actual).toBe(
+    expect(actual).to.eql(
       [
         "53545800", // signingPrefix
         // TransactionType
@@ -65,11 +67,11 @@ describe("Signing data", function () {
       ].join("")
     );
   });
-  test("can create multi signing blobs", function () {
+  it("can create multi signing blobs", function () {
     const signingAccount = "rJZdUusLDtY9NEsGea7ijqhVrXv98rYBYN";
     const signingJson = Object.assign({}, tx_json, { SigningPubKey: "" });
     const actual = encodeForMultisigning(signingJson, signingAccount);
-    expect(actual).toBe(
+    expect(actual).to.eql(
       [
         "534D5400", // signingPrefix
         // TransactionType
@@ -109,13 +111,13 @@ describe("Signing data", function () {
       ].join("")
     );
   });
-  test("can create claim blob", function () {
+  it("can create claim blob", function () {
     const channel =
       "43904CBFCDCEC530B4037871F86EE90BF799DF8D2E0EA564BC8A3F332E4F5FB1";
     const amount = "1000";
     const json = { channel, amount };
     const actual = encodeForSigningClaim(json);
-    expect(actual).toBe(
+    expect(actual).to.eql(
       [
         // hash prefix
         "434C4D00",

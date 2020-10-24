@@ -1,5 +1,7 @@
 const { encode, decode } = require("../dist");
 
+const expect = require('chai').expect
+
 let json = {
   Account: "rrrrrrrrrrrrrrrrrrrrrhoLvTp",
   Sequence: 0,
@@ -20,19 +22,19 @@ let binary =
   "24000000006840000000000000007300760081140000000000000000000000000000000000000000";
 
 describe("Can encode Pseudo Transactions", () => {
-  test("Correctly encodes Pseudo Transaciton", () => {
-    expect(encode(json)).toEqual(binary);
+  it("Correctly encodes Pseudo Transaciton", () => {
+    expect(encode(json)).to.eql(binary);
   });
 
-  test("Can decode account objects", () => {
-    expect(decode(encode(json))).toEqual(json);
+  it("Can decode account objects", () => {
+    expect(decode(encode(json))).to.eql(json);
   });
 
-  test("Blank AccountID is ACCOUNT_ZERO", () => {
-    expect(encode(json_blank_acct)).toEqual(binary);
+  it("Blank AccountID is ACCOUNT_ZERO", () => {
+    expect(encode(json_blank_acct)).to.eql(binary);
   });
 
-  test("Decodes Blank AccountID", () => {
-    expect(decode(encode(json_blank_acct))).toEqual(json);
+  it("Decodes Blank AccountID", () => {
+    expect(decode(encode(json_blank_acct))).to.eql(json);
   });
 });

@@ -1,0 +1,28 @@
+<!-- link to mocha css stylesheet -->
+<link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet" />
+
+<!--  write a div with id "mocha" for the output to be inserted into -->
+<div id="mocha"></div>
+
+<!-- load mocha framework -->
+<script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+
+<!-- load any other libraries like the chai assertion library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.1.0/chai.js"></script>
+
+
+<!-- setup mocha to use the BDD interface -->
+<!-- Note: you can use TDD here instead -->
+<!-- depending on how you are writing your tests -->
+<!-- more information: http://mochajs.org/#tdd -->
+<script>
+  mocha.setup("bdd");
+</script>
+
+<!-- write tests -->
+<script src="./bundle.js"></script>
+
+<!-- run mocha -->
+<script>
+  mocha.run();
+</script>

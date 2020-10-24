@@ -1,7 +1,8 @@
-const { loadFixture } = require("./utils");
 const { coreTypes } = require("../dist/types");
 const { Amount } = coreTypes;
-const fixtures = loadFixture("data-driven-tests.json");
+const fixtures = require("./fixtures/data-driven-tests.json");
+
+const expect = require('chai').expect;
 
 function amountErrorTests() {
   fixtures.values_tests
@@ -17,15 +18,15 @@ function amountErrorTests() {
         expect(() => {
           Amount.from(f.test_json);
           JSON.stringify(f.test_json);
-        }).toThrow();
+        }).to.throw();
       });
     });
 }
 
 describe("Amount", function () {
   it("can be parsed from", function () {
-    expect(Amount.from("1000000") instanceof Amount).toBe(true);
-    expect(Amount.from("1000000").toJSON()).toEqual("1000000");
+    expect(Amount.from("1000000") instanceof Amount).to.eql(true);
+    expect(Amount.from("1000000").toJSON()).to.eql("1000000");
     const fixture = {
       value: "1",
       issuer: "0000000000000000000000000000000000000000",
@@ -37,7 +38,7 @@ describe("Amount", function () {
       issuer: "rrrrrrrrrrrrrrrrrrrrrhoLvTp",
       currency: "USD",
     };
-    expect(amt.toJSON()).toEqual(rewritten);
+    expect(amt.toJSON()).to.eql(rewritten);
   });
   amountErrorTests();
 });

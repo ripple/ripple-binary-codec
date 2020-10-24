@@ -1,6 +1,8 @@
 const fixtures = require("./fixtures/codec-fixtures.json");
 const { decode, encode, decodeLedgerData } = require("../dist");
 
+const expect = require('chai').expect
+
 function json(object) {
   return JSON.stringify(object);
 }
@@ -14,17 +16,17 @@ describe("ripple-binary-codec", function () {
     describe(name, function () {
       entries.forEach((t, testN) => {
         // eslint-disable-next-line max-len
-        test(`${name}[${testN}] can encode ${truncateForDisplay(
+        it(`${name}[${testN}] can encode ${truncateForDisplay(
           json(t.json)
         )} to ${truncateForDisplay(t.binary)}`, () => {
-          expect(encode(t.json)).toEqual(t.binary);
+          expect(encode(t.json)).to.eql(t.binary);
         });
         // eslint-disable-next-line max-len
-        test(`${name}[${testN}] can decode ${truncateForDisplay(
+        it(`${name}[${testN}] can decode ${truncateForDisplay(
           t.binary
         )} to ${truncateForDisplay(json(t.json))}`, () => {
           const decoded = decode(t.binary);
-          expect(decoded).toEqual(t.json);
+          expect(decoded).to.eql(t.json);
         });
       });
     });
@@ -35,11 +37,11 @@ describe("ripple-binary-codec", function () {
   describe("ledgerData", function () {
     if (fixtures.ledgerData) {
       fixtures.ledgerData.forEach((t, testN) => {
-        test(`ledgerData[${testN}] can decode ${t.binary} to ${json(
+        it(`ledgerData[${testN}] can decode ${t.binary} to ${json(
           t.json
         )}`, () => {
           const decoded = decodeLedgerData(t.binary);
-          expect(t.json).toEqual(decoded);
+          expect(t.json).to.eql(decoded);
         });
       });
     }
