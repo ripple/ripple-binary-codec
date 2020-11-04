@@ -445,6 +445,16 @@
       }
     ],
     [
+      "TicketCount",
+      {
+        "nth": 41,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "UInt32"
+      }
+    ],
+    [
       "IndexNext",
       {
         "nth": 1,
