@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer/'
+import { Buffer } from "buffer/";
 
 /**
  * Write a 32 bit integer to a Buffer

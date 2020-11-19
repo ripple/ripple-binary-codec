@@ -4,7 +4,7 @@ import { HashPrefix } from "./hash-prefixes";
 import { Sha512Half } from "./hashes";
 import { Hash256 } from "./types/hash-256";
 import { BytesList } from "./serdes/binary-serializer";
-import { Buffer } from 'buffer/';
+import { Buffer } from "buffer/";
 
 /**
  * Abstract class describing a SHAMapNode

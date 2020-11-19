@@ -1,6 +1,6 @@
 import { UInt } from "./uint";
 import { BinaryParser } from "../serdes/binary-parser";
-import { Buffer } from 'buffer/'
+import { Buffer } from "buffer/";
 
 /**
  * Derived UInt class for serializing/deserializing 8 bit UInt

@@ -2,7 +2,7 @@ import { UInt } from "./uint";
 import { BinaryParser } from "../serdes/binary-parser";
 import * as bigInt from "big-integer";
 import { isInstance } from "big-integer";
-import { Buffer } from 'buffer/'
+import { Buffer } from "buffer/";
 
 const HEX_REGEX = /^[A-F0-9]{16}$/;
 const mask = bigInt(0x00000000ffffffff);
