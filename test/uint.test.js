@@ -34,8 +34,8 @@ test("compareToTest[7]", () => {
 });
 
 test("UInt64 from string zero", () => {
-  expect(UInt64.from('0')).toEqual(UInt64.from(0))
-})
+  expect(UInt64.from("0")).toEqual(UInt64.from(0));
+});
 
 test("valueOfTests", () => {
   let val = UInt8.from(1);
