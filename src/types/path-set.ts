@@ -122,12 +122,12 @@ class Hop extends SerializedType {
       result.account = (AccountID.fromParser(hopParser) as AccountID).toJSON();
     }
 
-    if (type & TYPE_CURRENCY) {
-      result.currency = (Currency.fromParser(hopParser) as Currency).toJSON();
-    }
-
     if (type & TYPE_ISSUER) {
       result.issuer = (AccountID.fromParser(hopParser) as AccountID).toJSON();
+    }
+
+    if (type & TYPE_CURRENCY) {
+      result.currency = (Currency.fromParser(hopParser) as Currency).toJSON();
     }
 
     return result;
