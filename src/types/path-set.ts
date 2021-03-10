@@ -130,20 +130,20 @@ class Hop extends SerializedType {
       issuer = (AccountID.fromParser(hopParser) as AccountID).toJSON();
     }
 
-    const result: HopObject = {}
+    const result: HopObject = {};
     if (account) {
-      result.account = account
+      result.account = account;
     }
 
-    if(issuer) {
-      result.issuer = issuer
+    if (issuer) {
+      result.issuer = issuer;
     }
 
-    if(currency) {
-      result.currency = currency
+    if (currency) {
+      result.currency = currency;
     }
 
-    return result
+    return result;
   }
 
   /**
