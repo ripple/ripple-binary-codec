@@ -55,7 +55,7 @@ class UInt64 extends UInt {
 
     if (typeof val === "string") {
       if (val === "0") {
-        return UInt64.from(0)
+        return UInt64.from(0);
       }
 
       if (!HEX_REGEX.test(val)) {
