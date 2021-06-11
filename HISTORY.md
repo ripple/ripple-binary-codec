@@ -1,6 +1,6 @@
 # ripple-binary-codec Release History
 
-## 1.1.2 (2021-06-11)
+## 1.1.3 (2021-06-11)
 - Fix for case UInt64.from string allowing lowercase hex
 - Fix for `ValidatorToReEnable` field code
 
