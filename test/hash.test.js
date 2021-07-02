@@ -50,10 +50,10 @@ describe("Hash256", function () {
 });
 
 describe("Currency", function () {
-  test("Will have a null iso() for dodgy XRP ", function () {
-    const bad = Currency.from("0000000000000000000000005852500000000000");
-    expect(bad.iso()).toBeUndefined();
-    expect(bad.isNative()).toBe(false);
+  test("Will throw an error for dodgy XRP ", function () {
+    expect(() =>
+      Currency.from("0000000000000000000000005852500000000000")
+    ).toThrow();
   });
   test("Currency with lowercase letters decode to hex", () => {
     expect(Currency.from("xRp").toJSON()).toBe(
@@ -72,6 +72,10 @@ describe("Currency", function () {
   test("can be constructed from a Buffer", function () {
     const xrp = new Currency(Buffer.alloc(20));
     expect(xrp.iso()).toBe("XRP");
+  });
+  test("Can handle non-standard currency codes", () => {
+    const currency = "015841551A748AD2C1F76FF6ECB0CCCD00000000";
+    expect(Currency.from(currency).toJSON()).toBe(currency);
   });
   test("throws on invalid reprs", function () {
     expect(() => Currency.from(Buffer.alloc(19))).toThrow();
