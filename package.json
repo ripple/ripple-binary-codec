@@ -8,6 +8,7 @@
     "test/*"
   ],
   "main": "dist/",
+  "types": "dist/index.d.ts",
   "directories": {
     "test": "test"
   },
