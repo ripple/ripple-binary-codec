@@ -40,7 +40,7 @@
     "Check": 67,
     "Nickname": 110,
     "Contract": 99,
-    "GeneratorMap": 103,
+    "NFTokenPage": 80,
     "NegativeUNL": 78
   },
   "FIELDS": [
@@ -88,6 +88,16 @@
       "SignerWeight",
       {
         "nth": 3,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "UInt16"
+      }
+    ],
+    [
+      "TransferFee",
+      {
+        "nth": 4,
         "isVLEncoded": false,
         "isSerialized": true,
         "isSigningField": true,
@@ -625,6 +635,16 @@
       }
     ],
     [
+      "TokenID",
+      {
+        "nth": 10,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "Hash256"
+      }
+    ],
+    [
       "BookDirectory",
       {
         "nth": 16,
@@ -895,7 +915,7 @@
       }
     ],
     [
-      "Generator",
+      "URI",
       {
         "nth": 5,
         "isVLEncoded": true,
@@ -1135,6 +1155,16 @@
       }
     ],
     [
+      "Minter",
+      {
+        "nth": 9,
+        "isVLEncoded": true,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "AccountID"
+      }
+    ],
+    [
       "ObjectEndMarker",
       {
         "nth": 1,
@@ -1245,6 +1275,16 @@
       }
     ],
     [
+      "NonFungibleToken",
+      {
+        "nth": 12,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "STObject"
+      }
+    ],
+    [
       "Signer",
       {
         "nth": 16,
@@ -1348,6 +1388,16 @@
       "Memos",
       {
         "nth": 9,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "STArray"
+      }
+    ],
+    [
+      "NonFungibleTokens",
+      {
+        "nth": 10,
         "isVLEncoded": false,
         "isSerialized": true,
         "isSigningField": true,
@@ -1555,6 +1605,36 @@
       }
     ],
     [
+      "TokenTaxon",
+      {
+        "nth": 42,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "UInt32"
+      }
+    ],
+    [
+      "MintedTokens",
+      {
+        "nth": 43,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "UInt32"
+      }
+    ],
+    [
+      "BurnedTokens",
+      {
+        "nth": 44,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "UInt32"
+      }
+    ],
+    [
       "Channel",
       {
         "nth": 22,
@@ -1578,6 +1658,36 @@
       "CheckID",
       {
         "nth": 24,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "Hash256"
+      }
+    ],
+    [
+      "ValidatedHash",
+      {
+        "nth": 25,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "Hash256"
+      }
+    ],
+    [
+      "PreviousPageMin",
+      {
+        "nth": 26,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "Hash256"
+      }
+    ],
+    [
+      "NextPageMin",
+      {
+        "nth": 27,
         "isVLEncoded": false,
         "isSerialized": true,
         "isSigningField": true,
@@ -1764,7 +1874,8 @@
     "DepositPreauth": 19,
     "TrustSet": 20,
     "AccountDelete": 21,
-
+    "NFTokenMint": 25,
+    "NFTokenBurn": 26,
     "EnableAmendment": 100,
     "SetFee": 101,
     "UNLModify": 102
