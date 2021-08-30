@@ -1,19 +1,19 @@
-import { Buffer } from "buffer/";
+import { Buffer } from 'buffer/'
 
 /**
- * Write a 32 bit integer to a Buffer
+ * Write a 32 bit integer to a Buffer.
  *
- * @param uint32 32 bit integer to write to buffer
- * @returns a buffer with the bytes representation of uint32
+ * @param uint32 - 32 bit integer to write to buffer.
+ * @returns A buffer with the bytes representation of uint32.
  */
 function bytes(uint32: number): Buffer {
-  const result = Buffer.alloc(4);
-  result.writeUInt32BE(uint32, 0);
-  return result;
+  const result = Buffer.alloc(4)
+  result.writeUInt32BE(uint32, 0)
+  return result
 }
 
 /**
- * Maps HashPrefix names to their byte representation
+ * Maps HashPrefix names to their byte representation.
  */
 const HashPrefix: Record<string, Buffer> = {
   transactionID: bytes(0x54584e00),
@@ -35,6 +35,6 @@ const HashPrefix: Record<string, Buffer> = {
   proposal: bytes(0x50525000),
   // payment channel claim
   paymentChannelClaim: bytes(0x434c4d00),
-};
+}
 
-export { HashPrefix };
+export default HashPrefix

@@ -1,162 +1,158 @@
-import { Field, FieldInstance } from "../enums";
-import { SerializedType, JsonObject } from "./serialized-type";
-import {
-  xAddressToClassicAddress,
-  isValidXAddress,
-} from "ripple-address-codec";
-import { BinaryParser } from "../serdes/binary-parser";
-import { BinarySerializer, BytesList } from "../serdes/binary-serializer";
-import { Buffer } from "buffer/";
+import { Buffer } from 'buffer/'
+import { xAddressToClassicAddress, isValidXAddress } from 'ripple-address-codec'
 
-const OBJECT_END_MARKER_BYTE = Buffer.from([0xe1]);
-const OBJECT_END_MARKER = "ObjectEndMarker";
-const ST_OBJECT = "STObject";
-const DESTINATION = "Destination";
-const ACCOUNT = "Account";
-const SOURCE_TAG = "SourceTag";
-const DEST_TAG = "DestinationTag";
+import { Field, FieldInstance } from '../enums'
+import BinaryParser from '../serdes/binary-parser'
+import { BinarySerializer, BytesList } from '../serdes/binary-serializer'
 
-/**
- * Break down an X-Address into an account and a tag
- *
- * @param field Name of field
- * @param xAddress X-Address corresponding to the field
- */
+import { SerializedType, JsonObject } from './serialized-type'
+
+const OBJECT_END_MARKER_BYTE = Buffer.from([0xe1])
+const OBJECT_END_MARKER = 'ObjectEndMarker'
+const ST_OBJECT = 'STObject'
+const DESTINATION = 'Destination'
+const ACCOUNT = 'Account'
+const SOURCE_TAG = 'SourceTag'
+const DEST_TAG = 'DestinationTag'
+
 function handleXAddress(field: string, xAddress: string): JsonObject {
-  const decoded = xAddressToClassicAddress(xAddress);
+  const decoded = xAddressToClassicAddress(xAddress)
 
-  let tagName;
-  if (field === DESTINATION) tagName = DEST_TAG;
-  else if (field === ACCOUNT) tagName = SOURCE_TAG;
-  else if (decoded.tag !== false)
-    throw new Error(`${field} cannot have an associated tag`);
+  let tagName
+  if (field === DESTINATION) {
+    tagName = DEST_TAG
+  } else if (field === ACCOUNT) {
+    tagName = SOURCE_TAG
+  } else if (decoded.tag !== false) {
+    throw new Error(`${field} cannot have an associated tag`)
+  }
 
   return decoded.tag !== false
     ? { [field]: decoded.classicAddress, [tagName]: decoded.tag }
-    : { [field]: decoded.classicAddress };
+    : { [field]: decoded.classicAddress }
 }
 
 /**
- * Validate that two objects don't both have the same tag fields
+ * Validate that two objects don't both have the same tag fields.
  *
- * @param obj1 First object to check for tags
- * @param obj2 Second object to check for tags
- * @throws When both objects have SourceTag or DestinationTag
+ * @param obj1 - First object to check for tags.
+ * @param obj2 - Second object to check for tags.
+ * @throws When both objects have SourceTag or DestinationTag.
  */
 function checkForDuplicateTags(obj1: JsonObject, obj2: JsonObject): void {
-  if (!(obj1[SOURCE_TAG] === undefined || obj2[SOURCE_TAG] === undefined))
-    throw new Error("Cannot have Account X-Address and SourceTag");
-  if (!(obj1[DEST_TAG] === undefined || obj2[DEST_TAG] === undefined))
-    throw new Error("Cannot have Destination X-Address and DestinationTag");
+  if (!(obj1[SOURCE_TAG] === undefined || obj2[SOURCE_TAG] === undefined)) {
+    throw new Error('Cannot have Account X-Address and SourceTag')
+  }
+  if (!(obj1[DEST_TAG] === undefined || obj2[DEST_TAG] === undefined)) {
+    throw new Error('Cannot have Destination X-Address and DestinationTag')
+  }
 }
 
 /**
- * Class for Serializing/Deserializing objects
+ * Class for Serializing/Deserializing objects.
  */
-class STObject extends SerializedType {
+export default class STObject extends SerializedType {
   /**
-   * Construct a STObject from a BinaryParser
+   * Construct a STObject from a BinaryParser.
    *
-   * @param parser BinaryParser to read STObject from
-   * @returns A STObject object
+   * @param parser - BinaryParser to read STObject from.
+   * @returns A STObject object.
    */
   static fromParser(parser: BinaryParser): STObject {
-    const list: BytesList = new BytesList();
-    const bytes: BinarySerializer = new BinarySerializer(list);
+    const list: BytesList = new BytesList()
+    const bytes: BinarySerializer = new BinarySerializer(list)
 
     while (!parser.end()) {
-      const field = parser.readField();
+      const field = parser.readField()
       if (field.name === OBJECT_END_MARKER) {
-        break;
+        break
       }
 
-      const associatedValue = parser.readFieldValue(field);
+      const associatedValue = parser.readFieldValue(field)
 
-      bytes.writeFieldAndValue(field, associatedValue);
+      bytes.writeFieldAndValue(field, associatedValue)
       if (field.type.name === ST_OBJECT) {
-        bytes.put(OBJECT_END_MARKER_BYTE);
+        bytes.put(OBJECT_END_MARKER_BYTE)
       }
     }
 
-    return new STObject(list.toBytes());
+    return new STObject(list.toBytes())
   }
 
   /**
-   * Construct a STObject from a JSON object
+   * Construct a STObject from a JSON object.
    *
-   * @param value An object to include
-   * @param filter optional, denote which field to include in serialized object
-   * @returns a STObject object
+   * @param value - An object to include.
+   * @param filter - Optional, denote which field to include in serialized object.
+   * @returns A STObject object.
    */
   static from<T extends STObject | JsonObject>(
     value: T,
-    filter?: (...any) => boolean
+    filter?: (...any) => boolean,
   ): STObject {
     if (value instanceof STObject) {
-      return value;
+      return value
     }
 
-    const list: BytesList = new BytesList();
-    const bytes: BinarySerializer = new BinarySerializer(list);
+    const list: BytesList = new BytesList()
+    const bytes: BinarySerializer = new BinarySerializer(list)
 
     const xAddressDecoded = Object.entries(value).reduce((acc, [key, val]) => {
-      let handled: JsonObject | undefined = undefined;
+      let handled: JsonObject | undefined
       if (isValidXAddress(val)) {
-        handled = handleXAddress(key, val);
-        checkForDuplicateTags(handled, value as JsonObject);
+        handled = handleXAddress(key, val)
+        checkForDuplicateTags(handled, value as JsonObject)
       }
-      return Object.assign(acc, handled ?? { [key]: val });
-    }, {});
+      return Object.assign(acc, handled ?? { [key]: val })
+    }, {})
 
     let sorted = Object.keys(xAddressDecoded)
-      .map((f: string): FieldInstance => Field[f] as FieldInstance)
+      .map((field: string): FieldInstance => Field[field] as FieldInstance)
       .filter(
-        (f: FieldInstance): boolean =>
-          f !== undefined &&
-          xAddressDecoded[f.name] !== undefined &&
-          f.isSerialized
+        (field: FieldInstance): boolean =>
+          field !== undefined &&
+          xAddressDecoded[field.name] !== undefined &&
+          field.isSerialized,
       )
       .sort((a, b) => {
-        return a.ordinal - b.ordinal;
-      });
+        return a.ordinal - b.ordinal
+      })
 
     if (filter !== undefined) {
-      sorted = sorted.filter(filter);
+      sorted = sorted.filter(filter)
     }
 
     sorted.forEach((field) => {
       const associatedValue = field.associatedType.from(
-        xAddressDecoded[field.name]
-      );
+        xAddressDecoded[field.name],
+      )
 
-      bytes.writeFieldAndValue(field, associatedValue);
+      bytes.writeFieldAndValue(field, associatedValue)
       if (field.type.name === ST_OBJECT) {
-        bytes.put(OBJECT_END_MARKER_BYTE);
+        bytes.put(OBJECT_END_MARKER_BYTE)
       }
-    });
+    })
 
-    return new STObject(list.toBytes());
+    return new STObject(list.toBytes())
   }
 
   /**
-   * Get the JSON interpretation of this.bytes
+   * Get the JSON interpretation of this.bytes.
    *
-   * @returns a JSON object
+   * @returns A JSON object.
    */
   toJSON(): JsonObject {
-    const objectParser = new BinaryParser(this.toString());
-    const accumulator = {};
+    const objectParser = new BinaryParser(this.toString())
+    const accumulator = {}
 
     while (!objectParser.end()) {
-      const field = objectParser.readField();
+      const field = objectParser.readField()
       if (field.name === OBJECT_END_MARKER) {
-        break;
+        break
       }
-      accumulator[field.name] = objectParser.readFieldValue(field).toJSON();
+      accumulator[field.name] = objectParser.readFieldValue(field).toJSON()
     }
 
-    return accumulator;
+    return accumulator
   }
 }
-
-export { STObject };

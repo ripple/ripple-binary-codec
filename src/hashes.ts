@@ -1,77 +1,79 @@
-import { HashPrefix } from "./hash-prefixes";
-import * as createHash from "create-hash";
-import { Hash256 } from "./types/hash-256";
-import { BytesList } from "./serdes/binary-serializer";
-import { Buffer } from "buffer/";
+import { Buffer } from 'buffer/'
+import * as createHash from 'create-hash'
+
+import HashPrefix from './hash-prefixes'
+import { BytesList } from './serdes/binary-serializer'
+import Hash256 from './types/hash-256'
 
 /**
- * Class for hashing with SHA512
+ * Class for hashing with SHA512.
+ *
  * @extends BytesList So SerializedTypes can write bytes to a Sha512Half
  */
 class Sha512Half extends BytesList {
-  private hash: createHash = createHash("sha512");
+  private hash: createHash = createHash('sha512')
 
   /**
-   * Construct a new Sha512Hash and write bytes this.hash
+   * Construct a new Sha512Hash and write bytes this.hash.
    *
-   * @param bytes bytes to write to this.hash
-   * @returns the new Sha512Hash object
+   * @param bytes - Bytes to write to this.hash.
+   * @returns The new Sha512Hash object.
    */
   static put(bytes: Buffer): Sha512Half {
-    return new Sha512Half().put(bytes);
+    return new Sha512Half().put(bytes)
   }
 
   /**
-   * Write bytes to an existing Sha512Hash
+   * Write bytes to an existing Sha512Hash.
    *
-   * @param bytes bytes to write to object
-   * @returns the Sha512 object
+   * @param bytes - Bytes to write to object.
+   * @returns The Sha512 object.
    */
   put(bytes: Buffer): Sha512Half {
-    this.hash.update(bytes);
-    return this;
+    this.hash.update(bytes)
+    return this
   }
 
   /**
-   * Compute SHA512 hash and slice in half
+   * Compute SHA512 hash and slice in half.
    *
-   * @returns half of a SHA512 hash
+   * @returns Half of a SHA512 hash.
    */
   finish256(): Buffer {
-    const bytes: Buffer = this.hash.digest();
-    return bytes.slice(0, 32);
+    const bytes: Buffer = this.hash.digest()
+    return bytes.slice(0, 32)
   }
 
   /**
-   * Constructs a Hash256 from the Sha512Half object
+   * Constructs a Hash256 from the Sha512Half object.
    *
-   * @returns a Hash256 object
+   * @returns A Hash256 object.
    */
   finish(): Hash256 {
-    return new Hash256(this.finish256());
+    return new Hash256(this.finish256())
   }
 }
 
 /**
- * compute SHA512 hash of a list of bytes
+ * Compute SHA512 hash of a list of bytes.
  *
- * @param args zero or more arguments to hash
- * @returns the sha512half hash of the arguments.
+ * @param args - Zero or more arguments to hash.
+ * @returns The sha512half hash of the arguments.
  */
 function sha512Half(...args: Buffer[]): Buffer {
-  const hash = new Sha512Half();
-  args.forEach((a) => hash.put(a));
-  return hash.finish256();
+  const hash = new Sha512Half()
+  args.forEach((arg) => hash.put(arg))
+  return hash.finish256()
 }
 
 /**
- * Construct a transactionID from a Serialized Transaction
+ * Construct a transactionID from a Serialized Transaction.
  *
- * @param serialized bytes to hash
- * @returns a Hash256 object
+ * @param serialized - Bytes to hash.
+ * @returns A Hash256 object.
  */
 function transactionID(serialized: Buffer): Hash256 {
-  return new Hash256(sha512Half(HashPrefix.transactionID, serialized));
+  return new Hash256(sha512Half(HashPrefix.transactionID, serialized))
 }
 
-export { Sha512Half, sha512Half, transactionID };
+export { Sha512Half, sha512Half, transactionID }

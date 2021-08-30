@@ -1,17 +1,17 @@
+import * as binary from './binary'
 import {
   Field,
   TransactionType,
   LedgerEntryType,
   Type,
   TransactionResult,
-} from "./enums";
-import * as types from "./types";
-import * as binary from "./binary";
-import { ShaMap } from "./shamap";
-import * as ledgerHashes from "./ledger-hashes";
-import * as hashes from "./hashes";
-import { quality } from "./quality";
-import { HashPrefix } from "./hash-prefixes";
+} from './enums'
+import HashPrefix from './hash-prefixes'
+import * as hashes from './hashes'
+import * as ledgerHashes from './ledger-hashes'
+import { quality } from './quality'
+import { ShaMap } from './shamap'
+import types from './types'
 
 export {
   hashes,
@@ -26,4 +26,4 @@ export {
   HashPrefix,
   ShaMap,
   types,
-};
+}

@@ -1,103 +1,106 @@
-import * as assert from "assert";
-import { quality, binary } from "./coretypes";
-import { decodeLedgerData } from "./ledger-hashes";
-import { ClaimObject } from "./binary";
-import { JsonObject } from "./types/serialized-type";
+import * as assert from 'assert'
+
+import { ClaimObject } from './binary'
+import { quality, binary } from './coretypes'
+import { decodeLedgerData } from './ledger-hashes'
+import { JsonObject } from './types/serialized-type'
+
 const {
   signingData,
   signingClaimData,
   multiSigningData,
   binaryToJSON,
   serializeObject,
-} = binary;
+} = binary
 
 /**
- * Decode a transaction
+ * Decode a transaction.
  *
- * @param binary hex-string of the encoded transaction
- * @returns the JSON representation of the transaction
+ * @param hexString - Hex-string of the encoded transaction.
+ * @returns The JSON representation of the transaction.
  */
-function decode(binary: string): JsonObject {
-  assert(typeof binary === "string", "binary must be a hex string");
-  return binaryToJSON(binary);
+function decode(hexString: string): JsonObject {
+  assert(typeof hexString === 'string', 'argument must be a hex string')
+  return binaryToJSON(hexString)
 }
 
 /**
- * Encode a transaction
+ * Encode a transaction.
  *
- * @param json The JSON representation of a transaction
- * @returns A hex-string of the encoded transaction
+ * @param json - The JSON representation of a transaction.
+ * @returns A hex-string of the encoded transaction.
  */
-function encode(json: object): string {
-  assert(typeof json === "object");
+function encode(json: Record<string, unknown>): string {
+  assert(typeof json === 'object')
   return serializeObject(json as JsonObject)
-    .toString("hex")
-    .toUpperCase();
+    .toString('hex')
+    .toUpperCase()
 }
 
 /**
- * Encode a transaction and prepare for signing
+ * Encode a transaction and prepare for signing.
  *
- * @param json JSON object representing the transaction
- * @param signer string representing the account to sign the transaction with
- * @returns a hex string of the encoded transaction
+ * @param json - JSON object representing the transaction.
+ * @returns A hex string of the encoded transaction.
  */
-function encodeForSigning(json: object): string {
-  assert(typeof json === "object");
+function encodeForSigning(json: Record<string, unknown>): string {
+  assert(typeof json === 'object')
   return signingData(json as JsonObject)
-    .toString("hex")
-    .toUpperCase();
+    .toString('hex')
+    .toUpperCase()
 }
 
 /**
- * Encode a transaction and prepare for signing with a claim
+ * Encode a transaction and prepare for signing with a claim.
  *
- * @param json JSON object representing the transaction
- * @param signer string representing the account to sign the transaction with
- * @returns a hex string of the encoded transaction
+ * @param json - JSON object representing the transaction.
+ * @returns A hex string of the encoded transaction.
  */
-function encodeForSigningClaim(json: object): string {
-  assert(typeof json === "object");
+function encodeForSigningClaim(json: Record<string, unknown>): string {
+  assert(typeof json === 'object')
   return signingClaimData(json as ClaimObject)
-    .toString("hex")
-    .toUpperCase();
+    .toString('hex')
+    .toUpperCase()
 }
 
 /**
- * Encode a transaction and prepare for multi-signing
+ * Encode a transaction and prepare for multi-signing.
  *
- * @param json JSON object representing the transaction
- * @param signer string representing the account to sign the transaction with
- * @returns a hex string of the encoded transaction
+ * @param json - JSON object representing the transaction.
+ * @param signer - String representing the account to sign the transaction with.
+ * @returns A hex string of the encoded transaction.
  */
-function encodeForMultisigning(json: object, signer: string): string {
-  assert(typeof json === "object");
-  assert.equal(json["SigningPubKey"], "");
+function encodeForMultisigning(
+  json: Record<string, unknown>,
+  signer: string,
+): string {
+  assert(typeof json === 'object')
+  assert.equal(json.SigningPubKey, '')
   return multiSigningData(json as JsonObject, signer)
-    .toString("hex")
-    .toUpperCase();
+    .toString('hex')
+    .toUpperCase()
 }
 
 /**
- * Encode a quality value
+ * Encode a quality value.
  *
- * @param value string representation of a number
- * @returns a hex-string representing the quality
+ * @param value - String representation of a number.
+ * @returns A hex-string representing the quality.
  */
 function encodeQuality(value: string): string {
-  assert(typeof value === "string");
-  return quality.encode(value).toString("hex").toUpperCase();
+  assert(typeof value === 'string')
+  return quality.encode(value).toString('hex').toUpperCase()
 }
 
 /**
- * Decode a quality value
+ * Decode a quality value.
  *
- * @param value hex-string of a quality
- * @returns a string representing the quality
+ * @param value - Hex-string of a quality.
+ * @returns A string representing the quality.
  */
 function decodeQuality(value: string): string {
-  assert(typeof value === "string");
-  return quality.decode(value).toString();
+  assert(typeof value === 'string')
+  return quality.decode(value).toString()
 }
 
 export = {
@@ -109,4 +112,4 @@ export = {
   encodeQuality,
   decodeQuality,
   decodeLedgerData,
-};
+}
