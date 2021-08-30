@@ -1,4 +1,4 @@
-const { coreTypes } = require('../dist/types')
+const coreTypes = require('../dist/types').default
 const { SerializedType } = require('../dist/types/serialized-type')
 
 describe('SerializedType interfaces', () => {

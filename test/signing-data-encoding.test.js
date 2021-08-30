@@ -1,8 +1,8 @@
-import {
+const {
   encodeForSigning,
   encodeForSigningClaim,
   encodeForMultisigning,
-} from '../dist'
+} = require('../dist')
 
 const TX_JSON = {
   Account: 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ',

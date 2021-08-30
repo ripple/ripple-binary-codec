@@ -43,8 +43,8 @@ Object.values(Field).forEach((field) => {
   field.associatedType = coreTypes[field.type.name]
 })
 
-Field.TransactionType.associatedType = TransactionType
-Field.TransactionResult.associatedType = TransactionResult
-Field.LedgerEntryType.associatedType = LedgerEntryType
+Field['TransactionType'].associatedType = TransactionType
+Field['TransactionResult'].associatedType = TransactionResult
+Field['LedgerEntryType'].associatedType = LedgerEntryType
 
 export default coreTypes

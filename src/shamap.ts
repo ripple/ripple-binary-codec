@@ -147,8 +147,7 @@ class ShaMapInner extends ShaMapNode {
    * @param list - BytesList to write bytes to.
    */
   toBytesSink(list: BytesList): void {
-    for (const i of this.branches) {
-      const branch = this.branches[i]
+    for (const branch of this.branches) {
       const hash = branch ? branch.hash() : coreTypes.Hash256.ZERO_256
       hash.toBytesSink(list)
     }

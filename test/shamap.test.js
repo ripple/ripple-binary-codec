@@ -2,8 +2,7 @@ const { Buffer } = require('buffer/')
 
 const { binary, HashPrefix } = require('../dist/coretypes')
 const { ShaMap } = require('../dist/shamap.js')
-const { coreTypes } = require('../dist/types')
-
+const { Hash256 } = require('../dist/types').default
 const { loadFixture } = require('./utils')
 
 function now() {
@@ -17,7 +16,7 @@ function makeItem(indexArg) {
   while (str.length < 64) {
     str += '0'
   }
-  const index = coreTypes.Hash256.from(str)
+  const index = Hash256.from(str)
   const item = {
     toBytesSink(sink) {
       index.toBytesSink(sink)
@@ -70,7 +69,7 @@ describe('ShaMap', () => {
           }
           const bytes = binary.serializeObject(e)
           return {
-            index: coreTypes.Hash256.from(e.index),
+            index: Hash256.from(e.index),
             hashPrefix() {
               return leafNodePrefix
             },

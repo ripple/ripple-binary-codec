@@ -1,5 +1,5 @@
-import { encode, decode } from '../dist/index'
-import fixtures from './fixtures/x-codec-fixtures.json'
+const { encode, decode } = require('../dist/index')
+const fixtures = require('./fixtures/x-codec-fixtures.json')
 
 const json_x1 = {
   OwnerCount: 0,

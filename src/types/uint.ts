@@ -1,21 +1,6 @@
 import * as bigInt from 'big-integer'
-import { Buffer } from 'buffer/'
 
 import { Comparable } from './serialized-type'
-
-/**
- * Compare numbers and bigInts n1 and n2.
- *
- * @param n1 - First object to compare.
- * @param n2 - Second object to compare.
- * @returns 1, 0, or 1, depending on how the two objects compare.
- */
-function compare(
-  n1: number | bigInt.BigInteger,
-  n2: number | bigInt.BigInteger,
-): number {
-  return bigInt(n1).compare(n2)
-}
 
 /**
  * Base class for serializing and deserializing unsigned integers.
@@ -30,7 +15,15 @@ export default abstract class UInt extends Comparable {
    * @returns 1, 0, or 1 depending on how the objects relate to each other.
    */
   compareTo(other: UInt): number {
-    return compare(this.valueOf(), other.valueOf())
+    let myValue = this.valueOf()
+    let theirValue = other.valueOf()
+    if (typeof myValue === 'number') {
+      myValue = bigInt(myValue)
+    }
+    if (typeof theirValue === 'number') {
+      theirValue = bigInt(theirValue)
+    }
+    return myValue.compare(theirValue)
   }
 
   /**

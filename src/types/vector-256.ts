@@ -1,5 +1,3 @@
-import { Buffer } from 'buffer/'
-
 import BinaryParser from '../serdes/binary-parser'
 import { BytesList } from '../serdes/binary-serializer'
 

@@ -48,7 +48,7 @@ function isPathSet(arg): arg is HopObject[][] {
 /**
  * Serialize and Deserialize a Hop.
  */
-export default class Hop extends SerializedType {
+class Hop extends SerializedType {
   /**
    * Create a Hop from a HopObject.
    *
@@ -219,7 +219,7 @@ class Path extends SerializedType {
 /**
  * Deserialize and Serialize the PathSet type.
  */
-class PathSet extends SerializedType {
+export default class PathSet extends SerializedType {
   /**
    * Construct a PathSet from an Array of Arrays representing paths.
    *

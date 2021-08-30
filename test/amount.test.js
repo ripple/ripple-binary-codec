@@ -1,8 +1,6 @@
-const { coreTypes } = require('../dist/types')
-
+const { Amount } = require('../dist/types').default
 const { loadFixture } = require('./utils')
 
-const { Amount } = coreTypes
 const fixtures = loadFixture('data-driven-tests.json')
 
 function amountErrorTests() {

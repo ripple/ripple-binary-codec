@@ -1,12 +1,16 @@
 /* eslint-disable func-style */
 
 const Decimal = require('decimal.js')
+const { Buffer } = require('buffer/')
 const { encodeAccountID } = require('ripple-address-codec')
 
 const { binary } = require('../dist/coretypes')
-const { coreTypes } = require('../dist/types')
-
-const { Amount, Hash160 } = coreTypes
+const {
+  Amount,
+  Hash160,
+  PathSet,
+  STObject,
+} = require('../dist/types').default
 const { makeParser, readJSON } = binary
 const { Field, TransactionType } = require('../dist/enums')
 
@@ -15,7 +19,6 @@ const { parseHexOnly, hexOnly, loadFixture } = require('./utils')
 const fixtures = loadFixture('data-driven-tests.json')
 const { BytesList } = require('../dist/serdes/binary-serializer')
 
-const { Buffer } = require('buffer/')
 
 const __ = hexOnly
 function toJSON(v) {
@@ -188,7 +191,7 @@ function transactionParsingTests() {
   test('readJSON (binary.decode) does not return STObject ', () => {
     const parser = makeParser(transaction.binary)
     const jsonFromBinary = readJSON(parser)
-    expect(jsonFromBinary instanceof coreTypes.STObject).toBe(false)
+    expect(jsonFromBinary instanceof STObject).toBe(false)
     expect(jsonFromBinary instanceof Object).toBe(true)
     expect(jsonFromBinary.prototype).toBe(undefined)
   })
@@ -388,7 +391,7 @@ function pathSetBinaryTests() {
     const txn = readJSON(parser)
     expect(txn.Paths).toEqual(expectedJSON)
     // TODO: this should go elsewhere
-    expect(coreTypes.PathSet.from(txn.Paths).toJSON()).toEqual(expectedJSON)
+    expect(PathSet.from(txn.Paths).toJSON()).toEqual(expectedJSON)
   })
 }
 
