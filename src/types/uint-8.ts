@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer/'
 
-import BinaryParser from '../serdes/binary-parser'
+import BinaryParser from '../serdes/BinaryParser'
 
 import UInt from './uint'
 

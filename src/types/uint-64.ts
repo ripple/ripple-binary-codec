@@ -2,7 +2,7 @@ import * as bigInt from 'big-integer'
 import { isInstance } from 'big-integer'
 import { Buffer } from 'buffer/'
 
-import BinaryParser from '../serdes/binary-parser'
+import BinaryParser from '../serdes/BinaryParser'
 
 import UInt from './uint'
 

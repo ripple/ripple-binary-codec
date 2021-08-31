@@ -1,86 +1,22 @@
 /* eslint-disable no-bitwise -- this file needs to use bitwise operations */
-import { strict as assert } from 'assert'
+import * as assert from 'assert'
 
 import { Buffer } from 'buffer/'
 
-import HashPrefix from './hash-prefixes'
-import { Sha512Half } from './hashes'
-import { BytesList } from './serdes/binary-serializer'
-import coreTypes from './types'
-import Hash256 from './types/hash-256'
+import HashPrefix from '../hash-prefixes'
+import { Sha512Half } from '../hashes'
+import BytesList from '../serdes/BytesList'
+import { Hash256 } from '../types'
 
-/**
- * Abstract class describing a SHAMapNode.
- */
-abstract class ShaMapNode {
-  abstract hashPrefix(): Buffer
-  abstract isLeaf(): boolean
-  abstract isInner(): boolean
-  abstract toBytesSink(list: BytesList): void
-  abstract hash(): Hash256
-}
-
-/**
- * Class describing a Leaf of SHAMap.
- */
-class ShaMapLeaf extends ShaMapNode {
-  constructor(public index: Hash256, public item?: ShaMapNode) {
-    super()
-  }
-
-  /**
-   * @returns True as ShaMapLeaf is a leaf node.
-   */
-  isLeaf(): boolean {
-    return true
-  }
-
-  /**
-   * @returns False as ShaMapLeaf is not an inner node.
-   */
-  isInner(): boolean {
-    return false
-  }
-
-  /**
-   * Get the prefix of the this.item.
-   *
-   * @returns The hash prefix, unless this.item is undefined, then it returns an empty Buffer.
-   */
-  hashPrefix(): Buffer {
-    return this.item === undefined ? Buffer.alloc(0) : this.item.hashPrefix()
-  }
-
-  /**
-   * Hash the bytes representation of this.
-   *
-   * @returns Hash of this.item concatenated with this.index.
-   */
-  hash(): Hash256 {
-    const hash = Sha512Half.put(this.hashPrefix())
-    this.toBytesSink(hash)
-    return hash.finish()
-  }
-
-  /**
-   * Write the bytes representation of this to a BytesList.
-   *
-   * @param list - BytesList to write bytes to.
-   */
-  toBytesSink(list: BytesList): void {
-    if (this.item !== undefined) {
-      this.item.toBytesSink(list)
-    }
-    this.index.toBytesSink(list)
-  }
-}
+import ShaMapLeaf from './ShaMapLeaf'
+import ShaMapNode from './ShaMapNode'
 
 /**
  * Class defining an Inner Node of a SHAMap.
  */
-class ShaMapInner extends ShaMapNode {
+export default class ShaMapInner extends ShaMapNode {
   private slotBits = 0
-  private branches: ShaMapNode[] = Array(16)
+  private branches: ShaMapNode[] = Array(16) as ShaMapNode[]
 
   constructor(private depth: number = 0) {
     super()
@@ -134,7 +70,7 @@ class ShaMapInner extends ShaMapNode {
    */
   hash(): Hash256 {
     if (this.empty()) {
-      return coreTypes.Hash256.ZERO_256
+      return Hash256.ZERO_256
     }
     const hash = Sha512Half.put(this.hashPrefix())
     this.toBytesSink(hash)
@@ -148,7 +84,7 @@ class ShaMapInner extends ShaMapNode {
    */
   toBytesSink(list: BytesList): void {
     for (const branch of this.branches) {
-      const hash = branch ? branch.hash() : coreTypes.Hash256.ZERO_256
+      const hash = branch ? branch.hash() : Hash256.ZERO_256
       hash.toBytesSink(list)
     }
   }
@@ -180,7 +116,3 @@ class ShaMapInner extends ShaMapNode {
     }
   }
 }
-
-class ShaMap extends ShaMapInner {}
-
-export { ShaMap, ShaMapNode, ShaMapLeaf }

@@ -1,6 +1,6 @@
 import * as bigInt from 'big-integer'
 
-import { Comparable } from './serialized-type'
+import Comparable from './Comparable'
 
 /**
  * Base class for serializing and deserializing unsigned integers.

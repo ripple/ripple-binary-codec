@@ -1,9 +1,9 @@
 /* eslint-disable no-bitwise -- this file needs to use bitwise operations */
 import { Buffer } from 'buffer/'
 
-import BinaryParser from '../serdes/binary-parser'
+import BinaryParser from '../serdes/BinaryParser'
 
-import { Comparable } from './serialized-type'
+import Comparable from './Comparable'
 
 /**
  * Base class defining how to encode and decode hashes.

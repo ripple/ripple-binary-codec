@@ -1,5 +1,5 @@
-const coreTypes = require('../dist/types').default
-const { SerializedType } = require('../dist/types/serialized-type')
+const coreTypes = require('../dist/types')
+const SerializedType = require('../dist/types/SerializedType').default
 
 describe('SerializedType interfaces', () => {
   Object.entries(coreTypes).forEach(([name, Value]) => {

@@ -3,11 +3,11 @@ import * as bigInt from 'big-integer'
 import { Buffer } from 'buffer/'
 import { Decimal } from 'decimal.js'
 
-import BinaryParser from '../serdes/binary-parser'
+import BinaryParser from '../serdes/BinaryParser'
 
 import AccountID from './account-id'
 import Currency from './currency'
-import { JsonObject, SerializedType } from './serialized-type'
+import SerializedType, { JsonObject } from './SerializedType'
 
 /**
  * Constants for validating amounts.
@@ -49,7 +49,7 @@ function isAmountObject(arg): arg is AmountObject {
 /**
  * Class for serializing/Deserializing Amounts.
  */
-class Amount extends SerializedType {
+export default class Amount extends SerializedType {
   static defaultAmount: Amount = new Amount(
     Buffer.from('4000000000000000', 'hex'),
   )
@@ -232,4 +232,4 @@ class Amount extends SerializedType {
   }
 }
 
-export { Amount, AmountObject }
+export { AmountObject }

@@ -82,7 +82,9 @@ export default class AccountID extends Hash160 {
    * @returns The base58 string defined by this.bytes.
    */
   toBase58(): string {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
+    /* eslint-disable @typescript-eslint/no-explicit-any --- we need this
+     * until ripple-address-codec types this function with the same `Buffer`
+     * we're using */
     return encodeAccountID(this.bytes as any)
     /* eslint-enable @typescript-eslint/no-explicit-any */
   }

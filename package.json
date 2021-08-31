@@ -20,6 +20,7 @@
     "ripple-address-codec": "^4.1.1"
   },
   "devDependencies": {
+    "@types/create-hash": "^1.2.2",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.0.10",
     "@typescript-eslint/eslint-plugin": "^3.10.1",
@@ -42,7 +43,7 @@
     "typescript": "^3.9.10"
   },
   "scripts": {
-    "compile": "tsc && cp ./src/enums/definitions.json ./dist/enums",
+    "compile": "rm -rf ./dist && tsc && cp ./src/enums/definitions.json ./dist/enums",
     "prepare": "npm run compile && npm test",
     "test": "jest",
     "lint": "eslint . --ext .ts --ext .test.js"
@@ -80,13 +81,21 @@
       "id-length": [
         "error",
         {
-          "exceptions": ["a", "b", "i", "j", "n"]
+          "exceptions": [
+            "a",
+            "b",
+            "i",
+            "j",
+            "n"
+          ]
         }
       ],
       "no-shadow": [
         "error",
         {
-          "allow": ["Buffer"]
+          "allow": [
+            "Buffer"
+          ]
         }
       ],
       "@typescript-eslint/no-unnecessary-condition": "off"

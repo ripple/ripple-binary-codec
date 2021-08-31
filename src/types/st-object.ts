@@ -2,10 +2,11 @@ import { Buffer } from 'buffer/'
 import { xAddressToClassicAddress, isValidXAddress } from 'ripple-address-codec'
 
 import { Field, FieldInstance } from '../enums'
-import BinaryParser from '../serdes/binary-parser'
-import { BinarySerializer, BytesList } from '../serdes/binary-serializer'
+import BinaryParser from '../serdes/BinaryParser'
+import BinarySerializer from '../serdes/BinarySerializer'
+import BytesList from '../serdes/BytesList'
 
-import { SerializedType, JsonObject } from './serialized-type'
+import SerializedType, { JsonObject } from './SerializedType'
 
 const OBJECT_END_MARKER_BYTE = Buffer.from([0xe1])
 const OBJECT_END_MARKER = 'ObjectEndMarker'
@@ -107,7 +108,7 @@ export default class STObject extends SerializedType {
     }, {})
 
     let sorted = Object.keys(xAddressDecoded)
-      .map((field: string): FieldInstance => Field[field] as FieldInstance)
+      .map((field: string): FieldInstance => Field.get(field))
       .filter(
         (field: FieldInstance): boolean =>
           field !== undefined &&

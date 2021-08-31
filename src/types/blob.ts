@@ -1,8 +1,8 @@
 import { Buffer } from 'buffer/'
 
-import BinaryParser from '../serdes/binary-parser'
+import BinaryParser from '../serdes/BinaryParser'
 
-import { SerializedType } from './serialized-type'
+import SerializedType from './SerializedType'
 
 /**
  * Variable length encoded type.

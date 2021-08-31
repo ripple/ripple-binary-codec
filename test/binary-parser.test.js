@@ -10,14 +10,14 @@ const {
   Hash160,
   PathSet,
   STObject,
-} = require('../dist/types').default
+} = require('../dist/types')
 const { makeParser, readJSON } = binary
 const { Field, TransactionType } = require('../dist/enums')
 
 const { parseHexOnly, hexOnly, loadFixture } = require('./utils')
 
 const fixtures = loadFixture('data-driven-tests.json')
-const { BytesList } = require('../dist/serdes/binary-serializer')
+const BytesList = require('../dist/serdes/BytesList').default
 
 
 const __ = hexOnly
@@ -95,32 +95,32 @@ function transactionParsingTests() {
   test('can be done with low level apis', () => {
     const parser = makeParser(transaction.binary)
 
-    expect(parser.readField()).toEqual(Field.TransactionType)
+    expect(parser.readField()).toEqual(Field.get('TransactionType'))
     expect(parser.readUInt16()).toEqual(7)
-    expect(parser.readField()).toEqual(Field.Flags)
+    expect(parser.readField()).toEqual(Field.get('Flags'))
     expect(parser.readUInt32()).toEqual(0)
-    expect(parser.readField()).toEqual(Field.Sequence)
+    expect(parser.readField()).toEqual(Field.get('Sequence'))
     expect(parser.readUInt32()).toEqual(103929)
-    expect(parser.readField()).toEqual(Field.TakerPays)
+    expect(parser.readField()).toEqual(Field.get('TakerPays'))
     parser.read(8)
-    expect(parser.readField()).toEqual(Field.TakerGets)
+    expect(parser.readField()).toEqual(Field.get('TakerGets'))
     // amount value
     expect(parser.read(8)).not.toBe([])
     // amount currency
     expect(Hash160.fromParser(parser)).not.toBe([])
     expect(encodeAccountID(parser.read(20))).toEqual(tx_json.TakerGets.issuer)
-    expect(parser.readField()).toEqual(Field.Fee)
+    expect(parser.readField()).toEqual(Field.get('Fee'))
     expect(parser.read(8)).not.toEqual([])
-    expect(parser.readField()).toEqual(Field.SigningPubKey)
+    expect(parser.readField()).toEqual(Field.get('SigningPubKey'))
     expect(parser.readVariableLengthLength()).toBe(33)
     expect(parser.read(33).toString('hex').toUpperCase()).toEqual(
       tx_json.SigningPubKey,
     )
-    expect(parser.readField()).toEqual(Field.TxnSignature)
+    expect(parser.readField()).toEqual(Field.get('TxnSignature'))
     expect(parser.readVariableLength().toString('hex').toUpperCase()).toEqual(
       tx_json.TxnSignature,
     )
-    expect(parser.readField()).toEqual(Field.Account)
+    expect(parser.readField()).toEqual(Field.get('Account'))
     expect(encodeAccountID(parser.readVariableLength())).toEqual(
       tx_json.Account,
     )
@@ -134,49 +134,49 @@ function transactionParsingTests() {
     }
     {
       const [field, value] = readField()
-      expect(field).toEqual(Field.TransactionType)
+      expect(field).toEqual(Field.get('TransactionType'))
       expect(value).toEqual(TransactionType.OfferCreate)
     }
     {
       const [field, value] = readField()
-      expect(field).toEqual(Field.Flags)
+      expect(field).toEqual(Field.get('Flags'))
       expect(value.valueOf()).toEqual(0)
     }
     {
       const [field, value] = readField()
-      expect(field).toEqual(Field.Sequence)
+      expect(field).toEqual(Field.get('Sequence'))
       expect(value.valueOf()).toEqual(103929)
     }
     {
       const [field, value] = readField()
-      expect(field).toEqual(Field.TakerPays)
+      expect(field).toEqual(Field.get('TakerPays'))
       expect(value.isNative()).toEqual(true)
       expect(value.toJSON()).toEqual('98957503520')
     }
     {
       const [field, value] = readField()
-      expect(field).toEqual(Field.TakerGets)
+      expect(field).toEqual(Field.get('TakerGets'))
       expect(value.isNative()).toEqual(false)
       expect(value.toJSON().issuer).toEqual(tx_json.TakerGets.issuer)
     }
     {
       const [field, value] = readField()
-      expect(field).toEqual(Field.Fee)
+      expect(field).toEqual(Field.get('Fee'))
       expect(value.isNative()).toEqual(true)
     }
     {
       const [field, value] = readField()
-      expect(field).toEqual(Field.SigningPubKey)
+      expect(field).toEqual(Field.get('SigningPubKey'))
       expect(value.toJSON()).toEqual(tx_json.SigningPubKey)
     }
     {
       const [field, value] = readField()
-      expect(field).toEqual(Field.TxnSignature)
+      expect(field).toEqual(Field.get('TxnSignature'))
       expect(value.toJSON()).toEqual(tx_json.TxnSignature)
     }
     {
       const [field, value] = readField()
-      expect(field).toEqual(Field.Account)
+      expect(field).toEqual(Field.get('Account'))
       expect(value.toJSON()).toEqual(tx_json.Account)
     }
     expect(parser.end()).toBe(true)

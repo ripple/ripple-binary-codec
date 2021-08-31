@@ -10,8 +10,8 @@ import HashPrefix from './hash-prefixes'
 import * as hashes from './hashes'
 import * as ledgerHashes from './ledger-hashes'
 import { quality } from './quality'
-import { ShaMap } from './shamap'
-import types from './types'
+import ShaMap from './ShaMap'
+import * as types from './types'
 
 export {
   hashes,

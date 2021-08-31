@@ -4,7 +4,7 @@ import * as assert from 'assert'
 import { Buffer } from 'buffer/'
 
 import { Field, FieldInstance } from '../enums'
-import { SerializedType } from '../types/serialized-type'
+import SerializedType from '../types/SerializedType'
 
 /**
  * BinaryParser is used to compute fields and values from a HexString.
@@ -153,7 +153,7 @@ export default class BinaryParser {
    * @returns The field represented by the bytes at the head of the BinaryParser.
    */
   readField(): FieldInstance {
-    return Field.fromString(this.readFieldOrdinal().toString())
+    return Field.get(this.readFieldOrdinal().toString())
   }
 
   /**

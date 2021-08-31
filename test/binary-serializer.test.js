@@ -4,7 +4,7 @@ const { encode, decode } = require('../dist')
 const { binary } = require('../dist/coretypes')
 
 const { makeParser, BytesList, BinarySerializer } = binary
-const { UInt8, UInt16, UInt32, UInt64, STObject } = require('../dist/types').default
+const { UInt8, UInt16, UInt32, UInt64, STObject } = require('../dist/types')
 const bigInt = require('big-integer')
 const { Buffer } = require('buffer/')
 

@@ -1,8 +1,8 @@
 import { Buffer } from 'buffer/'
 
-import BinaryParser from '../serdes/binary-parser'
+import BinaryParser from '../serdes/BinaryParser'
 
-import { SerializedType, JsonObject } from './serialized-type'
+import SerializedType, { JsonObject } from './SerializedType'
 import STObject from './st-object'
 
 const ARRAY_END_MARKER = Buffer.from([0xf1])

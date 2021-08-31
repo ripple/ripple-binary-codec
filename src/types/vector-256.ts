@@ -1,8 +1,8 @@
-import BinaryParser from '../serdes/binary-parser'
-import { BytesList } from '../serdes/binary-serializer'
+import BinaryParser from '../serdes/BinaryParser'
+import BytesList from '../serdes/BytesList'
 
 import Hash256 from './hash-256'
-import { SerializedType } from './serialized-type'
+import SerializedType from './SerializedType'
 
 function isStrings(arg): arg is string[] {
   return Array.isArray(arg) && (arg.length === 0 || typeof arg[0] === 'string')

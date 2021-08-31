@@ -3,7 +3,7 @@ import * as assert from 'assert'
 import { ClaimObject } from './binary'
 import { quality, binary } from './coretypes'
 import { decodeLedgerData } from './ledger-hashes'
-import { JsonObject } from './types/serialized-type'
+import { JsonObject } from './types/SerializedType'
 
 const {
   signingData,

@@ -1,8 +1,9 @@
+/* eslint-disable import/prefer-default-export, @typescript-eslint/no-extraneous-class -- this file needs refactor, but it would create a breaking change as it would change how you import this */
 import * as bigInt from 'big-integer'
 import { Buffer } from 'buffer/'
 import { Decimal } from 'decimal.js'
 
-import coreTypes from './types'
+import { UInt64 } from './types'
 
 /**
  * Class for encoding and decoding quality.
@@ -18,7 +19,7 @@ class quality {
     const decimal = new Decimal(input)
     const exponent = decimal.e - 15
     const qualityString = decimal.times(`1e${-exponent}`).abs().toString()
-    const bytes = coreTypes.UInt64.from(bigInt(qualityString)).toBytes()
+    const bytes = UInt64.from(bigInt(qualityString)).toBytes()
     bytes[0] = exponent + 100
     return bytes
   }

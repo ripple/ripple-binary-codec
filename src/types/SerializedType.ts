@@ -1,19 +1,26 @@
 import * as bigInt from 'big-integer'
 import { Buffer } from 'buffer/'
 
-import BinaryParser from '../serdes/binary-parser'
-import { BytesList } from '../serdes/binary-serializer'
+import type BinaryParser from '../serdes/BinaryParser'
+import BytesList from '../serdes/BytesList'
 
-type JSON = string | number | boolean | null | undefined | JSON[] | JsonObject
+export type JSON =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | JSON[]
+  | JsonObject
 
-interface JsonObject {
+export interface JsonObject {
   [key: string]: JSON
 }
 
 /**
  * The base class for all binary-codec types.
  */
-class SerializedType {
+export default class SerializedType {
   protected readonly bytes: Buffer = Buffer.alloc(0)
 
   constructor(bytes: Buffer) {
@@ -80,41 +87,3 @@ class SerializedType {
     return this.toHex()
   }
 }
-
-/**
- * Base class for SerializedTypes that are comparable.
- */
-class Comparable extends SerializedType {
-  lt(other: Comparable): boolean {
-    return this.compareTo(other) < 0
-  }
-
-  eq(other: Comparable): boolean {
-    return this.compareTo(other) === 0
-  }
-
-  gt(other: Comparable): boolean {
-    return this.compareTo(other) > 0
-  }
-
-  gte(other: Comparable): boolean {
-    return this.compareTo(other) > -1
-  }
-
-  lte(other: Comparable): boolean {
-    return this.compareTo(other) < 1
-  }
-
-  /**
-   * Overload this method to define how two Comparable SerializedTypes are compared.
-   *
-   * @param other - The comparable object to compare this to.
-   * @returns A number denoting the relationship of this and other.
-   * @throws {Error}
-   */
-  compareTo(other: Comparable): number {
-    throw new Error(`cannot compare ${this.toString()} and ${other.toString()}`)
-  }
-}
-
-export { SerializedType, Comparable, JSON, JsonObject }

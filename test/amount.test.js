@@ -1,4 +1,4 @@
-const { Amount } = require('../dist/types').default
+const { Amount } = require('../dist/types')
 const { loadFixture } = require('./utils')
 
 const fixtures = loadFixture('data-driven-tests.json')

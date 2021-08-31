@@ -1,8 +1,8 @@
 const { Buffer } = require('buffer/')
 
 const { binary, HashPrefix } = require('../dist/coretypes')
-const { ShaMap } = require('../dist/shamap.js')
-const { Hash256 } = require('../dist/types').default
+const ShaMap = require('../dist/ShaMap').default
+const { Hash256 } = require('../dist/types')
 const { loadFixture } = require('./utils')
 
 function now() {

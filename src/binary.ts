@@ -4,12 +4,11 @@ import { Buffer } from 'buffer/'
 import { FieldInstance } from './enums'
 import HashPrefix from './hash-prefixes'
 import { sha512Half, transactionID } from './hashes'
-import BinaryParser from './serdes/binary-parser'
-import { BinarySerializer, BytesList } from './serdes/binary-serializer'
-import coreTypes from './types'
-import AccountID from './types/account-id'
-import { JsonObject } from './types/serialized-type'
-import STObject from './types/st-object'
+import BinaryParser from './serdes/BinaryParser'
+import BinarySerializer from './serdes/BinarySerializer'
+import BytesList from './serdes/BytesList'
+import { AccountID, Hash256, STObject, UInt64 } from './types'
+import { JsonObject } from './types/SerializedType'
 
 /**
  * Construct a BinaryParser.
@@ -26,7 +25,7 @@ const makeParser = (bytes: string): BinaryParser => new BinaryParser(bytes)
  * @returns JSON for the bytes in the BinaryParser.
  */
 const readJSON = (parser: BinaryParser): JsonObject =>
-  (parser.readType(coreTypes.STObject) as STObject).toJSON()
+  (parser.readType(STObject) as STObject).toJSON()
 
 /**
  * Parse a hex-string into its JSON interpretation.
@@ -65,7 +64,7 @@ function serializeObject(object: JsonObject, opts: OptionObject = {}): Buffer {
   const filter = signingFieldsOnly
     ? (field: FieldInstance): boolean => field.isSigningField
     : undefined
-  coreTypes.STObject.from(object, filter).toBytesSink(bytesList)
+  STObject.from(object, filter).toBytesSink(bytesList)
 
   if (suffix) {
     bytesList.put(suffix)
@@ -105,8 +104,8 @@ interface ClaimObject extends JsonObject {
 function signingClaimData(claim: ClaimObject): Buffer {
   const num = bigInt(String(claim.amount))
   const prefix = HashPrefix.paymentChannelClaim
-  const channel = coreTypes.Hash256.from(claim.channel).toBytes()
-  const amount = coreTypes.UInt64.from(num).toBytes()
+  const channel = Hash256.from(claim.channel).toBytes()
+  const amount = UInt64.from(num).toBytes()
 
   const bytesList = new BytesList()
 
@@ -128,7 +127,7 @@ function multiSigningData(
   signingAccount: string | AccountID,
 ): Buffer {
   const prefix = HashPrefix.transactionMultiSig
-  const suffix = coreTypes.AccountID.from(signingAccount).toBytes()
+  const suffix = AccountID.from(signingAccount).toBytes()
   return serializeObject(transaction, {
     prefix,
     suffix,
