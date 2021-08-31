@@ -6,7 +6,7 @@ import BinaryParser from '../serdes/BinaryParser'
 import BinarySerializer from '../serdes/BinarySerializer'
 import BytesList from '../serdes/BytesList'
 
-import SerializedType, { JsonObject } from './SerializedType'
+import SerializedType, { JsonObject, JSON } from './SerializedType'
 
 const OBJECT_END_MARKER_BYTE = Buffer.from([0xe1])
 const OBJECT_END_MARKER = 'ObjectEndMarker'
@@ -99,12 +99,12 @@ export default class STObject extends SerializedType {
     const bytes: BinarySerializer = new BinarySerializer(list)
 
     const xAddressDecoded = Object.entries(value).reduce((acc, [key, val]) => {
-      let handled: JsonObject | undefined
       if (isValidXAddress(val)) {
-        handled = handleXAddress(key, val)
+        const handled = handleXAddress(key, val)
         checkForDuplicateTags(handled, value as JsonObject)
+        return { ...acc, ...handled }
       }
-      return Object.assign(acc, handled ?? { [key]: val })
+      return { ...acc, [key]: val as JSON }
     }, {})
 
     let sorted = Object.keys(xAddressDecoded)

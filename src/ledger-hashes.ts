@@ -169,7 +169,7 @@ function decodeLedgerData(binary: string): ledgerObject {
   const parser = new BinaryParser(binary)
   return {
     ledger_index: parser.readUInt32(),
-    total_coins: parser.readType(UInt64).valueOf().toString(),
+    total_coins: (parser.readType(UInt64) as UInt64).valueOf().toString(),
     parent_hash: parser.readType(Hash256).toHex(),
     transaction_hash: parser.readType(Hash256).toHex(),
     account_hash: parser.readType(Hash256).toHex(),

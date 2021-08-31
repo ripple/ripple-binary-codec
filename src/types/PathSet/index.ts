@@ -8,9 +8,9 @@ import Path, { PATHSET_END_BYTE, PATH_SEPARATOR_BYTE } from './Path'
 
 function isHopObject(arg): arg is HopObject {
   return (
-    arg?.issuer !== undefined ||
-    arg?.account !== undefined ||
-    arg?.currency !== undefined
+    (arg as HopObject)?.issuer !== undefined ||
+    (arg as HopObject)?.account !== undefined ||
+    (arg as HopObject)?.currency !== undefined
   )
 }
 

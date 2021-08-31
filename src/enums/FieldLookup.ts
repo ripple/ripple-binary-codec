@@ -4,10 +4,10 @@ import { Buffer } from 'buffer/'
 import * as types from '../types'
 
 import Bytes from './Bytes'
+import BytesLookup from './BytesLookup'
 import * as enums from './definitions.json'
 import FieldInfo from './FieldInfo'
 import FieldInstance from './FieldInstance'
-import BytesLookup from './BytesLookup'
 
 const TYPE_WIDTH = 2
 export const Type = new BytesLookup(enums.TYPES, TYPE_WIDTH)
@@ -30,6 +30,10 @@ export const TransactionResult = new BytesLookup(
   TRANSACTION_RESULT_WIDTH,
 )
 
+// NOTE: this is strange. Here we are making LedgerEntryType, TransactionType,
+// and TransactionResult use the above instances of BytesLookup instead of
+// their specified type. This is a strange violation of type safety and needs
+// refactoring.
 const TYPE_MAP = {
   ...types,
   LedgerEntryType,
@@ -58,6 +62,7 @@ function fieldHeader(type: number, nth: number): Buffer {
 
 function buildField([name, info]: [string, FieldInfo]): FieldInstance {
   const typeOrdinal = enums.TYPES[info.type] as number
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment --- the associated type here is actually either a constructor that inherits from SerializedType or an instance of BytesLookup. Needs refactor. */
   return {
     name,
     nth: info.nth,
@@ -67,12 +72,13 @@ function buildField([name, info]: [string, FieldInfo]): FieldInstance {
     ordinal: (typeOrdinal << 16) | info.nth,
     type: new Bytes(info.type, typeOrdinal, TYPE_WIDTH),
     header: fieldHeader(typeOrdinal, info.nth),
-    associatedType: TYPE_MAP[name] || TYPE_MAP[info.type],
+    associatedType: TYPE_MAP[name] ?? TYPE_MAP[info.type],
   }
+  /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 }
 
 interface FieldLookupStore {
-  [key: string]: FieldInstance,
+  [key: string]: FieldInstance
 }
 
 /*

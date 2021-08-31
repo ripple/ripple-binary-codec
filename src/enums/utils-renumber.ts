@@ -1,7 +1,6 @@
-/* eslint-disable import/unambiguous --- this is actually a script */
+/* eslint-disable import/unambiguous --- TODO this script can probably be removed */
 
 /**
- * TODO: what is this for? Can it be removed?
  * Quick script to re-number values.
  */
 
