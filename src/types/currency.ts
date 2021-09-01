@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers ---
+ * TODO describe these magic numbers better */
 import { Buffer } from 'buffer/'
 
 import Hash160 from './hash-160'
@@ -60,10 +62,10 @@ function bytesFromRepresentation(input: string): Buffer {
  * Class defining how to encode and decode Currencies.
  */
 export default class Currency extends Hash160 {
-  static readonly XRP = new Currency(Buffer.alloc(20))
+  public static readonly XRP = new Currency(Buffer.alloc(20))
   private readonly _iso: string | null
 
-  constructor(byteBuf: Buffer) {
+  public constructor(byteBuf: Buffer) {
     super(byteBuf ?? Currency.XRP.bytes)
     const code = this.bytes.slice(12, 15)
 
@@ -77,22 +79,13 @@ export default class Currency extends Hash160 {
   }
 
   /**
-   * Return the ISO code of this currency.
-   *
-   * @returns ISO code if it exists, else null.
-   */
-  iso(): string | null {
-    return this._iso
-  }
-
-  /**
    * Constructs a Currency object.
    *
    * @param value - Value to translate into a Currency object.
    * @returns Currency object from input.
-   * @throws {Error}
+   * @throws Error.
    */
-  static from<T extends Hash160 | string>(value: T): Currency {
+  public static from<T extends Hash160 | string>(value: T): Currency {
     if (value instanceof Currency) {
       return value
     }
@@ -105,11 +98,20 @@ export default class Currency extends Hash160 {
   }
 
   /**
+   * Return the ISO code of this currency.
+   *
+   * @returns ISO code if it exists, else null.
+   */
+  public iso(): string | null {
+    return this._iso
+  }
+
+  /**
    * Gets the JSON representation of a currency.
    *
    * @returns JSON representation.
    */
-  toJSON(): string {
+  public toJSON(): string {
     const iso = this.iso()
     if (iso !== null) {
       return iso

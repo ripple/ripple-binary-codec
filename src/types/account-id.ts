@@ -14,10 +14,15 @@ const HEX_REGEX = /^[A-F0-9]{40}$/u
  * Class defining how to encode and decode an AccountID.
  */
 export default class AccountID extends Hash160 {
-  static readonly defaultAccountID: AccountID = new AccountID(Buffer.alloc(20))
+  /* eslint-disable @typescript-eslint/no-magic-numbers ---
+   * TODO describe this better */
+  public static readonly DEFAULT_ACCOUNT_ID: AccountID = new AccountID(
+    Buffer.alloc(20),
+  )
+  /* eslint-enable @typescript-eslint/no-magic-numbers */
 
-  constructor(bytes?: Buffer) {
-    super(bytes ?? AccountID.defaultAccountID.bytes)
+  public constructor(bytes?: Buffer) {
+    super(bytes ?? AccountID.DEFAULT_ACCOUNT_ID.bytes)
   }
 
   /**
@@ -25,9 +30,9 @@ export default class AccountID extends Hash160 {
    *
    * @param value - Either an existing AccountID, a hex-string, or a base58 r-Address.
    * @returns An AccountID object.
-   * @throws {Error}
+   * @throws Error.
    */
-  static from<T extends Hash160 | string>(value: T): AccountID {
+  public static from<T extends Hash160 | string>(value: T): AccountID {
     if (value instanceof AccountID) {
       return value
     }
@@ -50,9 +55,9 @@ export default class AccountID extends Hash160 {
    *
    * @param input - A base58 r-Address.
    * @returns An AccountID object.
-   * @throws {Error}
+   * @throws Error.
    */
-  static fromBase58(input: string): AccountID {
+  public static fromBase58(input: string): AccountID {
     let value = input
     if (isValidXAddress(value)) {
       const classic = xAddressToClassicAddress(value)
@@ -72,7 +77,7 @@ export default class AccountID extends Hash160 {
    *
    * @returns The base58 string for this AccountID.
    */
-  toJSON(): string {
+  public toJSON(): string {
     return this.toBase58()
   }
 
@@ -81,11 +86,11 @@ export default class AccountID extends Hash160 {
    *
    * @returns The base58 string defined by this.bytes.
    */
-  toBase58(): string {
-    /* eslint-disable @typescript-eslint/no-explicit-any --- we need this
-     * until ripple-address-codec types this function with the same `Buffer`
+  public toBase58(): string {
+    /* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any --
+     * TODO we need this until ripple-address-codec types this function with the same `Buffer`
      * we're using */
     return encodeAccountID(this.bytes as any)
-    /* eslint-enable @typescript-eslint/no-explicit-any */
+    /* eslint-enable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */
   }
 }

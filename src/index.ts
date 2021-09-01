@@ -1,17 +1,16 @@
 import * as assert from 'assert'
 
-import { ClaimObject } from './binary'
-import { quality, binary } from './coretypes'
-import { decodeLedgerData } from './ledger-hashes'
-import { JsonObject } from './types/SerializedType'
-
-const {
+import {
+  ClaimObject,
   signingData,
   signingClaimData,
   multiSigningData,
   binaryToJSON,
   serializeObject,
-} = binary
+} from './binary'
+import { decodeLedgerData } from './ledger-hashes'
+import { quality } from './quality'
+import { JsonObject } from './types/SerializedType'
 
 /**
  * Decode a transaction.
@@ -32,9 +31,13 @@ function decode(hexString: string): JsonObject {
  */
 function encode(json: Record<string, unknown>): string {
   assert(typeof json === 'object')
+
+  /* eslint-disable @typescript-eslint/consistent-type-assertions --
+   * TODO why is this necessary maybe it's not */
   return serializeObject(json as JsonObject)
     .toString('hex')
     .toUpperCase()
+  /* eslint-enable @typescript-eslint/consistent-type-assertions */
 }
 
 /**
@@ -45,9 +48,13 @@ function encode(json: Record<string, unknown>): string {
  */
 function encodeForSigning(json: Record<string, unknown>): string {
   assert(typeof json === 'object')
+
+  /* eslint-disable @typescript-eslint/consistent-type-assertions --
+   * TODO why is this necessary maybe it's not */
   return signingData(json as JsonObject)
     .toString('hex')
     .toUpperCase()
+  /* eslint-enable @typescript-eslint/consistent-type-assertions */
 }
 
 /**
@@ -58,9 +65,13 @@ function encodeForSigning(json: Record<string, unknown>): string {
  */
 function encodeForSigningClaim(json: Record<string, unknown>): string {
   assert(typeof json === 'object')
+
+  /* eslint-disable @typescript-eslint/consistent-type-assertions --
+   * TODO why is this necessary maybe it's not */
   return signingClaimData(json as ClaimObject)
     .toString('hex')
     .toUpperCase()
+  /* eslint-enable @typescript-eslint/consistent-type-assertions */
 }
 
 /**
@@ -76,9 +87,13 @@ function encodeForMultisigning(
 ): string {
   assert(typeof json === 'object')
   assert.equal(json.SigningPubKey, '')
+
+  /* eslint-disable @typescript-eslint/consistent-type-assertions --
+   * TODO why is this necessary maybe it's not */
   return multiSigningData(json as JsonObject, signer)
     .toString('hex')
     .toUpperCase()
+  /* eslint-enable @typescript-eslint/consistent-type-assertions */
 }
 
 /**

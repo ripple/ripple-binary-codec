@@ -4,7 +4,7 @@ import { Buffer } from 'buffer/'
  * Bytes list is a collection of buffer objects.
  */
 export default class BytesList {
-  private bytesArray: Buffer[] = []
+  private readonly _bytesArray: Buffer[] = []
 
   /**
    * Get the total number of bytes in the BytesList.
@@ -12,7 +12,7 @@ export default class BytesList {
    * @returns The number of bytes.
    */
   public getLength(): number {
-    return Buffer.concat(this.bytesArray).byteLength
+    return Buffer.concat(this._bytesArray).byteLength
   }
 
   /**
@@ -22,8 +22,10 @@ export default class BytesList {
    * @returns This BytesList.
    */
   public put(bytesArg: Buffer | Uint8Array): BytesList {
-    const bytes = Buffer.from(bytesArg) // Temporary, to catch instances of Uint8Array being passed in
-    this.bytesArray.push(bytes)
+    // Temporary, to catch instances of Uint8Array being passed in
+    const bytes = Buffer.from(bytesArg)
+
+    this._bytesArray.push(bytes)
     return this
   }
 
@@ -37,10 +39,10 @@ export default class BytesList {
   }
 
   public toBytes(): Buffer {
-    return Buffer.concat(this.bytesArray)
+    return Buffer.concat(this._bytesArray)
   }
 
-  toHex(): string {
+  public toHex(): string {
     return this.toBytes().toString('hex').toUpperCase()
   }
 }

@@ -15,7 +15,7 @@ export default class Blob extends SerializedType {
    * @param hint - The length of the blob, computed by readVariableLengthLength() and passed in.
    * @returns A Blob object.
    */
-  static fromParser(parser: BinaryParser, hint: number): Blob {
+  public static fromParser(parser: BinaryParser, hint: number): Blob {
     return new Blob(parser.read(hint))
   }
 
@@ -24,9 +24,9 @@ export default class Blob extends SerializedType {
    *
    * @param value - Existing Blob object or a hex-string.
    * @returns A Blob object.
-   * @throws {Error}
+   * @throws Error.
    */
-  static from<T extends Blob | string>(value: T): Blob {
+  public static from<T extends Blob | string>(value: T): Blob {
     if (value instanceof Blob) {
       return value
     }

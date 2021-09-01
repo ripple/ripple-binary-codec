@@ -1,6 +1,7 @@
 const { Buffer } = require('buffer/')
 
-const { binary, HashPrefix } = require('../dist/coretypes')
+const HashPrefix = require('../dist/hash-prefixes').default
+const binary = require('../dist/binary')
 const ShaMap = require('../dist/ShaMap').default
 const { Hash256 } = require('../dist/types')
 const { loadFixture } = require('./utils')

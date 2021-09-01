@@ -1,4 +1,5 @@
-/* eslint-disable import/unambiguous --- TODO this script can probably be removed */
+/* eslint-disable max-len, import/unambiguous, import/no-unused-modules, @typescript-eslint/naming-convention, @typescript-eslint/no-magic-numbers, no-console --
+ * TODO this script can probably be removed */
 
 /**
  * Quick script to re-number values.

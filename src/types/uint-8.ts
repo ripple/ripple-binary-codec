@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer/'
 
-import BinaryParser from '../serdes/BinaryParser'
+import type BinaryParser from '../serdes/BinaryParser'
 
 import UInt from './uint'
 
@@ -8,15 +8,18 @@ import UInt from './uint'
  * Derived UInt class for serializing/deserializing 8 bit UInt.
  */
 export default class UInt8 extends UInt {
-  protected static readonly width: number = 8 / 8 // 1
-  static readonly defaultUInt8: UInt8 = new UInt8(Buffer.alloc(UInt8.width))
+  public static readonly WIDTH: number = 1
 
-  constructor(bytes: Buffer) {
-    super(bytes ?? UInt8.defaultUInt8.bytes)
+  public static readonly DEFAULT_UINT_8: UInt8 = new UInt8(
+    Buffer.alloc(UInt8.WIDTH),
+  )
+
+  public constructor(bytes: Buffer) {
+    super(bytes ?? UInt8.DEFAULT_UINT_8.bytes)
   }
 
-  static fromParser(parser: BinaryParser): UInt {
-    return new UInt8(parser.read(UInt8.width))
+  public static fromParser(parser: BinaryParser): UInt {
+    return new UInt8(parser.read(UInt8.WIDTH))
   }
 
   /**
@@ -24,15 +27,15 @@ export default class UInt8 extends UInt {
    *
    * @param val - UInt8 object or number.
    * @returns Constructed UInt8 object.
-   * @throws {Error}
+   * @throws Error.
    */
-  static from<T extends UInt8 | number>(val: T): UInt8 {
+  public static from<T extends UInt8 | number>(val: T): UInt8 {
     if (val instanceof UInt8) {
       return val
     }
 
     if (typeof val === 'number') {
-      const buf = Buffer.alloc(UInt8.width)
+      const buf = Buffer.alloc(UInt8.WIDTH)
       buf.writeUInt8(val, 0)
       return new UInt8(buf)
     }
@@ -45,7 +48,7 @@ export default class UInt8 extends UInt {
    *
    * @returns The number represented by this.bytes.
    */
-  valueOf(): number {
+  public valueOf(): number {
     return this.bytes.readUInt8(0)
   }
 }

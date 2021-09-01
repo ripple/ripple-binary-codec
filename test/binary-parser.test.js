@@ -4,7 +4,7 @@ const Decimal = require('decimal.js')
 const { Buffer } = require('buffer/')
 const { encodeAccountID } = require('ripple-address-codec')
 
-const { binary } = require('../dist/coretypes')
+const binary = require('../dist/binary')
 const {
   Amount,
   Hash160,
@@ -43,7 +43,7 @@ function basicApiTests() {
   const bytes = parseHexOnly('00,01020304,0506', Uint8Array)
   test('can read slices of bytes', () => {
     const parser = makeParser(bytes)
-    expect(parser.bytes instanceof Buffer).toBe(true)
+    expect(parser._bytes instanceof Buffer).toBe(true)
     const read1 = parser.read(1)
     expect(read1 instanceof Buffer).toBe(true)
     expect(read1).toEqual(Buffer.from([0]))

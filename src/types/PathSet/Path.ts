@@ -8,8 +8,8 @@ import Hop, { HopObject } from './Hop'
 /**
  * Constants for separating Paths in a PathSet.
  */
-const PATHSET_END_BYTE = 0x00
-const PATH_SEPARATOR_BYTE = 0xff
+export const PATHSET_END_BYTE = 0x00
+export const PATH_SEPARATOR_BYTE = 0xff
 
 /**
  * Class for serializing/deserializing Paths.
@@ -21,7 +21,7 @@ export default class Path extends SerializedType {
    * @param value - Path or array of HopObjects to construct a Path.
    * @returns The Path.
    */
-  static from(value: Path | HopObject[]): Path {
+  public static from(value: Path | HopObject[]): Path {
     if (value instanceof Path) {
       return value
     }
@@ -40,7 +40,7 @@ export default class Path extends SerializedType {
    * @param parser - BinaryParser to read Path from.
    * @returns The Path represented by the bytes read from the BinaryParser.
    */
-  static fromParser(parser: BinaryParser): Path {
+  public static fromParser(parser: BinaryParser): Path {
     const bytes: Buffer[] = []
     while (!parser.end()) {
       bytes.push(Hop.fromParser(parser).toBytes())
@@ -60,7 +60,7 @@ export default class Path extends SerializedType {
    *
    * @returns An Array of HopObject constructed from this.bytes.
    */
-  toJSON(): HopObject[] {
+  public toJSON(): HopObject[] {
     const json: HopObject[] = []
     const pathParser = new BinaryParser(this.toString())
 
@@ -71,5 +71,3 @@ export default class Path extends SerializedType {
     return json
   }
 }
-
-export { PATHSET_END_BYTE, PATH_SEPARATOR_BYTE }

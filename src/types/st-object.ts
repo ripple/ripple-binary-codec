@@ -8,7 +8,10 @@ import BytesList from '../serdes/BytesList'
 
 import SerializedType, { JsonObject, JSON } from './SerializedType'
 
+/* eslint-disable @typescript-eslint/no-magic-numbers ---
+ * linter doesn't like the call to Buffer.from */
 const OBJECT_END_MARKER_BYTE = Buffer.from([0xe1])
+/* eslint-enable @typescript-eslint/no-magic-numbers */
 const OBJECT_END_MARKER = 'ObjectEndMarker'
 const ST_OBJECT = 'STObject'
 const DESTINATION = 'Destination'
@@ -28,9 +31,9 @@ function handleXAddress(field: string, xAddress: string): JsonObject {
     throw new Error(`${field} cannot have an associated tag`)
   }
 
-  return decoded.tag !== false
-    ? { [field]: decoded.classicAddress, [tagName]: decoded.tag }
-    : { [field]: decoded.classicAddress }
+  return decoded.tag === false
+    ? { [field]: decoded.classicAddress }
+    : { [field]: decoded.classicAddress, [tagName]: decoded.tag }
 }
 
 /**
@@ -59,7 +62,7 @@ export default class STObject extends SerializedType {
    * @param parser - BinaryParser to read STObject from.
    * @returns A STObject object.
    */
-  static fromParser(parser: BinaryParser): STObject {
+  public static fromParser(parser: BinaryParser): STObject {
     const list: BytesList = new BytesList()
     const bytes: BinarySerializer = new BinarySerializer(list)
 
@@ -87,7 +90,9 @@ export default class STObject extends SerializedType {
    * @param filter - Optional, denote which field to include in serialized object.
    * @returns A STObject object.
    */
-  static from<T extends STObject | JsonObject>(
+  /* eslint-disable max-lines-per-function ---
+   * TODO needs refactor */
+  public static from<T extends STObject | JsonObject>(
     value: T,
     filter?: (...any) => boolean,
   ): STObject {
@@ -101,10 +106,18 @@ export default class STObject extends SerializedType {
     const xAddressDecoded = Object.entries(value).reduce((acc, [key, val]) => {
       if (isValidXAddress(val)) {
         const handled = handleXAddress(key, val)
+        /* eslint-disable @typescript-eslint/consistent-type-assertions ---
+         * this is definitely a JsonObject because of the type check at the
+         * beginning of the function */
         checkForDuplicateTags(handled, value as JsonObject)
+        /* eslint-enable @typescript-eslint/consistent-type-assertions */
         return { ...acc, ...handled }
       }
+      /* eslint-disable @typescript-eslint/consistent-type-assertions ---
+       * this is definitely a JSON because of the type check at the
+       * beginning of the function */
       return { ...acc, [key]: val as JSON }
+      /* eslint-enable @typescript-eslint/consistent-type-assertions */
     }, {})
 
     let sorted = Object.keys(xAddressDecoded)
@@ -136,13 +149,14 @@ export default class STObject extends SerializedType {
 
     return new STObject(list.toBytes())
   }
+  /* eslint-enable max-lines-per-function */
 
   /**
    * Get the JSON interpretation of this.bytes.
    *
    * @returns A JSON object.
    */
-  toJSON(): JsonObject {
+  public toJSON(): JsonObject {
     const objectParser = new BinaryParser(this.toString())
     const accumulator = {}
 

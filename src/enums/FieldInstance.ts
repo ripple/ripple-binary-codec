@@ -13,5 +13,6 @@ export default interface FieldInstance {
   readonly ordinal: number
   readonly name: string
   readonly header: Buffer
-  associatedType: typeof SerializedType // TODO: this isn't true since in `src/types/index` we assign some cases to instances of ByteLookup....
+  // TODO: this isn't true since in `src/enums/FieldLookup` we assign some cases to instances of ByteLookup....
+  associatedType: typeof SerializedType
 }

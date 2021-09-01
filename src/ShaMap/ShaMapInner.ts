@@ -4,7 +4,7 @@ import * as assert from 'assert'
 import { Buffer } from 'buffer/'
 
 import HashPrefix from '../hash-prefixes'
-import { Sha512Half } from '../hashes'
+import Sha512Half from '../hashes'
 import BytesList from '../serdes/BytesList'
 import { Hash256 } from '../types'
 
@@ -15,52 +15,72 @@ import ShaMapNode from './ShaMapNode'
  * Class defining an Inner Node of a SHAMap.
  */
 export default class ShaMapInner extends ShaMapNode {
-  private slotBits = 0
-  private branches: ShaMapNode[] = Array(16) as ShaMapNode[]
+  private _slotBits = 0
+  /* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-magic-numbers --
+   * TODO why, describe me */
+  private _branches: ShaMapNode[] = Array(16) as ShaMapNode[]
+  /* eslint-enable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-magic-numbers */
+  private readonly _depth: number
 
-  constructor(private depth: number = 0) {
+  public constructor(depth = 0) {
     super()
+    this._depth = depth
   }
 
   /**
-   * @returns True as ShaMapInner is an inner node.
+   * Returns `true` because ShaMapInners are always inner nodes.
+   *
+   * @returns `true`.
    */
-  isInner(): boolean {
+  /* eslint-disable class-methods-use-this --
+   * this method could be static, but its probably useful as is */
+  public isInner(): true {
     return true
   }
+  /* eslint-enable class-methods-use-this */
 
   /**
-   * @returns False as ShaMapInner is not a leaf node.
+   * Returns `false` because ShaMapInners are never leaves.
+   *
+   * @returns `false`.
    */
-  isLeaf(): boolean {
+  /* eslint-disable class-methods-use-this --
+   * this method could be static, but its probably useful as is */
+  public isLeaf(): false {
     return false
   }
+  /* eslint-enable class-methods-use-this */
 
   /**
    * Get the hash prefix for this node.
    *
    * @returns Hash prefix describing an inner node.
    */
-  hashPrefix(): Buffer {
+  /* eslint-disable class-methods-use-this --
+   * this must be a method to fulfill the interface of ShaMapNode */
+  public hashPrefix(): Buffer {
     return HashPrefix.innerNode
   }
+  /* eslint-enable class-methods-use-this */
 
   /**
    * Set a branch of this node to be another node.
    *
-   * @param slot - Slot to add branch to this.branches.
+   * @param slot - Slot to add branch to this._branches.
    * @param branch - Branch to add.
    */
-  setBranch(slot: number, branch: ShaMapNode): void {
-    this.slotBits |= 1 << slot
-    this.branches[slot] = branch
+  public setBranch(slot: number, branch: ShaMapNode): void {
+    this._slotBits |= 1 << slot
+    this._branches[slot] = branch
   }
 
   /**
-   * @returns True if node is empty.
+   * Returns `true` if node is empty.
+   *
+   * @returns `true` if node is empty.
    */
-  empty(): boolean {
-    return this.slotBits === 0
+  public empty(): boolean {
+    return this._slotBits === 0
   }
 
   /**
@@ -68,7 +88,7 @@ export default class ShaMapInner extends ShaMapNode {
    *
    * @returns The hash of this node.
    */
-  hash(): Hash256 {
+  public hash(): Hash256 {
     if (this.empty()) {
       return Hash256.ZERO_256
     }
@@ -82,8 +102,8 @@ export default class ShaMapInner extends ShaMapNode {
    *
    * @param list - BytesList to write bytes to.
    */
-  toBytesSink(list: BytesList): void {
-    for (const branch of this.branches) {
+  public toBytesSink(list: BytesList): void {
+    for (const branch of this._branches) {
       const hash = branch ? branch.hash() : Hash256.ZERO_256
       hash.toBytesSink(list)
     }
@@ -95,17 +115,17 @@ export default class ShaMapInner extends ShaMapNode {
    * @param index - Hash of the index of the item being inserted.
    * @param item - Item to insert in the map.
    * @param leaf - Leaf node to insert when branch doesn't exist.
-   * @throws {Error}
+   * @throws Error.
    */
-  addItem(index?: Hash256, item?: ShaMapNode, leaf?: ShaMapLeaf): void {
+  public addItem(index?: Hash256, item?: ShaMapNode, leaf?: ShaMapLeaf): void {
     assert(index !== undefined)
-    const nibble = index.nibblet(this.depth)
-    const existing = this.branches[nibble]
+    const nibble = index.nibblet(this._depth)
+    const existing = this._branches[nibble]
 
     if (existing === undefined) {
-      this.setBranch(nibble, leaf || new ShaMapLeaf(index, item))
+      this.setBranch(nibble, leaf ?? new ShaMapLeaf(index, item))
     } else if (existing instanceof ShaMapLeaf) {
-      const newInner = new ShaMapInner(this.depth + 1)
+      const newInner = new ShaMapInner(this._depth + 1)
       newInner.addItem(existing.index, undefined, existing)
       newInner.addItem(index, item, leaf)
       this.setBranch(nibble, newInner)

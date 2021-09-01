@@ -12,50 +12,15 @@ import BytesList from './BytesList'
  * BinarySerializer is used to write fields and values to buffers.
  */
 export default class BinarySerializer {
-  private sink: BytesList = new BytesList()
+  private readonly _sink: BytesList = new BytesList()
 
-  constructor(sink: BytesList) {
-    this.sink = sink
+  public constructor(sink: BytesList) {
+    this._sink = sink
   }
 
-  /**
-   * Write a value to this BinarySerializer.
-   *
-   * @param value - A SerializedType value.
-   */
-  write(value: SerializedType): void {
-    value.toBytesSink(this.sink)
-  }
-
-  /**
-   * Write bytes to this BinarySerializer.
-   *
-   * @param bytes - The bytes to write.
-   */
-  put(bytes: Buffer): void {
-    this.sink.put(bytes)
-  }
-
-  /**
-   * Write a value of a given type to this BinarySerializer.
-   *
-   * @param type - The type to write.
-   * @param value - A value of that type.
-   */
-  writeType(type: typeof SerializedType, value: SerializedType): void {
-    this.write(type.from(value))
-  }
-
-  /**
-   * Write BytesList to this BinarySerializer.
-   *
-   * @param bl - BytesList to write to BinarySerializer.
-   */
-  writeBytesList(bl: BytesList): void {
-    bl.toBytesSink(this.sink)
-  }
-
-  private encodeVariableLength(inputLength: number): Buffer {
+  /* eslint-disable max-statements, @typescript-eslint/no-magic-numbers --
+   * TODO refactor */
+  private static encodeVariableLength(inputLength: number): Buffer {
     let length = inputLength
     const lenBytes = Buffer.alloc(3)
     if (length <= 192) {
@@ -77,6 +42,44 @@ export default class BinarySerializer {
     }
     throw new Error('Overflow error')
   }
+  /* eslint-enable max-statements, @typescript-eslint/no-magic-numbers */
+
+  /**
+   * Write a value to this BinarySerializer.
+   *
+   * @param value - A SerializedType value.
+   */
+  public write(value: SerializedType): void {
+    value.toBytesSink(this._sink)
+  }
+
+  /**
+   * Write bytes to this BinarySerializer.
+   *
+   * @param bytes - The bytes to write.
+   */
+  public put(bytes: Buffer): void {
+    this._sink.put(bytes)
+  }
+
+  /**
+   * Write a value of a given type to this BinarySerializer.
+   *
+   * @param type - The type to write.
+   * @param value - A value of that type.
+   */
+  public writeType(type: typeof SerializedType, value: SerializedType): void {
+    this.write(type.from(value))
+  }
+
+  /**
+   * Write BytesList to this BinarySerializer.
+   *
+   * @param bl - BytesList to write to BinarySerializer.
+   */
+  public writeBytesList(bl: BytesList): void {
+    bl.toBytesSink(this._sink)
+  }
 
   /**
    * Write field and value to BinarySerializer.
@@ -84,17 +87,17 @@ export default class BinarySerializer {
    * @param field - Field to write to BinarySerializer.
    * @param value - Value to write to BinarySerializer.
    */
-  writeFieldAndValue(field: FieldInstance, value: SerializedType): void {
+  public writeFieldAndValue(field: FieldInstance, value: SerializedType): void {
     const associatedValue = field.associatedType.from(value)
     assert(associatedValue.toBytesSink !== undefined)
     assert(field.name !== undefined)
 
-    this.sink.put(field.header)
+    this._sink.put(field.header)
 
     if (field.isVariableLengthEncoded) {
       this.writeLengthEncoded(associatedValue)
     } else {
-      associatedValue.toBytesSink(this.sink)
+      associatedValue.toBytesSink(this._sink)
     }
   }
 
@@ -106,7 +109,7 @@ export default class BinarySerializer {
   public writeLengthEncoded(value: SerializedType): void {
     const bytes = new BytesList()
     value.toBytesSink(bytes)
-    this.put(this.encodeVariableLength(bytes.getLength()))
+    this.put(BinarySerializer.encodeVariableLength(bytes.getLength()))
     this.writeBytesList(bytes)
   }
 }

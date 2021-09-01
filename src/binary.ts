@@ -3,7 +3,6 @@ import { Buffer } from 'buffer/'
 
 import { FieldInstance } from './enums'
 import HashPrefix from './hash-prefixes'
-import { sha512Half, transactionID } from './hashes'
 import BinaryParser from './serdes/BinaryParser'
 import BinarySerializer from './serdes/BinarySerializer'
 import BytesList from './serdes/BytesList'
@@ -16,7 +15,9 @@ import { JsonObject } from './types/SerializedType'
  * @param bytes - Hex-string to construct BinaryParser from.
  * @returns A BinaryParser.
  */
-const makeParser = (bytes: string): BinaryParser => new BinaryParser(bytes)
+function makeParser(bytes: string): BinaryParser {
+  return new BinaryParser(bytes)
+}
 
 /**
  * Parse BinaryParser into JSON.
@@ -24,8 +25,12 @@ const makeParser = (bytes: string): BinaryParser => new BinaryParser(bytes)
  * @param parser - BinaryParser object.
  * @returns JSON for the bytes in the BinaryParser.
  */
-const readJSON = (parser: BinaryParser): JsonObject =>
-  (parser.readType(STObject) as STObject).toJSON()
+/* eslint-disable @typescript-eslint/consistent-type-assertions --
+ * TODO why is this necessary? */
+function readJSON(parser: BinaryParser): JsonObject {
+  return (parser.readType(STObject) as STObject).toJSON()
+}
+/* eslint-enable @typescript-eslint/consistent-type-assertions */
 
 /**
  * Parse a hex-string into its JSON interpretation.
@@ -33,13 +38,10 @@ const readJSON = (parser: BinaryParser): JsonObject =>
  * @param bytes - Hex-string to parse into JSON.
  * @returns JSON.
  */
-const binaryToJSON = (bytes: string): JsonObject => readJSON(makeParser(bytes))
+function binaryToJSON(bytes: string): JsonObject {
+  return readJSON(makeParser(bytes))
+}
 
-/**
- * Interface for passing parameters to SerializeObject.
- *
- * @property set - SigningFieldOnly to true if you want to serialize only signing fields.
- */
 interface OptionObject {
   prefix?: Buffer
   suffix?: Buffer
@@ -53,8 +55,13 @@ interface OptionObject {
  * @param opts - Options for serializing, including optional prefix, suffix, and signingFieldOnly.
  * @returns A Buffer containing the serialized object.
  */
+
 function serializeObject(object: JsonObject, opts: OptionObject = {}): Buffer {
+  /* eslint-disable @typescript-eslint/naming-convention --
+   * changing the name of `signingFieldsOnly` would break
+   * the interface and isn't worth it */
   const { prefix, suffix, signingFieldsOnly = false } = opts
+  /* eslint-enable @typescript-eslint/naming-convention */
   const bytesList = new BytesList()
 
   if (prefix) {
@@ -135,18 +142,18 @@ function multiSigningData(
   })
 }
 
+/* eslint-disable import/no-unused-modules --
+ * used in test */
 export {
-  BinaryParser,
-  BinarySerializer,
   BytesList,
+  BinarySerializer,
   ClaimObject,
-  makeParser,
   serializeObject,
-  readJSON,
   multiSigningData,
   signingData,
   signingClaimData,
   binaryToJSON,
-  sha512Half,
-  transactionID,
+  makeParser,
+  readJSON,
 }
+/* eslint-enable import/no-unused-modules */

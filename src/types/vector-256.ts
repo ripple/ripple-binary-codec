@@ -8,6 +8,8 @@ function isStrings(arg): arg is string[] {
   return Array.isArray(arg) && (arg.length === 0 || typeof arg[0] === 'string')
 }
 
+const HASH_LENGTH_BYTES = 32
+
 /**
  * Class for serializing and deserializing vectors of Hash256.
  */
@@ -19,10 +21,10 @@ export default class Vector256 extends SerializedType {
    * @param hint - Length of the vector, in bytes, optional.
    * @returns A Vector256 object.
    */
-  static fromParser(parser: BinaryParser, hint?: number): Vector256 {
+  public static fromParser(parser: BinaryParser, hint?: number): Vector256 {
     const bytesList = new BytesList()
     const bytes = hint ?? parser.size()
-    const hashes = bytes / 32
+    const hashes = bytes / HASH_LENGTH_BYTES
     for (let i = 0; i < hashes; i++) {
       Hash256.fromParser(parser).toBytesSink(bytesList)
     }
@@ -34,9 +36,9 @@ export default class Vector256 extends SerializedType {
    *
    * @param value - A Vector256 object or array of hex-strings representing Hash256's.
    * @returns A Vector256 object.
-   * @throws {Error}
+   * @throws Error.
    */
-  static from<T extends Vector256 | string[]>(value: T): Vector256 {
+  public static from<T extends Vector256 | string[]>(value: T): Vector256 {
     if (value instanceof Vector256) {
       return value
     }
@@ -56,18 +58,18 @@ export default class Vector256 extends SerializedType {
    * Return an Array of hex-strings represented by this.bytes.
    *
    * @returns An Array of strings representing the Hash256 objects.
-   * @throws {Error}
+   * @throws Error.
    */
-  toJSON(): string[] {
-    if (this.bytes.byteLength % 32 !== 0) {
+  public toJSON(): string[] {
+    if (this.bytes.byteLength % HASH_LENGTH_BYTES !== 0) {
       throw new Error('Invalid bytes for Vector256')
     }
 
     const result: string[] = []
-    for (let i = 0; i < this.bytes.byteLength; i += 32) {
+    for (let i = 0; i < this.bytes.byteLength; i += HASH_LENGTH_BYTES) {
       result.push(
         this.bytes
-          .slice(i, i + 32)
+          .slice(i, i + HASH_LENGTH_BYTES)
           .toString('hex')
           .toUpperCase(),
       )

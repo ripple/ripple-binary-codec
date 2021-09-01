@@ -7,7 +7,10 @@ import { Buffer } from 'buffer/'
  * @returns A buffer with the bytes representation of uint32.
  */
 function bytes(uint32: number): Buffer {
+  /* eslint-disable @typescript-eslint/no-magic-numbers --
+   * 4 bytes is a 32 bit int */
   const result = Buffer.alloc(4)
+  /* eslint-enable @typescript-eslint/no-magic-numbers */
   result.writeUInt32BE(uint32, 0)
   return result
 }
@@ -15,7 +18,9 @@ function bytes(uint32: number): Buffer {
 /**
  * Maps HashPrefix names to their byte representation.
  */
-const HashPrefix: Record<string, Buffer> = {
+/* eslint-disable @typescript-eslint/no-magic-numbers --
+ * TODO better description of why */
+const HASH_PREFIX: Record<string, Buffer> = {
   transactionID: bytes(0x54584e00),
   // transaction plus metadata
   transaction: bytes(0x534e4400),
@@ -36,5 +41,6 @@ const HashPrefix: Record<string, Buffer> = {
   // payment channel claim
   paymentChannelClaim: bytes(0x434c4d00),
 }
+/* eslint-enable @typescript-eslint/no-magic-numbers */
 
-export default HashPrefix
+export default HASH_PREFIX

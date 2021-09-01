@@ -1,8 +1,10 @@
 export { default as Field } from './Field'
 export { default as FieldInstance } from './FieldInstance'
+/* eslint-disable import/no-unused-modules --
+ * used in test */
 export {
-  Type,
   LedgerEntryType,
   TransactionType,
   TransactionResult,
 } from './FieldLookup'
+/* eslint-enable import/no-unused-modules */

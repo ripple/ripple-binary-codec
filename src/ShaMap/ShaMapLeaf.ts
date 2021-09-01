@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer/'
 
-import { Sha512Half } from '../hashes'
+import Sha512Half from '../hashes'
 import BytesList from '../serdes/BytesList'
 import Hash256 from '../types/hash-256'
 
@@ -10,30 +10,45 @@ import ShaMapNode from './ShaMapNode'
  * Class describing a Leaf of SHAMap.
  */
 export default class ShaMapLeaf extends ShaMapNode {
-  constructor(public index: Hash256, public item?: ShaMapNode) {
+  public index: Hash256
+  public item?: ShaMapNode
+
+  public constructor(index: Hash256, item?: ShaMapNode) {
     super()
+    this.index = index
+    this.item = item
   }
 
   /**
-   * @returns True as ShaMapLeaf is a leaf node.
+   * Returns `true` because ShaMapLeafs are always leaf node.
+   *
+   * @returns True.
    */
-  isLeaf(): boolean {
+  /* eslint-disable class-methods-use-this --
+   * this method could be static, but its probably useful as is */
+  public isLeaf(): true {
     return true
   }
+  /* eslint-enable class-methods-use-this */
 
   /**
-   * @returns False as ShaMapLeaf is not an inner node.
+   * Returns `false` because ShaMapLeafs are never inner nodes.
+   *
+   * @returns False.
    */
-  isInner(): boolean {
+  /* eslint-disable class-methods-use-this --
+   * this method could be static, but its probably useful as is */
+  public isInner(): false {
     return false
   }
+  /* eslint-enable class-methods-use-this */
 
   /**
    * Get the prefix of the this.item.
    *
    * @returns The hash prefix, unless this.item is undefined, then it returns an empty Buffer.
    */
-  hashPrefix(): Buffer {
+  public hashPrefix(): Buffer {
     return this.item === undefined ? Buffer.alloc(0) : this.item.hashPrefix()
   }
 
@@ -42,7 +57,7 @@ export default class ShaMapLeaf extends ShaMapNode {
    *
    * @returns Hash of this.item concatenated with this.index.
    */
-  hash(): Hash256 {
+  public hash(): Hash256 {
     const hash = Sha512Half.put(this.hashPrefix())
     this.toBytesSink(hash)
     return hash.finish()
@@ -53,7 +68,7 @@ export default class ShaMapLeaf extends ShaMapNode {
    *
    * @param list - BytesList to write bytes to.
    */
-  toBytesSink(list: BytesList): void {
+  public toBytesSink(list: BytesList): void {
     if (this.item !== undefined) {
       this.item.toBytesSink(list)
     }

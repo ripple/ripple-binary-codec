@@ -14,7 +14,7 @@ export default abstract class UInt extends Comparable {
    * @param other - Other UInt to compare this to.
    * @returns 1, 0, or 1 depending on how the objects relate to each other.
    */
-  compareTo(other: UInt): number {
+  public compareTo(other: UInt): number {
     let myValue = this.valueOf()
     let theirValue = other.valueOf()
     if (typeof myValue === 'number') {
@@ -31,7 +31,7 @@ export default abstract class UInt extends Comparable {
    *
    * @returns Number or string represented by this.bytes.
    */
-  toJSON(): number | string {
+  public toJSON(): number | string {
     const val = this.valueOf()
     return typeof val === 'number' ? val : val.toString()
   }

@@ -17,7 +17,10 @@ const MAX_IOU_EXPONENT = 80
 const MAX_IOU_PRECISION = 16
 const MAX_DROPS = new Decimal('1e17')
 const MIN_XRP = new Decimal('1e-6')
+/* eslint-disable @typescript-eslint/no-magic-numbers ---
+ * these are fine just wrapped in other classes */
 const mask = bigInt(0x00000000ffffffff)
+/* eslint-enable @typescript-eslint/no-magic-numbers */
 
 /**
  * Decimal.js configuration for Amount IOUs.
@@ -37,25 +40,26 @@ interface AmountObject extends JsonObject {
 }
 
 function isAmountObject(arg): arg is AmountObject {
-  const keys = Object.keys(arg).sort()
+  /* eslint-disable @typescript-eslint/consistent-type-assertions --
+   * TODO is there any way to write this without a type assertion? */
   return (
-    keys.length === 3 &&
-    keys[0] === 'currency' &&
-    keys[1] === 'issuer' &&
-    keys[2] === 'value'
+    (arg as AmountObject)?.currency != null &&
+    (arg as AmountObject)?.issuer != null &&
+    (arg as AmountObject)?.value != null
   )
+  /* eslint-enable @typescript-eslint/consistent-type-assertions */
 }
 
 /**
  * Class for serializing/Deserializing Amounts.
  */
 export default class Amount extends SerializedType {
-  static defaultAmount: Amount = new Amount(
+  public static readonly DEFAULT_AMOUNT: Amount = new Amount(
     Buffer.from('4000000000000000', 'hex'),
   )
 
-  constructor(bytes: Buffer) {
-    super(bytes ?? Amount.defaultAmount.bytes)
+  public constructor(bytes: Buffer) {
+    super(bytes ?? Amount.DEFAULT_AMOUNT.bytes)
   }
 
   /**
@@ -64,66 +68,20 @@ export default class Amount extends SerializedType {
    * @param value - An Amount, object representing an IOU, or a string
    *     representing an integer amount.
    * @returns An Amount object.
-   * @throws {Error}
+   * @throws Error.
    */
-  static from<T extends Amount | AmountObject | string>(value: T): Amount {
+  public static from<T extends Amount | AmountObject | string>(
+    value: T,
+  ): Amount {
     if (value instanceof Amount) {
       return value
     }
-
-    let amount = Buffer.alloc(8)
     if (typeof value === 'string') {
-      Amount.assertXrpIsValid(value)
-
-      const number = bigInt(value)
-
-      const intBuf = [Buffer.alloc(4), Buffer.alloc(4)]
-      intBuf[0].writeUInt32BE(Number(number.shiftRight(32)), 0)
-      intBuf[1].writeUInt32BE(Number(number.and(mask)), 0)
-
-      amount = Buffer.concat(intBuf)
-
-      amount[0] |= 0x40
-
-      return new Amount(amount)
+      return Amount.fromString(value)
     }
-
     if (isAmountObject(value)) {
-      const number = new Decimal(value.value)
-      Amount.assertIouIsValid(number)
-
-      if (number.isZero()) {
-        amount[0] |= 0x80
-      } else {
-        const integerNumberString = number
-          .times(`1e${-(number.e - 15)}`)
-          .abs()
-          .toString()
-
-        const num = bigInt(integerNumberString)
-        const intBuf = [Buffer.alloc(4), Buffer.alloc(4)]
-        intBuf[0].writeUInt32BE(Number(num.shiftRight(32)), 0)
-        intBuf[1].writeUInt32BE(Number(num.and(mask)), 0)
-
-        amount = Buffer.concat(intBuf)
-
-        amount[0] |= 0x80
-
-        if (number.gt(new Decimal(0))) {
-          amount[0] |= 0x40
-        }
-
-        const exponent = number.e - 15
-        const exponentByte = 97 + exponent
-        amount[0] |= exponentByte >>> 2
-        amount[1] |= (exponentByte & 0x03) << 6
-      }
-
-      const currency = Currency.from(value.currency).toBytes()
-      const issuer = AccountID.from(value.issuer).toBytes()
-      return new Amount(Buffer.concat([amount, currency, issuer]))
+      return Amount.fromAmountObject(value)
     }
-
     throw new Error('Invalid type to construct an Amount')
   }
 
@@ -133,18 +91,125 @@ export default class Amount extends SerializedType {
    * @param parser - BinaryParser to read the Amount from.
    * @returns An Amount object.
    */
-  static fromParser(parser: BinaryParser): Amount {
+  public static fromParser(parser: BinaryParser): Amount {
+    /* eslint-disable @typescript-eslint/no-magic-numbers -- TODO refactor or
+     * describe these constants */
     const isXRP = parser.peek() & 0x80
     const numBytes = isXRP ? 48 : 8
     return new Amount(parser.read(numBytes))
+    /* eslint-enable @typescript-eslint/no-magic-numbers */
   }
+
+  private static assertXrpIsValid(amount: string): void {
+    if (amount.includes('.')) {
+      throw new Error(`${amount.toString()} is an illegal amount`)
+    }
+
+    const decimal = new Decimal(amount)
+    if (!decimal.isZero()) {
+      if (decimal.lt(MIN_XRP) || decimal.gt(MAX_DROPS)) {
+        throw new Error(`${amount.toString()} is an illegal amount`)
+      }
+    }
+  }
+
+  private static assertIouIsValid(decimal: Decimal): void {
+    if (!decimal.isZero()) {
+      const precision = decimal.precision()
+      /* eslint-disable @typescript-eslint/no-magic-numbers -- TODO refactor or
+       * describe these constants */
+      const exponent = decimal.e - 15
+      /* eslint-enable @typescript-eslint/no-magic-numbers */
+      if (
+        precision > MAX_IOU_PRECISION ||
+        exponent > MAX_IOU_EXPONENT ||
+        exponent < MIN_IOU_EXPONENT
+      ) {
+        throw new Error('Decimal precision out of range')
+      }
+      this.verifyNoDecimal(decimal)
+    }
+  }
+
+  private static verifyNoDecimal(decimal: Decimal): void {
+    const integerNumberString = decimal
+      /* eslint-disable @typescript-eslint/no-magic-numbers -- TODO refactor or
+       * describe these constants */
+      .times(`1e${-(decimal.e - 15)}`)
+      /* eslint-enable @typescript-eslint/no-magic-numbers */
+      .abs()
+      .toString()
+
+    if (integerNumberString.includes('.')) {
+      throw new Error('Decimal place found in integerNumberString')
+    }
+  }
+
+  private static fromString(value: string): Amount {
+    Amount.assertXrpIsValid(value)
+
+    const number = bigInt(value)
+
+    /* eslint-disable @typescript-eslint/no-magic-numbers -- TODO refactor or
+     * describe these constants */
+    const intBuf = [Buffer.alloc(4), Buffer.alloc(4)]
+    intBuf[0].writeUInt32BE(Number(number.shiftRight(32)), 0)
+    intBuf[1].writeUInt32BE(Number(number.and(mask)), 0)
+
+    const amount = Buffer.concat(intBuf)
+    amount[0] |= 0x40
+    return new Amount(amount)
+    /* eslint-enable @typescript-eslint/no-magic-numbers */
+  }
+
+  /* eslint-disable max-statements, max-lines-per-function, @typescript-eslint/no-magic-numbers --
+   * TODO refactor */
+  private static fromAmountObject(value: AmountObject): Amount {
+    const number = new Decimal(value.value)
+    Amount.assertIouIsValid(number)
+    let amount = Buffer.alloc(8)
+
+    if (number.isZero()) {
+      amount[0] |= 0x80
+    } else {
+      const integerNumberString = number
+        .times(`1e${-(number.e - 15)}`)
+        .abs()
+        .toString()
+
+      const num = bigInt(integerNumberString)
+      const intBuf = [Buffer.alloc(4), Buffer.alloc(4)]
+      intBuf[0].writeUInt32BE(Number(num.shiftRight(32)), 0)
+      intBuf[1].writeUInt32BE(Number(num.and(mask)), 0)
+
+      amount = Buffer.concat(intBuf)
+
+      amount[0] |= 0x80
+
+      if (number.gt(new Decimal(0))) {
+        amount[0] |= 0x40
+      }
+
+      const exponent = number.e - 15
+      const exponentByte = 97 + exponent
+      amount[0] |= exponentByte >>> 2
+      amount[1] |= (exponentByte & 0x03) << 6
+    }
+
+    const currency = Currency.from(value.currency).toBytes()
+    const issuer = AccountID.from(value.issuer).toBytes()
+    return new Amount(Buffer.concat([amount, currency, issuer]))
+  }
+  /* eslint-enable max-statements, max-lines-per-function, @typescript-eslint/no-magic-numbers */
 
   /**
    * Get the JSON representation of this Amount.
    *
    * @returns The JSON interpretation of this.bytes.
    */
-  toJSON(): AmountObject | string {
+  /* eslint-disable max-statements, max-lines-per-function, @typescript-eslint/no-magic-numbers --
+   * TODO refactor */
+  public toJSON(): AmountObject | string {
     if (this.isNative()) {
       const bytes = this.bytes
       const isPositive = bytes[0] & 0x40
@@ -159,8 +224,12 @@ export default class Amount extends SerializedType {
     }
     const parser = new BinaryParser(this.toString())
     const mantissa = parser.read(8)
+    /* eslint-disable @typescript-eslint/consistent-type-assertions --
+     * TODO it may be possible to get rid of this with a generic type on the
+     * SerializedType.fromParser func */
     const currency = Currency.fromParser(parser) as Currency
     const issuer = AccountID.fromParser(parser) as AccountID
+    /* eslint-enable @typescript-eslint/consistent-type-assertions */
 
     const b1 = mantissa[0]
     const b2 = mantissa[1]
@@ -182,45 +251,7 @@ export default class Amount extends SerializedType {
       issuer: issuer.toJSON(),
     }
   }
-
-  private static assertXrpIsValid(amount: string): void {
-    if (amount.includes('.')) {
-      throw new Error(`${amount.toString()} is an illegal amount`)
-    }
-
-    const decimal = new Decimal(amount)
-    if (!decimal.isZero()) {
-      if (decimal.lt(MIN_XRP) || decimal.gt(MAX_DROPS)) {
-        throw new Error(`${amount.toString()} is an illegal amount`)
-      }
-    }
-  }
-
-  private static assertIouIsValid(decimal: Decimal): void {
-    if (!decimal.isZero()) {
-      const precision = decimal.precision()
-      const exponent = decimal.e - 15
-      if (
-        precision > MAX_IOU_PRECISION ||
-        exponent > MAX_IOU_EXPONENT ||
-        exponent < MIN_IOU_EXPONENT
-      ) {
-        throw new Error('Decimal precision out of range')
-      }
-      this.verifyNoDecimal(decimal)
-    }
-  }
-
-  private static verifyNoDecimal(decimal: Decimal): void {
-    const integerNumberString = decimal
-      .times(`1e${-(decimal.e - 15)}`)
-      .abs()
-      .toString()
-
-    if (integerNumberString.includes('.')) {
-      throw new Error('Decimal place found in integerNumberString')
-    }
-  }
+  /* eslint-enable max-statements, max-lines-per-function, @typescript-eslint/no-magic-numbers */
 
   /**
    * Test if this amount is in units of Native Currency(XRP).
@@ -228,8 +259,9 @@ export default class Amount extends SerializedType {
    * @returns True if Native (XRP).
    */
   private isNative(): boolean {
+    /* eslint-disable @typescript-eslint/no-magic-numbers ---
+     * TODO describe this better */
     return (this.bytes[0] & 0x80) === 0
+    /* eslint-enable @typescript-eslint/no-magic-numbers */
   }
 }
-
-export { AmountObject }

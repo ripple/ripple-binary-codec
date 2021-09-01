@@ -7,11 +7,14 @@ import { HopObject } from './Hop'
 import Path, { PATHSET_END_BYTE, PATH_SEPARATOR_BYTE } from './Path'
 
 function isHopObject(arg): arg is HopObject {
+  /* eslint-disable @typescript-eslint/consistent-type-assertions --
+   * TODO is there any way to write this without a type assertion? */
   return (
     (arg as HopObject)?.issuer !== undefined ||
     (arg as HopObject)?.account !== undefined ||
     (arg as HopObject)?.currency !== undefined
   )
+  /* eslint-enable @typescript-eslint/consistent-type-assertions */
 }
 
 function isPathSet(arg): arg is HopObject[][] {
@@ -31,9 +34,9 @@ export default class PathSet extends SerializedType {
    *
    * @param value - A PathSet or Array of Array of HopObjects.
    * @returns The PathSet constructed from value.
-   * @throws {Error}
+   * @throws Error.
    */
-  static from<T extends PathSet | HopObject[][]>(value: T): PathSet {
+  public static from<T extends PathSet | HopObject[][]>(value: T): PathSet {
     if (value instanceof PathSet) {
       return value
     }
@@ -60,7 +63,7 @@ export default class PathSet extends SerializedType {
    * @param parser - A BinaryParser to read PathSet from.
    * @returns The PathSet read from parser.
    */
-  static fromParser(parser: BinaryParser): PathSet {
+  public static fromParser(parser: BinaryParser): PathSet {
     const bytes: Buffer[] = []
 
     while (!parser.end()) {
@@ -80,7 +83,7 @@ export default class PathSet extends SerializedType {
    *
    * @returns An Array of Array of HopObjects, representing this PathSet.
    */
-  toJSON(): HopObject[][] {
+  public toJSON(): HopObject[][] {
     const json: HopObject[][] = []
     const pathParser = new BinaryParser(this.toString())
 

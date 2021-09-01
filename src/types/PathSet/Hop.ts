@@ -32,7 +32,7 @@ export default class Hop extends SerializedType {
    * @param value - Either a hop or HopObject to create a hop with.
    * @returns A Hop.
    */
-  static from(value: Hop | HopObject): Hop {
+  public static from(value: Hop | HopObject): Hop {
     if (value instanceof Hop) {
       return value
     }
@@ -63,20 +63,20 @@ export default class Hop extends SerializedType {
    * @param parser - BinaryParser to read the Hop from.
    * @returns A Hop.
    */
-  static fromParser(parser: BinaryParser): Hop {
+  public static fromParser(parser: BinaryParser): Hop {
     const type = parser.readUInt8()
     const bytes: Buffer[] = [Buffer.from([type])]
 
     if (type & TYPE_ACCOUNT) {
-      bytes.push(parser.read(AccountID.width))
+      bytes.push(parser.read(AccountID.WIDTH))
     }
 
     if (type & TYPE_CURRENCY) {
-      bytes.push(parser.read(Currency.width))
+      bytes.push(parser.read(Currency.WIDTH))
     }
 
     if (type & TYPE_ISSUER) {
-      bytes.push(parser.read(AccountID.width))
+      bytes.push(parser.read(AccountID.WIDTH))
     }
 
     return new Hop(Buffer.concat(bytes))
@@ -87,11 +87,14 @@ export default class Hop extends SerializedType {
    *
    * @returns A HopObject, an JS object with optional account, issuer, and currency.
    */
-  toJSON(): HopObject {
+  public toJSON(): HopObject {
     const hopParser = new BinaryParser(this.bytes.toString('hex'))
     const type = hopParser.readUInt8()
     const result: HopObject = {}
 
+    /* eslint-disable @typescript-eslint/consistent-type-assertions --
+     * TODO it may be possible to get rid of this with a generic type on the
+     * SerializedType.fromParser func */
     if (type & TYPE_ACCOUNT) {
       result.account = AccountID.fromParser(hopParser).toJSON() as string
     }
@@ -103,6 +106,7 @@ export default class Hop extends SerializedType {
     if (type & TYPE_ISSUER) {
       result.issuer = AccountID.fromParser(hopParser).toJSON() as string
     }
+    /* eslint-enable @typescript-eslint/consistent-type-assertions */
 
     return result
   }
@@ -112,7 +116,7 @@ export default class Hop extends SerializedType {
    *
    * @returns A number to be bitwise and-ed with TYPE_ constants to describe the types in the hop.
    */
-  type(): number {
+  public type(): number {
     return this.bytes[0]
   }
 }

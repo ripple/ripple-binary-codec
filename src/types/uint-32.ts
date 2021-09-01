@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer/'
 
-import BinaryParser from '../serdes/BinaryParser'
+import type BinaryParser from '../serdes/BinaryParser'
 
 import UInt from './uint'
 
@@ -8,15 +8,18 @@ import UInt from './uint'
  * Derived UInt class for serializing/deserializing 32 bit UInt.
  */
 export default class UInt32 extends UInt {
-  protected static readonly width: number = 32 / 8 // 4
-  static readonly defaultUInt32: UInt32 = new UInt32(Buffer.alloc(UInt32.width))
+  public static readonly WIDTH: number = 4
 
-  constructor(bytes: Buffer) {
-    super(bytes ?? UInt32.defaultUInt32.bytes)
+  public static readonly DEFAULT_UINT_32: UInt32 = new UInt32(
+    Buffer.alloc(UInt32.WIDTH),
+  )
+
+  public constructor(bytes: Buffer) {
+    super(bytes ?? UInt32.DEFAULT_UINT_32.bytes)
   }
 
-  static fromParser(parser: BinaryParser): UInt {
-    return new UInt32(parser.read(UInt32.width))
+  public static fromParser(parser: BinaryParser): UInt {
+    return new UInt32(parser.read(UInt32.WIDTH))
   }
 
   /**
@@ -24,14 +27,14 @@ export default class UInt32 extends UInt {
    *
    * @param val - UInt32 object or number.
    * @returns Constructed UInt32 instance.
-   * @throws {Error}
+   * @throws Error.
    */
-  static from<T extends UInt32 | number | string>(val: T): UInt32 {
+  public static from<T extends UInt32 | number | string>(val: T): UInt32 {
     if (val instanceof UInt32) {
       return val
     }
 
-    const buf = Buffer.alloc(UInt32.width)
+    const buf = Buffer.alloc(UInt32.WIDTH)
 
     if (typeof val === 'string') {
       const num = Number.parseInt(val, 10)
@@ -52,7 +55,7 @@ export default class UInt32 extends UInt {
    *
    * @returns The number represented by this.bytes.
    */
-  valueOf(): number {
+  public valueOf(): number {
     return this.bytes.readUInt32BE(0)
   }
 }

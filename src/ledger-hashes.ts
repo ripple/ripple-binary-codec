@@ -4,15 +4,11 @@ import * as bigInt from 'big-integer'
 
 import { BinarySerializer, serializeObject } from './binary'
 import HashPrefix from './hash-prefixes'
-import { Sha512Half } from './hashes'
+import Sha512Half from './hashes'
 import BinaryParser from './serdes/BinaryParser'
 import ShaMap, { ShaMapNode, ShaMapLeaf } from './ShaMap'
-import Hash256 from './types/hash-256'
+import { STObject, UInt32, UInt64, UInt8, Hash256 } from './types'
 import { JsonObject } from './types/SerializedType'
-import STObject from './types/st-object'
-import UInt32 from './types/uint-32'
-import UInt64 from './types/uint-64'
-import UInt8 from './types/uint-8'
 
 /**
  * Computes the hash of a list of objects.
@@ -33,7 +29,7 @@ function computeHash(
 /**
  * Interface describing a transaction item.
  */
-interface transactionItemObject extends JsonObject {
+interface TransactionItemObject extends JsonObject {
   hash: string
   metaData: JsonObject
 }
@@ -45,10 +41,13 @@ interface transactionItemObject extends JsonObject {
  * @returns A tuple of index and item to be added to SHAMap.
  */
 function transactionItemizer(
-  json: transactionItemObject,
+  json: TransactionItemObject,
 ): [Hash256, ShaMapNode, undefined] {
   assert(json.hash)
   const index = Hash256.from(json.hash)
+
+  /* eslint-disable @typescript-eslint/consistent-type-assertions --
+   * TODO why is this necessary maybe it's not */
   const item = {
     hashPrefix() {
       return HashPrefix.transaction
@@ -59,13 +58,14 @@ function transactionItemizer(
       serializer.writeLengthEncoded(STObject.from(json.metaData))
     },
   } as ShaMapNode
+  /* eslint-enable @typescript-eslint/consistent-type-assertions */
   return [index, item, undefined]
 }
 
 /**
  * Interface describing an entry item.
  */
-interface entryItemObject extends JsonObject {
+interface EntryItemObject extends JsonObject {
   index: string
 }
 
@@ -76,10 +76,13 @@ interface entryItemObject extends JsonObject {
  * @returns A tuple of index and item to be added to SHAMap.
  */
 function entryItemizer(
-  json: entryItemObject,
+  json: EntryItemObject,
 ): [Hash256, ShaMapNode, undefined] {
   const index = Hash256.from(json.index)
   const bytes = serializeObject(json)
+
+  /* eslint-disable @typescript-eslint/consistent-type-assertions --
+   * TODO why is this necessary maybe it's not */
   const item = {
     hashPrefix() {
       return HashPrefix.accountStateEntry
@@ -88,6 +91,7 @@ function entryItemizer(
       sink.put(bytes)
     },
   } as ShaMapNode
+  /* eslint-enable @typescript-eslint/consistent-type-assertions */
   return [index, item, undefined]
 }
 
@@ -98,9 +102,12 @@ function entryItemizer(
  * @returns A Hash256 object.
  */
 function transactionTreeHash(param: JsonObject[]): Hash256 {
+  /* eslint-disable @typescript-eslint/consistent-type-assertions --
+   * TODO why is this necessary maybe it's not */
   const itemizer = transactionItemizer as (
     json: JsonObject,
   ) => [Hash256, ShaMapNode, undefined]
+  /* eslint-enable @typescript-eslint/consistent-type-assertions */
   return computeHash(itemizer, param)
 }
 
@@ -111,16 +118,21 @@ function transactionTreeHash(param: JsonObject[]): Hash256 {
  * @returns A Hash256 object.
  */
 function accountStateHash(param: JsonObject[]): Hash256 {
+  /* eslint-disable @typescript-eslint/consistent-type-assertions --
+   * TODO why is this necessary maybe it's not */
   const itemizer = entryItemizer as (
     json: JsonObject,
   ) => [Hash256, ShaMapNode, undefined]
+  /* eslint-enable @typescript-eslint/consistent-type-assertions */
   return computeHash(itemizer, param)
 }
 
 /**
  * Interface describing a ledger header.
  */
-interface ledgerObject {
+/* eslint-disable @typescript-eslint/naming-convention --
+ * this is actually what the shape of this object should be */
+interface LedgerObject {
   ledger_index: number
   total_coins: string | number | bigInt.BigInteger
   parent_hash: string
@@ -131,6 +143,7 @@ interface ledgerObject {
   close_time_resolution: number
   close_flags: number
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 /**
  * Serialize and hash a ledger header.
@@ -138,7 +151,7 @@ interface ledgerObject {
  * @param header - A ledger header.
  * @returns The hash of header.
  */
-function ledgerHash(header: ledgerObject): Hash256 {
+function ledgerHash(header: LedgerObject): Hash256 {
   const hash = new Sha512Half()
   hash.put(HashPrefix.ledgerHeader)
   assert(header.parent_close_time !== undefined)
@@ -164,12 +177,17 @@ function ledgerHash(header: ledgerObject): Hash256 {
  * @param binary - A serialized ledger header.
  * @returns A JSON object describing a ledger header.
  */
-function decodeLedgerData(binary: string): ledgerObject {
+function decodeLedgerData(binary: string): LedgerObject {
   assert(typeof binary === 'string', 'binary must be a hex string')
   const parser = new BinaryParser(binary)
+  /* eslint-disable @typescript-eslint/naming-convention --
+   * this is actually what the shape of this object should be */
   return {
     ledger_index: parser.readUInt32(),
+    /* eslint-disable @typescript-eslint/consistent-type-assertions --
+     * TODO why is this necessary maybe it's not */
     total_coins: (parser.readType(UInt64) as UInt64).valueOf().toString(),
+    /* eslint-enable @typescript-eslint/consistent-type-assertions */
     parent_hash: parser.readType(Hash256).toHex(),
     transaction_hash: parser.readType(Hash256).toHex(),
     account_hash: parser.readType(Hash256).toHex(),
@@ -178,6 +196,10 @@ function decodeLedgerData(binary: string): ledgerObject {
     close_time_resolution: parser.readUInt8(),
     close_flags: parser.readUInt8(),
   }
+  /* eslint-enable @typescript-eslint/naming-convention */
 }
 
+/* eslint-disable import/no-unused-modules ---
+ * these are imported in test */
 export { accountStateHash, transactionTreeHash, ledgerHash, decodeLedgerData }
+/* eslint-enable import/no-unused-modules */

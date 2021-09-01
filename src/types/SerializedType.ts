@@ -23,16 +23,19 @@ export interface JsonObject {
 export default class SerializedType {
   protected readonly bytes: Buffer = Buffer.alloc(0)
 
-  constructor(bytes: Buffer) {
+  public constructor(bytes: Buffer) {
     this.bytes = bytes ?? Buffer.alloc(0)
   }
 
-  static fromParser(parser: BinaryParser, hint?: number): SerializedType {
+  public static fromParser(
+    parser: BinaryParser,
+    hint?: number,
+  ): SerializedType {
     throw new Error('fromParser not implemented')
     return this.fromParser(parser, hint)
   }
 
-  static from(
+  public static from(
     value: SerializedType | JSON | bigInt.BigInteger,
   ): SerializedType {
     throw new Error('from not implemented')
@@ -44,7 +47,7 @@ export default class SerializedType {
    *
    * @param list - The BytesList to write SerializedType bytes to.
    */
-  toBytesSink(list: BytesList): void {
+  public toBytesSink(list: BytesList): void {
     list.put(this.bytes)
   }
 
@@ -53,7 +56,7 @@ export default class SerializedType {
    *
    * @returns Hex String of this.bytes.
    */
-  toHex(): string {
+  public toHex(): string {
     return this.toBytes().toString('hex').toUpperCase()
   }
 
@@ -62,7 +65,7 @@ export default class SerializedType {
    *
    * @returns A buffer of the bytes.
    */
-  toBytes(): Buffer {
+  public toBytes(): Buffer {
     if (this.bytes) {
       return this.bytes
     }
@@ -76,14 +79,16 @@ export default class SerializedType {
    *
    * @returns Any type, if not overloaded returns hexString representation of bytes.
    */
-  toJSON(): JSON {
+  public toJSON(): JSON {
     return this.toHex()
   }
 
   /**
+   * Return the HexString representation of this type.
+   *
    * @returns HexString representation of this.bytes.
    */
-  toString(): string {
+  public toString(): string {
     return this.toHex()
   }
 }

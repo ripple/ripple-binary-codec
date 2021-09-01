@@ -1,7 +1,7 @@
 /* eslint-disable func-style */
 
 const { encode, decode } = require('../dist')
-const { binary } = require('../dist/coretypes')
+const binary = require('../dist/binary')
 
 const { makeParser, BytesList, BinarySerializer } = binary
 const { UInt8, UInt16, UInt32, UInt64, STObject } = require('../dist/types')
@@ -115,8 +115,8 @@ function bytesListTest() {
     .put(Buffer.from([2, 3]))
     .put(Buffer.from([4, 5]))
   test('is an Array<Buffer>', function () {
-    expect(Array.isArray(list.bytesArray)).toBe(true)
-    expect(list.bytesArray[0] instanceof Buffer).toBe(true)
+    expect(Array.isArray(list._bytesArray)).toBe(true)
+    expect(list._bytesArray[0] instanceof Buffer).toBe(true)
   })
   test('keeps track of the length itself', function () {
     expect(list.getLength()).toBe(5)

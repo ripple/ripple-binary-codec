@@ -4,11 +4,11 @@ const { Hash160, Hash256, AccountID, Currency } = require('../dist/types')
 
 describe('Hash160', function () {
   test('has a static width member', function () {
-    expect(Hash160.width).toBe(20)
+    expect(Hash160.WIDTH).toBe(20)
   })
   test('inherited by subclasses', function () {
-    expect(AccountID.width).toBe(20)
-    expect(Currency.width).toBe(20)
+    expect(AccountID.WIDTH).toBe(20)
+    expect(Currency.WIDTH).toBe(20)
   })
   test('can be compared against another', function () {
     const h1 = Hash160.from('1000000000000000000000000000000000000000')
@@ -29,7 +29,7 @@ describe('Hash160', function () {
 
 describe('Hash256', function () {
   test('has a static width member', function () {
-    expect(Hash256.width).toBe(32)
+    expect(Hash256.WIDTH).toBe(32)
   })
   test('has a ZERO_256 member', function () {
     expect(Hash256.ZERO_256.toJSON()).toBe(

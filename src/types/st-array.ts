@@ -5,10 +5,16 @@ import BinaryParser from '../serdes/BinaryParser'
 import SerializedType, { JsonObject } from './SerializedType'
 import STObject from './st-object'
 
+/* eslint-disable @typescript-eslint/no-magic-numbers ---
+ * linter doesn't like the call to Buffer.from */
 const ARRAY_END_MARKER = Buffer.from([0xf1])
+/* eslint-enable @typescript-eslint/no-magic-numbers */
 const ARRAY_END_MARKER_NAME = 'ArrayEndMarker'
 
+/* eslint-disable @typescript-eslint/no-magic-numbers ---
+ * linter doesn't like the call to Buffer.from */
 const OBJECT_END_MARKER = Buffer.from([0xe1])
+/* eslint-enable @typescript-eslint/no-magic-numbers */
 
 function isObjects(args): args is JsonObject[] {
   return (
@@ -26,7 +32,7 @@ export default class STArray extends SerializedType {
    * @param parser - BinaryParser to parse an STArray from.
    * @returns An STArray Object.
    */
-  static fromParser(parser: BinaryParser): STArray {
+  public static fromParser(parser: BinaryParser): STArray {
     const bytes: Buffer[] = []
 
     while (!parser.end()) {
@@ -51,9 +57,9 @@ export default class STArray extends SerializedType {
    *
    * @param value - STArray or Array of Objects to parse into an STArray.
    * @returns An STArray object.
-   * @throws {Error}
+   * @throws Error.
    */
-  static from<T extends STArray | JsonObject[]>(value: T): STArray {
+  public static from<T extends STArray | JsonObject[]>(value: T): STArray {
     if (value instanceof STArray) {
       return value
     }
@@ -76,7 +82,7 @@ export default class STArray extends SerializedType {
    *
    * @returns An Array of JSON objects.
    */
-  toJSON(): JsonObject[] {
+  public toJSON(): JsonObject[] {
     const result: JsonObject[] = []
 
     const arrayParser = new BinaryParser(this.toString())
