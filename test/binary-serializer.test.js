@@ -1,17 +1,19 @@
-/* eslint-disable func-style */
-
-const { encode, decode } = require('../dist')
-const binary = require('../dist/binary')
-
-const { makeParser, BytesList, BinarySerializer } = binary
-const { UInt8, UInt16, UInt32, UInt64, STObject } = require('../dist/types')
+/* eslint-disable node/global-require, global-require, import/order --
+ * this file does dynanmic imports for now */
+/* eslint-disable max-lines -- TODO we should probably refactor */
 const bigInt = require('big-integer')
 const { Buffer } = require('buffer/')
 
-const { loadFixture } = require('./utils')
-const fixtures = loadFixture('data-driven-tests.json')
+const { encode, decode } = require('../dist')
+const binary = require('../dist/binary')
+const { UInt8, UInt16, UInt32, UInt64, STObject } = require('../dist/types')
+
 const deliverMinTxBinary = require('./fixtures/delivermin-tx-binary.json')
 const deliverMinTx = require('./fixtures/delivermin-tx.json')
+const { loadFixture } = require('./utils')
+
+const { makeParser, BytesList, BinarySerializer } = binary
+const fixtures = loadFixture('data-driven-tests.json')
 
 const SignerListSet = {
   tx: require('./fixtures/signerlistset-tx.json'),
@@ -140,11 +142,9 @@ function assertRecycles(blob) {
 
 function nestedObjectTests() {
   fixtures.whole_objects.forEach((f, i) => {
-    /* eslint-disable jest/expect-expect */
     test(`whole_objects[${i}]: can parse blob and dump out same blob`, () => {
       assertRecycles(f.blob_with_no_signing)
     })
-    /* eslint-enable jest/expect-expect */
   })
 }
 

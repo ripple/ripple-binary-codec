@@ -141,6 +141,9 @@ test('UInt64 from non 16 length hex', () => {
 
 test('valueOfTests', () => {
   let val = UInt8.from(1)
+  /* eslint-disable no-bitwise --
+   * this is on purpose */
   val |= 0x2
+  /* eslint-enable no-bitwise */
   expect(val).toBe(3)
 })

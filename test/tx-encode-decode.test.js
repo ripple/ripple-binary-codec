@@ -9,7 +9,11 @@ const tx_json = {
 
   // JavaScript converts operands to 32-bit signed ints after doing bitwise
   // operations. We need to convert it back to an unsigned int with >>> 0.
-  Flags: (1 << 31) >>> 0, // tfFullyCanonicalSig
+  /* eslint-disable no-bitwise --
+   * this is on purpose */
+  // below represents: tfFullyCanonicalSig
+  Flags: (1 << 31) >>> 0,
+  /* eslint-enable no-bitwise */
 
   Sequence: 1,
   TransactionType: 'Payment',

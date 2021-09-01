@@ -29,7 +29,8 @@ describe('Signing data', function () {
     const actual = encodeForSigning(TX_JSON)
     expect(actual).toBe(
       [
-        '53545800', // signingPrefix
+        // signingPrefix
+        '53545800',
         // TransactionType
         '12',
         '0000',

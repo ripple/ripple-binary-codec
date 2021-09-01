@@ -1,9 +1,11 @@
+/* eslint-disable no-bitwise -- required in these tests */
 const { Buffer } = require('buffer/')
 
-const HashPrefix = require('../dist/hash-prefixes').default
 const binary = require('../dist/binary')
+const HashPrefix = require('../dist/hash-prefixes').default
 const ShaMap = require('../dist/ShaMap').default
 const { Hash256 } = require('../dist/types')
+
 const { loadFixture } = require('./utils')
 
 function now() {
@@ -15,7 +17,7 @@ const ZERO = '0000000000000000000000000000000000000000000000000000000000000000'
 function makeItem(indexArg) {
   let str = indexArg
   while (str.length < 64) {
-    str += '0'
+    str = `${str}0`
   }
   const index = Hash256.from(str)
   const item = {
@@ -60,13 +62,14 @@ describe('ShaMap', () => {
     test(`recreate account state hash from ${fixture}`, () => {
       const map = new ShaMap()
       const ledger = loadFixture(fixture)
-      // const t = now();
       const leafNodePrefix = HashPrefix.accountStateEntry
       ledger.accountState
         .map((e, i) => {
           if ((i > 1000) & (i % 1000 === 0)) {
+            /* eslint-disable no-console -- TODO why is this here? */
             console.log(e.index)
             console.log(i)
+            /* eslint-enable no-console */
           }
           const bytes = binary.serializeObject(e)
           return {
@@ -81,7 +84,6 @@ describe('ShaMap', () => {
         })
         .forEach((so) => map.addItem(so.index, so))
       expect(map.hash().toHex()).toBe(ledger.account_hash)
-      // console.log('took seconds: ', (now() - t));
     })
   }
   factory('ledger-full-38129.json')

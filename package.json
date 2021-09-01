@@ -46,7 +46,7 @@
     "compile": "rm -rf ./dist && tsc && cp ./src/enums/definitions.json ./dist/enums",
     "prepare": "npm run compile && npm test",
     "test": "jest",
-    "lint": "eslint . --ext .ts --ext .test.js"
+    "lint": "eslint . --ext .ts --ext .js"
   },
   "repository": {
     "type": "git",

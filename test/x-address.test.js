@@ -1,4 +1,5 @@
 const { encode, decode } = require('../dist/index')
+
 const fixtures = require('./fixtures/x-codec-fixtures.json')
 
 const json_x1 = {
@@ -165,7 +166,7 @@ describe('Invalid X-Address behavior', () => {
 })
 
 describe('ripple-binary-codec x-address test', function () {
-  function makeSuite(outerName, entries) {
+  function makeSuite(_outerName, entries) {
     describe(name, function () {
       entries.forEach((t, testN) => {
         test(`${name}[${testN}] encodes X-address json equivalent to classic address json`, () => {

@@ -1,4 +1,5 @@
 const { Amount } = require('../dist/types')
+
 const { loadFixture } = require('./utils')
 
 const fixtures = loadFixture('data-driven-tests.json')
@@ -11,8 +12,9 @@ function amountErrorTests() {
       if (!f.error) {
         return
       }
-      const testName =
-        `${JSON.stringify(f.test_json)}\n\tis invalid ` + `because: ${f.error}`
+      const testName = `${JSON.stringify(f.test_json)}\n\tis invalid because: ${
+        f.error
+      }`
       it(testName, () => {
         expect(() => {
           Amount.from(f.test_json)

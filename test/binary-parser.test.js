@@ -1,29 +1,26 @@
-/* eslint-disable func-style */
-
-const Decimal = require('decimal.js')
+/* eslint-disable max-statements, max-lines -- TODO we should refactor */
 const { Buffer } = require('buffer/')
+const Decimal = require('decimal.js')
 const { encodeAccountID } = require('ripple-address-codec')
 
 const binary = require('../dist/binary')
-const {
-  Amount,
-  Hash160,
-  PathSet,
-  STObject,
-} = require('../dist/types')
-const { makeParser, readJSON } = binary
 const { Field, TransactionType } = require('../dist/enums')
+const BytesList = require('../dist/serdes/BytesList').default
+const { Amount, Hash160, PathSet, STObject } = require('../dist/types')
 
 const { parseHexOnly, hexOnly, loadFixture } = require('./utils')
 
-const fixtures = loadFixture('data-driven-tests.json')
-const BytesList = require('../dist/serdes/BytesList').default
+const { makeParser, readJSON } = binary
 
+const fixtures = loadFixture('data-driven-tests.json')
 
 const __ = hexOnly
+/* eslint-disable @typescript-eslint/promise-function-async --
+ * TODO unclear why this is a promise? */
 function toJSON(v) {
   return v.toJSON ? v.toJSON() : v
 }
+/* eslint-enable @typescript-eslint/promise-function-async */
 
 function assertEqualAmountJSON(actual, expected) {
   expect(typeof actual === typeof expected).toBe(true)
@@ -266,9 +263,7 @@ function assertRecyclable(json, forField) {
 function nestedObjectTests() {
   fixtures.whole_objects.forEach((f, i) => {
     test(`whole_objects[${i}]: can parse blob into
-          ${JSON.stringify(
-            f.tx_json,
-          )}`, /*                                              */ () => {
+          ${JSON.stringify(f.tx_json)}`, () => {
       const parser = makeParser(f.blob_with_no_signing)
       let ix = 0
       while (!parser.end()) {
@@ -281,11 +276,14 @@ function nestedObjectTests() {
         try {
           expect(actual).toEqual(expectedJSON)
         } catch (e) {
+          /* eslint-disable @typescript-eslint/no-base-to-string --
+           * TODO investigate */
           throw new Error(`${e} ${field} a: ${actual} e: ${expectedJSON}`)
+          /* eslint-enable @typescript-eslint/no-base-to-string */
         }
         expect(field.name).toEqual(expectedField)
         assertRecyclable(actual, field)
-        ix++
+        ix += 1
       }
     })
   })
