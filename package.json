@@ -28,7 +28,6 @@
     "@xrplf/eslint-config": "^1.2.1",
     "@xrplf/prettier-config": "^1.2.0",
     "eslint": "^7.32.0",
-    "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-array-func": "^3.1.7",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-import": "^2.24.2",
