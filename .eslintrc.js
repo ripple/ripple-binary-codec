@@ -1,14 +1,10 @@
+/* eslint-disable import/unambiguous, import/no-commonjs, import/no-unused-modules --
+ * this is a script */
 module.exports = {
-  extends: [
-    '@xrplf/eslint-config/base',
-  ],
+  extends: ['@xrplf/eslint-config/base'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.eslint.json',
-    sourceType: 'module',
-    ecmaFeatures: {
-      impliedStrict: true,
-    },
   },
   env: {
     browser: true,
@@ -22,7 +18,7 @@ module.exports = {
       {
         allow: [
           // This exception is specific to this package and must stay
-          'Buffer'
+          'Buffer',
         ],
       },
     ],
@@ -36,9 +32,7 @@ module.exports = {
   overrides: [
     // test files always look like scripts and are currently using commonjs
     {
-      files: [
-        'test/**/*.js',
-      ],
+      files: ['test/**/*.js'],
       rules: {
         'max-nested-callbacks': 'off',
         'import/unambiguous': 'off',

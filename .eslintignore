@@ -2,4 +2,3 @@ node_modules
 dist
 .github
 coverage
-.eslintrc.js
