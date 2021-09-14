@@ -41,6 +41,7 @@
     "Nickname": 110,
     "Contract": 99,
     "NFTokenPage": 80,
+    "NFTokenOffer": 55,
     "NegativeUNL": 78
   },
   "FIELDS": [
@@ -1535,6 +1536,16 @@
       }
     ],
     [
+      "TokenIDs",
+      {
+        "nth": 4,
+        "isVLEncoded": true,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "Vector256"
+      }
+    ],
+    [
       "Transaction",
       {
         "nth": 1,
@@ -1878,7 +1889,8 @@
     "NFTokenBurn": 26,
     "NFTokenCreateOffer": 27,
     "NFTokenCancelOffer": 28,
-    "NFTokenOfferAccept": 29,
+    "NFTokenAcceptOffer": 29,
+    "NFTokenAdjustOffer": 30,
     "EnableAmendment": 100,
     "SetFee": 101,
     "UNLModify": 102
