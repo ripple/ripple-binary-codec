@@ -2,6 +2,7 @@ import { AccountID } from "./account-id";
 import { Currency } from "./currency";
 import { BinaryParser } from "../serdes/binary-parser";
 import { SerializedType, JsonObject } from "./serialized-type";
+import { Buffer } from "buffer/";
 
 /**
  * Constants for separating Paths in a PathSet
@@ -116,9 +117,7 @@ class Hop extends SerializedType {
     const hopParser = new BinaryParser(this.bytes.toString("hex"));
     const type = hopParser.readUInt8();
 
-    let account,
-      currency,
-      issuer: string | undefined = undefined;
+    let account, currency, issuer;
     if (type & TYPE_ACCOUNT) {
       account = (AccountID.fromParser(hopParser) as AccountID).toJSON();
     }
@@ -131,11 +130,20 @@ class Hop extends SerializedType {
       issuer = (AccountID.fromParser(hopParser) as AccountID).toJSON();
     }
 
-    return {
-      account: account,
-      issuer: issuer,
-      currency: currency,
-    };
+    const result: HopObject = {};
+    if (account) {
+      result.account = account;
+    }
+
+    if (issuer) {
+      result.issuer = issuer;
+    }
+
+    if (currency) {
+      result.currency = currency;
+    }
+
+    return result;
   }
 
   /**

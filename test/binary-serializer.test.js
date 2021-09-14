@@ -5,6 +5,8 @@ const { encode, decode } = require("../dist");
 const { makeParser, BytesList, BinarySerializer } = binary;
 const { coreTypes } = require("../dist/types");
 const { UInt8, UInt16, UInt32, UInt64, STObject } = coreTypes;
+const bigInt = require("big-integer");
+const { Buffer } = require("buffer/");
 
 const { loadFixture } = require("./utils");
 const fixtures = loadFixture("data-driven-tests.json");
@@ -48,6 +50,60 @@ const PaymentChannel = {
     tx: require("./fixtures/payment-channel-claim-tx.json"),
     binary: require("./fixtures/payment-channel-claim-binary.json"),
   },
+};
+
+const Ticket = {
+  create: {
+    tx: require("./fixtures/ticket-create-tx.json"),
+    binary: require("./fixtures/ticket-create-binary.json"),
+  },
+};
+
+let json_undefined = {
+  TakerPays: "223174650",
+  Account: "rPk2dXr27rMw9G5Ej9ad2Tt7RJzGy8ycBp",
+  TransactionType: "OfferCreate",
+  Memos: [
+    {
+      Memo: {
+        MemoType: "584D4D2076616C7565",
+        MemoData: "322E3230393635",
+        MemoFormat: undefined,
+      },
+    },
+  ],
+  Fee: "15",
+  OfferSequence: undefined,
+  TakerGets: {
+    currency: "XMM",
+    value: "100",
+    issuer: "rExAPEZvbkZqYPuNcZ7XEBLENEshsWDQc8",
+  },
+  Flags: 524288,
+  Sequence: undefined,
+  LastLedgerSequence: 6220135,
+};
+
+let json_omitted = {
+  TakerPays: "223174650",
+  Account: "rPk2dXr27rMw9G5Ej9ad2Tt7RJzGy8ycBp",
+  TransactionType: "OfferCreate",
+  Memos: [
+    {
+      Memo: {
+        MemoType: "584D4D2076616C7565",
+        MemoData: "322E3230393635",
+      },
+    },
+  ],
+  Fee: "15",
+  TakerGets: {
+    currency: "XMM",
+    value: "100",
+    issuer: "rExAPEZvbkZqYPuNcZ7XEBLENEshsWDQc8",
+  },
+  Flags: 524288,
+  LastLedgerSequence: 6220135,
 };
 
 const NegativeUNL = require("./fixtures/negative-unl.json");
@@ -115,7 +171,7 @@ check(UInt64, 0xfeffffff, [0, 0, 0, 0, 254, 255, 255, 255]);
 check(UInt64, -1, "throws");
 check(UInt64, 0, [0, 0, 0, 0, 0, 0, 0, 0]);
 check(UInt64, 1, [0, 0, 0, 0, 0, 0, 0, 1]);
-check(UInt64, BigInt(1), [0, 0, 0, 0, 0, 0, 0, 1]);
+check(UInt64, bigInt(1), [0, 0, 0, 0, 0, 0, 0, 1]);
 
 function deliverMinTest() {
   test("can serialize DeliverMin", () => {
@@ -179,6 +235,21 @@ function NegativeUNLTest() {
   });
 }
 
+function omitUndefinedTest() {
+  test("omits fields with undefined value", () => {
+    let encodedOmitted = encode(json_omitted);
+    let encodedUndefined = encode(json_undefined);
+    expect(encodedOmitted).toEqual(encodedUndefined);
+    expect(decode(encodedOmitted)).toEqual(decode(encodedUndefined));
+  });
+}
+
+function ticketTest() {
+  test("can serialize TicketCreate", () => {
+    expect(encode(Ticket.create.tx)).toEqual(Ticket.create.binary);
+  });
+}
+
 describe("Binary Serialization", function () {
   describe("nestedObjectTests", () => nestedObjectTests());
   describe("BytesList", () => bytesListTest());
@@ -188,4 +259,6 @@ describe("Binary Serialization", function () {
   describe("Escrow", () => EscrowTest());
   describe("PaymentChannel", () => PaymentChannelTest());
   describe("NegativeUNLTest", () => NegativeUNLTest());
+  describe("OmitUndefined", () => omitUndefinedTest());
+  describe("TicketTest", () => ticketTest());
 });

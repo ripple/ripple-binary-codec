@@ -6,6 +6,7 @@ import {
 } from "ripple-address-codec";
 import { BinaryParser } from "../serdes/binary-parser";
 import { BinarySerializer, BytesList } from "../serdes/binary-serializer";
+import { Buffer } from "buffer/";
 
 const OBJECT_END_MARKER_BYTE = Buffer.from([0xe1]);
 const OBJECT_END_MARKER = "ObjectEndMarker";
@@ -109,7 +110,12 @@ class STObject extends SerializedType {
 
     let sorted = Object.keys(xAddressDecoded)
       .map((f: string): FieldInstance => Field[f] as FieldInstance)
-      .filter((f: FieldInstance): boolean => f !== undefined && f.isSerialized)
+      .filter(
+        (f: FieldInstance): boolean =>
+          f !== undefined &&
+          xAddressDecoded[f.name] !== undefined &&
+          f.isSerialized
+      )
       .sort((a, b) => {
         return a.ordinal - b.ordinal;
       });
