@@ -1,6 +1,7 @@
 /* eslint-disable import/unambiguous, import/no-commonjs, import/no-unused-modules --
  * this is a script */
 module.exports = {
+  root: true,
   extends: ['@xrplf/eslint-config/base'],
   parser: '@typescript-eslint/parser',
   parserOptions: {

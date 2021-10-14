@@ -42,8 +42,9 @@
     "typescript": "^3.9.10"
   },
   "scripts": {
-    "compile": "rm -rf ./dist && tsc && cp ./src/enums/definitions.json ./dist/enums",
-    "prepare": "npm run compile && npm test",
+    "clean": "rm -rf ./dist",
+    "compile": "tsc && cp ./src/enums/definitions.json ./dist/enums",
+    "prepare": "npm run clean && npm run compile && npm test",
     "test": "jest",
     "lint": "eslint . --ext .ts --ext .js"
   },
